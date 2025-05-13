@@ -1,0 +1,18 @@
+{
+  "name": "log430-labo",
+  "version": "1.0.0",
+  "description": "Projet pour le labo du cours de LOG430",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Raphaël Mailhiot",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10"
+  }
+}
