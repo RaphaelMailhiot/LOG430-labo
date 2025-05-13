@@ -1,5 +1,7 @@
 # Projet Jest & Node.js
 
+[![CI/CD Status](https://github.com/RaphaelMailhiot/LOG430-labo/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/RaphaelMailhiot/LOG430-labo/actions/workflows/ci-cd.yml)
+
 Un **projet JavaScript** simple sous **Node.js** avec **Jest** pour les tests unitaires, prêt à être cloné, installé et démarré en quelques secondes.
 
 ---
