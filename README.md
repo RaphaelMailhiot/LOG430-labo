@@ -54,4 +54,3 @@ Un **projet JavaScript** simple sous **Node.js** avec **Jest** pour les tests un
     │ └── example.test.js
     ├── package.json # Scripts & dépendances
     └── README.md # Documentation du projet
-    
