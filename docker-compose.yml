@@ -1,0 +1,18 @@
+version: "2.35.1"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: log430-labo:latest        # même nom que votre image Docker
+    container_name: log430-labo-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"                   # adaptez le port si nécessaire
+    volumes:
+      - ./:/app                       # monte tout le projet pour le dev
+      - /app/node_modules            # préserve node_modules dans le conteneur
+    environment:
+      NODE_ENV: development           # ou "production" en prod
+    command: npm start                # ou "node src/index.js"
