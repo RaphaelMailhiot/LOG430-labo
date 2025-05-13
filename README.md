@@ -16,8 +16,8 @@ Un **projet JavaScript** simple sous **Node.js** avec **Jest** pour les tests un
 
 1. **Cloner le dépôt**  
    ```bash
-   git clone https://votre-repo.git
-   cd votre-repo
+   git clone https://github.com/RaphaelMailhiot/LOG430-labo.git
+   cd LOG430-labo
    ```
 
 ## ⚙️ Exécution
@@ -36,7 +36,19 @@ Un **projet JavaScript** simple sous **Node.js** avec **Jest** pour les tests un
     npm dev
     ```
 
-3. **Exécuter les test Jest**
+## 🧪 Tests
+
+1. **Exécuter les test Jest**
     ```bash
     npm test
     ```
+
+## 🗂️ Structure du projet
+
+    LOG430-labo/
+    ├── src/
+    │ └── index.js # Point d’entrée de l’application
+    ├── __tests__/ # Tests unitaires Jest
+    │ └── example.test.js
+    ├── package.json # Scripts & dépendances
+    └── README.md # Documentation du projet
