@@ -45,8 +45,8 @@ jobs:
         run: |
           docker build \
             --file Dockerfile \
-            --tag ${{ secrets.DOCKER_USERNAME }}/mon-projet:${{ github.sha }} \
-            --tag ${{ secrets.DOCKER_USERNAME }}/mon-projet:latest \
+            --tag ${{ secrets.DOCKER_USERNAME }}/LOG430-labo:${{ github.sha }} \
+            --tag ${{ secrets.DOCKER_USERNAME }}/LOG430-labo:latest \
             .
 
   publish:
@@ -64,5 +64,5 @@ jobs:
 
       - name: Push images
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/mon-projet:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/mon-projet:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/LOG430-labo:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/LOG430-labo:latest
