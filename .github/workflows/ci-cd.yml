@@ -75,19 +75,22 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: my-docker-hub-namespace/my-docker-hub-repository
+          images: raphaelmailhiot/log430-labo
 
       - name: Build and push Docker image
+        id: push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/log430-labo:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/log430-labo:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/log430-labo:latest
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: index.docker.io/my-docker-hub-namespace/my-docker-hub-repository
+          subject-name: index.docker.io/raphaelmailhiot/log430-labo
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
