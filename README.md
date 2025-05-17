@@ -77,3 +77,11 @@ LOG430-labo/
 ├── package.json          # Scripts & dépendances
 └── README.md             # Documentation du projet
 ```
+
+## ℹ️ Information supplémentaire
+
+Cette application JavaScript utilise l'intégration continue (CI/CD) quand le code est poussé sur GitHub en quatre étape :
+* Vérification de la qualité du code avec eslint
+* Vérification des test unitaire Jest
+* Construction de l'image Docker
+* Publication de l'image sur Docker Hub
