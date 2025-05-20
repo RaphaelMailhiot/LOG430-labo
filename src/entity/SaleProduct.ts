@@ -5,11 +5,11 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-} from "typeorm";
-import { Sale } from "./Sale";
-import { Product } from "./Product";
+} from 'typeorm';
+import { Product } from './Product';
+import { Sale } from './Sale';
 
-@Entity({ name: "sale_product" })
+@Entity({ name: 'sale_product' })
 export class SaleProduct {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -18,9 +18,9 @@ export class SaleProduct {
    * Référence à la vente parente
    */
   @ManyToOne(() => Sale, (sale) => sale.items, {
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: "sale_id" })
+  @JoinColumn({ name: 'sale_id' })
   sale!: Sale;
 
   /**
@@ -29,14 +29,14 @@ export class SaleProduct {
   @ManyToOne(() => Product, {
     eager: true,        // charge les infos produit automatiquement
   })
-  @JoinColumn({ name: "product_id" })
+  @JoinColumn({ name: 'product_id' })
   product!: Product;
 
   /** Quantité vendue de ce produit */
-  @Column({ type: "integer" })
+  @Column({ type: 'integer' })
   quantity!: number;
 
   /** Prix unitaire au moment de la vente */
-  @Column({ type: "decimal", precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   unitPrice!: number;
 }

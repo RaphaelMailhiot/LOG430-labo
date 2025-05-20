@@ -1,8 +1,8 @@
 // src/controllers/SaleService.ts
-import { DataSource, Repository } from "typeorm";
-import { Sale } from "../entity/Sale";
-import { SaleProduct } from "../entity/SaleProduct";
-import { Product } from "../entity/Product";
+import { DataSource, Repository } from 'typeorm';
+import { Product } from '../entity/Product';
+import { Sale } from '../entity/Sale';
+import { SaleProduct } from '../entity/SaleProduct';
 
 export class SaleService {
   private saleRepo: Repository<Sale>;
@@ -63,7 +63,7 @@ export class SaleService {
     return this.dataSource.transaction(async (tx) => {
       const sale = await tx.findOne(Sale, {
         where: { id: saleId },
-        relations: ["items", "items.product"],
+        relations: ['items', 'items.product'],
       });
       if (!sale) {
         throw new Error(`Vente introuvable : ${saleId}`);

@@ -1,6 +1,6 @@
-import { Product } from './product';
 import { Category } from './category';
 import { Checkout } from './checkout';
+import { Product } from './product';
 
 export class Store {
     private _id: number;

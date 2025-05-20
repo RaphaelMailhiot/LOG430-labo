@@ -2,18 +2,18 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
+  //Column,
   CreateDateColumn,
   OneToMany,
-} from "typeorm";
-import { SaleProduct } from "./SaleProduct";
+} from 'typeorm';
+import { SaleProduct } from './SaleProduct';
 
-@Entity({ name: "sale" })
+@Entity({ name: 'sale' })
 export class Sale {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @CreateDateColumn({ type: "datetime" })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt!: Date;
 
   /**
@@ -22,7 +22,7 @@ export class Sale {
    * les ProductSale lors du save d’une Sale.
    */
   @OneToMany(() => SaleProduct, (ps) => ps.sale, {
-    cascade: ["insert", "update"],
+    cascade: ['insert', 'update'],
     eager: true,         // charge les lignes automatiquement
   })
   items!: SaleProduct[];

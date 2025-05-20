@@ -1,6 +1,6 @@
 // index.ts
-import { AppDataSource } from "./data-source";
-import { SaleService } from "./controllers/saleService";
+import { SaleService } from './controllers/saleService';
+import { AppDataSource } from './data-source';
 
 async function main() {
   // 1. Initialiser la connexion
@@ -17,7 +17,7 @@ async function main() {
     ]);
     console.log(`Vente #${saleId} enregistrée (total : ${total} $)`);
   } catch (err: any) {
-    console.error("Erreur lors de la vente :", err.message);
+    console.error('Erreur lors de la vente :', err.message);
   } finally {
     await AppDataSource.destroy();
   }
@@ -25,4 +25,4 @@ async function main() {
 
 main();
 
-console.log("Hello World!LOG430-labo");
+console.log('Hello World!LOG430-labo');
