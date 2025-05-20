@@ -20,7 +20,7 @@ jobs:
         run: npm ci
 
       - name: ESLint
-        run: npx eslint "src/**/*.js"
+        run: npx eslint "src/**/*.{js,jsx,ts,tsx}"
   
   test:
     name: 🧪 Tests unitaires
