@@ -1,0 +1,9 @@
+@startuml
+node "Machine utilisateur" {
+  component "index.js (Node.js CLI)"
+}
+
+database "fichier SQLite"
+
+"index.js" --> "fichier SQLite" : sqlite3 driver (2-tier)
+@enduml

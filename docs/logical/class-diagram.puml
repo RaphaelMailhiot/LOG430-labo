@@ -1,0 +1,36 @@
+@startuml
+
+class Produit {
+  - id: Number
+  - nom: String
+  - prixUnitaire: Number
+  - stock: Number
+  + ajusterStock(qte)
+}
+
+class Vente {
+  - id: Number
+  - date: Date
+  - lignes: Array<LigneVente>
+  + calculTotal()
+}
+
+class LigneVente {
+  - produit: Produit
+  - quantite: Number
+  + montant()
+}
+
+class Utilisateur {
+  - id: Number
+  - login: String
+  - hashMdp: String
+  - role: String
+  + verifierMdp(mdp)
+}
+
+Produit "1" -- "0..*" LigneVente
+Vente "1" -- "1..*" LigneVente
+Utilisateur "1" -- "1..*" Produit
+
+@enduml

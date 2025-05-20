@@ -1,0 +1,23 @@
+@startuml
+
+package "src" {
+    package "controllers" as C {
+        class venteController
+        class utilisateurControlleur
+    }
+    package "models" as M {
+        class Produit
+        class Vente
+    }
+    package "views" as V {
+        class produitView
+        class venteView
+    }
+
+    class index
+}
+
+C -[hidden]down- M
+M -[hidden]down- V
+V -[hidden]down- index
+@enduml
