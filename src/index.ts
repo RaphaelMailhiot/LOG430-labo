@@ -1,6 +1,7 @@
 // index.ts
 import { SaleService } from './controllers/saleService';
 import { AppDataSource } from './data-source';
+import { terminal as term } from 'terminal-kit';
 
 async function main() {
   // 1. Initialiser la connexion
@@ -25,4 +26,8 @@ async function main() {
 
 main();
 
-console.log('Hello World!LOG430-labo');
+term.green('Bienvenue dans le système de gestion des ventes !\n');
+term.blue('Rechercher un produit par Id :\n');
+term.inputField(
+  
+);

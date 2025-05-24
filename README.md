@@ -39,11 +39,15 @@ docker run -p 3000:3000 log430-labo
 * **Démarrer**
 
   ```bash
+  npm run build
+  npx typeorm migration:run -d dist/data-source.js
   npm start
   ```
 * **Mode développement** (avec nodemon)
 
   ```bash
+  npm run build
+  npx typeorm migration:run -d dist/data-source.js
   npm run dev
   ```
 

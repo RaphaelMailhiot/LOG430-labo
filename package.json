@@ -19,6 +19,7 @@
     "@types/inquirer": "^9.0.8",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.19",
+    "@types/terminal-kit": "^2.5.7",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^9.27.0",
@@ -37,6 +38,7 @@
     "inquirer": "^12.6.1",
     "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
+    "terminal-kit": "^3.1.2",
     "typeorm": "^0.3.24"
   }
 }
