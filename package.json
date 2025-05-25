@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon dist/index.js",
     "test": "jest",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js"
   },
@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/express": "^5.0.2",
     "@types/inquirer": "^9.0.8",
     "@types/jest": "^29.5.14",
@@ -34,8 +35,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "better-sqlite3": "^11.10.0",
     "dotenv": "^16.5.0",
-    "inquirer": "^12.6.1",
+    "inquirer": "^12.6.2",
     "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
     "terminal-kit": "^3.1.2",

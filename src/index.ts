@@ -1,33 +1,7 @@
-// index.ts
-import { SaleService } from './controllers/saleService';
-import { AppDataSource } from './data-source';
-import { terminal as term } from 'terminal-kit';
+import 'reflect-metadata';
+import mainMenu from './cli';
 
-async function main() {
-  // 1. Initialiser la connexion
-  await AppDataSource.initialize();
-
-  // 2. Instancier le service
-  const saleService = new SaleService(AppDataSource);
-
-  // 3. Appeler la méthode createSale
-  try {
-    const { saleId, total } = await saleService.createSale([
-      { productId: 1, quantity: 2 },
-      { productId: 3, quantity: 1 },
-    ]);
-    console.log(`Vente #${saleId} enregistrée (total : ${total} $)`);
-  } catch (err: any) {
-    console.error('Erreur lors de la vente :', err.message);
-  } finally {
-    await AppDataSource.destroy();
-  }
-}
-
-main();
-
-term.green('Bienvenue dans le système de gestion des ventes !\n');
-term.blue('Rechercher un produit par Id :\n');
-term.inputField(
-  
-);
+(async () => {
+  console.log('🛒 Bienvenue dans l’application Magasin CLI');
+  await mainMenu();
+})();
