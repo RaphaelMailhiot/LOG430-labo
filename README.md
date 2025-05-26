@@ -2,13 +2,13 @@
 
 [![CI/CD Status](https://github.com/RaphaelMailhiot/LOG430-labo/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/RaphaelMailhiot/LOG430-labo/actions/workflows/ci-cd.yml)
 
-Un projet **Node.js** (v12+) prêt à l’emploi, intégrant **Jest** pour des tests unitaires fiables et un pipeline **CI/CD** automatisé via GitHub Actions. Clonez, installez et démarrez en quelques secondes pour développer et tester vos applications JavaScript serveur efficacement.
+Un projet **Node.js** (v22+) prêt à l’emploi, intégrant **Jest** pour des tests unitaires fiables et un pipeline **CI/CD** automatisé via GitHub Actions. Clonez, installez et démarrez en quelques secondes pour développer et tester vos applications JavaScript serveur efficacement.
 
 ---
 
 ## 🚀 Prérequis
 
-* **Node.js** v12 ou supérieur
+* **Node.js** v22 ou supérieur
 * **npm** (fourni avec Node.js)
 * **Docker** (optionnel, pour la version conteneurisée)
 * Un terminal (Linux/macOS/Windows)
@@ -40,14 +40,12 @@ docker run -p 3000:3000 log430-labo
 
   ```bash
   npm run build
-  npx typeorm migration:run -d dist/data-source.js
   npm start
   ```
 * **Mode développement** (avec nodemon)
 
   ```bash
   npm run build
-  npx typeorm migration:run -d dist/data-source.js
   npm run dev
   ```
 
