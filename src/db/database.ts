@@ -28,3 +28,19 @@ CREATE TABLE IF NOT EXISTS sale_items (
   FOREIGN KEY(product_id) REFERENCES products(id)
 );
 `);
+
+
+// Insertion de données initiales si la table products est vide
+const row = db.prepare('SELECT COUNT(*) as c FROM products').get() as { c: number };
+const count = row.c;
+if (count === 0) {
+  const insert = db.prepare(`
+    INSERT INTO products (name, category, price, stock)
+    VALUES (?, ?, ?, ?)
+  `);
+  insert.run('Clavier', 'Informatique', 49.99, 20);
+  insert.run('Souris', 'Informatique', 19.99, 35);
+  insert.run('Écran', 'Informatique', 199.99, 10);
+  insert.run('Câble HDMI', 'Accessoires', 9.99, 50);
+  insert.run('Casque audio', 'Audio', 59.99, 15);
+}
