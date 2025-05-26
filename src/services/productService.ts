@@ -21,11 +21,11 @@ export const findProducts = (search: string): Product[] => {
  * Récupère un produit par son ID.
  */
 export const getProductById = (id: number): Product | undefined => {
-    const stmt = db.prepare(`SELECT * FROM products WHERE id = ?`);
+    const stmt = db.prepare('SELECT * FROM products WHERE id = ?');
     return stmt.get(id) as Product | undefined;
 };
 
 export const updateStock = (id: number, delta: number): void => {
-  db.prepare(`UPDATE products SET stock = stock + ? WHERE id = ?`)
+  db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?')
     .run(delta, id);
 };

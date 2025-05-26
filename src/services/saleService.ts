@@ -1,14 +1,14 @@
 // src/services/saleService.ts
+import { updateStock } from './productService';
 import { db } from '../db/database';
 import { SaleItem } from '../models/sale';
-import { updateStock } from './productService';
 
 /**
  * Enregistre une vente et décale le stock.
  * @returns l’ID de la vente créée
  */
 export function recordSale(items: SaleItem[]): number {
-  const insertSale = db.prepare(`INSERT INTO sales DEFAULT VALUES`);
+  const insertSale = db.prepare('INSERT INTO sales DEFAULT VALUES');
   const saleInfo = insertSale.run();
   const saleId = saleInfo.lastInsertRowid as number;
 
@@ -46,8 +46,8 @@ export function cancelSale(saleId: number): void {
     for (const it of items) {
       updateStock(it.productId, it.quantity);
     }
-    db.prepare(`DELETE FROM sale_items WHERE sale_id = ?`).run(saleId);
-    db.prepare(`DELETE FROM sales WHERE id = ?`).run(saleId);
+    db.prepare('DELETE FROM sale_items WHERE sale_id = ?').run(saleId);
+    db.prepare('DELETE FROM sales WHERE id = ?').run(saleId);
   });
   transaction();
 }
