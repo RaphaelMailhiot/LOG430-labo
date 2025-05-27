@@ -1,5 +1,7 @@
 @startuml
 
+title Diagramme de classes
+
 class Product {
   - id: number
   - name: string

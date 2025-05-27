@@ -1,5 +1,7 @@
 @startuml
 
+title Architecture locale 2-tier
+
 node "Machine utilisateur" {
   component "index.js (Node.js CLI)"
   component "TypeORM"

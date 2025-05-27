@@ -1,25 +1,34 @@
 @startuml
 
+title Organisation des modules
+
 package "src" {
-    package "entities" {
+    package "entities" as E {
         class Product
         class Sale
         class SaleItem
     }
-    package "models" {
+    package "models" as M {
         class product
         class sale
     }
-    package "services" {
+    package "services" as S {
         class productService
         class saleService
     }
-    package "views" {
+    package "views" as V {
         class cli
     }
-    class data-source
+    class datasource
     class index
     class initData
 }
+
+E -[hidden]down- M
+M -[hidden]down- S
+S -[hidden]down- V
+V -[hidden]down- datasource
+datasource -[hidden]down- index
+index -[hidden]down- initData
 
 @enduml
