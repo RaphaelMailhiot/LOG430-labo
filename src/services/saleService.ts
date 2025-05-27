@@ -1,7 +1,7 @@
 import { AppDataSource } from '../data-source';
+import { Product } from '../entities/Product';
 import { Sale } from '../entities/Sale';
 import { SaleItem } from '../entities/SaleItem';
-import { Product } from '../entities/Product';
 
 /**
  * Enregistre une vente et décale le stock.

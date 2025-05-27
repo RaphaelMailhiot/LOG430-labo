@@ -1,6 +1,6 @@
+import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Product } from '../entities/Product';
-import { ILike } from 'typeorm';
 
 /**
  * Recherche des produits par ID, nom ou catégorie.

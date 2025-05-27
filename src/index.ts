@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import mainMenu from './views/cli';
 import { AppDataSource } from './data-source';
 import { initProducts } from './initData';
+import mainMenu from './views/cli';
 
 (async () => {
   await AppDataSource.initialize();
