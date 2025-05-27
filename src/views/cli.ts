@@ -62,7 +62,7 @@ async function handleAddProduct() {
     { type: 'number', name: 'stock', message: 'Stock initial ?' }
   ]);
   const produit = await addProduct({ name, category, price, stock }); 
-  console.log(`Produit ajouté :`, produit);
+  console.log('Produit ajouté :', produit);
 }
 
 async function handleSale() {
