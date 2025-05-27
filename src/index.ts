@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import mainMenu from './cli';
+import mainMenu from './views/cli';
 import { AppDataSource } from './data-source';
 import { initProducts } from './initData';
 

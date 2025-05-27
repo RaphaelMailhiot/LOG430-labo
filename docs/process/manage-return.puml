@@ -1,0 +1,21 @@
+@startuml
+
+skinparam style strictuml
+
+title Processus de retour d'une vente
+actor Utilisateur
+participant "CLI (cli.ts)" as CLI
+participant "SaleService (saleService.ts)" as SaleService
+database "AppDataSource\n(TypeORM/SQLite)" as Database
+
+Utilisateur -> CLI : Choisir 'Gérer un retour'
+CLI -> Utilisateur : Demander numéro de vente à annuler (number)
+Utilisateur -> CLI : Saisir critère (number)
+CLI -> CLI : handleReturn()
+CLI -> SaleService : cancelSale(saleId:number)
+SaleService -> Database : getRepository(Sale).findOneBy(id:number)
+SaleService -> Database : delete(saleId:number)
+SaleService --> CLI : confirmation de l'annulation
+CLI --> Utilisateur : Vente {id} annulée
+
+@enduml

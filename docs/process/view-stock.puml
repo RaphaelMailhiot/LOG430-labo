@@ -1,0 +1,18 @@
+@startuml
+
+skinparam style strictuml
+
+title Processus de consultation de l'inventaire
+actor Utilisateur
+participant "CLI (cli.ts)" as CLI
+participant "ProductService (productService.ts)" as ProductService
+database "AppDataSource\n(TypeORM/SQLite)" as Database
+
+Utilisateur -> CLI : Choisir 'Consulter le stock'
+CLI -> CLI : handleStock()
+CLI -> ProductService : findProducts(string)
+ProductService -> Database : getRepository(Product).find()
+ProductService --> CLI : Information des produits (id, name, category, price, stock)
+CLI -> Utilisateur : Afficher résultats
+
+@enduml

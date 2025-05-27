@@ -1,0 +1,42 @@
+@startuml
+
+skinparam style strictuml
+
+title Processus d'une vente
+actor Utilisateur
+participant "CLI\n(cli.ts)" as CLI
+participant "SaleService\n(saleService.ts)" as SaleService
+database "AppDataSource\n(TypeORM/SQLite)" as Database
+
+Utilisateur -> CLI : Choisir « Enregistrer une vente »
+
+' Boucle de saisie des produits
+loop Pour chaque produit à ajouter
+    CLI -> Utilisateur : Demander ID produit
+    Utilisateur -> CLI : Saisir ID produit (id:number)
+    CLI -> Utilisateur : Demander quantité
+    Utilisateur -> CLI : Saisir quantité (quantity:number)
+    CLI -> Utilisateur : Ajouter un autre produit ? (answer:booleen)
+end
+
+CLI -> CLI : handleSale()
+CLI -> SaleService : getProductById(productId:number)
+SaleService -> Database : getRepository(Product).findOneBy(id:number)
+Database --> SaleService : informations
+CLI -> CLI : saleItems.push().reduce()
+
+SaleService -> CLI : afficherTotalVente(total)
+CLI --> Utilisateur : Afficher total
+CLI -> Utilisateur : Demander confirmation
+Utilisateur -> CLI : Confirmer la vente ? (answer:booleen)
+
+alt Vente confirmée
+    CLI -> SaleService : recordSale(saleItems:any[])
+    SaleService -> Database : getRepository(Sale)
+    Database -> SaleService : save(sale:any)
+    SaleService --> CLI : sale.id:number
+    CLI --> Utilisateur : Vente {id} enregistrée
+else Vente annulée
+    CLI --> Utilisateur : Vente annulée
+end
+@enduml

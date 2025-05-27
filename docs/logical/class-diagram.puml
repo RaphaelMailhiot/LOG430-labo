@@ -1,36 +1,43 @@
 @startuml
 
-class Produit {
-  - id: Number
-  - nom: String
-  - prixUnitaire: Number
-  - stock: Number
-  + ajusterStock(qte)
+class Product {
+  - id: number
+  - name: string
+  - category: string
+  - price: number
+  - stock: number
 }
 
-class Vente {
-  - id: Number
-  - date: Date
-  - lignes: Array<LigneVente>
-  + calculTotal()
+class Sale {
+  - id: number
+  - date: string
+  - items: SaleItem[]
 }
 
-class LigneVente {
-  - produit: Produit
-  - quantite: Number
-  + montant()
+class SaleItem {
+  - sale_id: number
+  - product_id: number
+  - quantity: number
+  - price: number
+  - sale: Sale
+  - product: Product
 }
 
-class Utilisateur {
-  - id: Number
-  - login: String
-  - hashMdp: String
-  - role: String
-  + verifierMdp(mdp)
+class ProductService {
+  + findProducts(term: string): Product[]
+  + getProductById(id: number): Product
+  + updateStock(id: number, delta: number): void
 }
 
-Produit "1" -- "0..*" LigneVente
-Vente "1" -- "1..*" LigneVente
-Utilisateur "1" -- "1..*" Produit
+class SaleService {
+  + recordSale(items: SaleItem[]): number
+  + cancelSale(saleId: number): void
+}
+
+Product "1" -- "0..*" SaleItem : "product"
+Sale "1" -- "0..*" SaleItem : "items"
+ProductService ..> Product
+SaleService ..> Sale
+SaleService ..> SaleItem
 
 @enduml

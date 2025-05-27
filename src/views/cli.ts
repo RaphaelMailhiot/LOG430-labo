@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
-import { findProducts, getProductById } from './services/productService';
-import { recordSale, cancelSale } from './services/saleService';
+import { findProducts, getProductById } from '../services/productService';
+import { recordSale, cancelSale } from '../services/saleService';
 
 async function mainMenu() {
   const { action } = await inquirer.prompt({
@@ -98,6 +98,8 @@ async function handleSale() {
   if (confirm) {
     const saleId = await recordSale(saleItems);
     console.log(`Vente #${saleId} enregistrée.`);
+  } else {
+    console.log('Vente annulée.');
   }
 }
 

@@ -1,9 +1,13 @@
 @startuml
+
 node "Machine utilisateur" {
   component "index.js (Node.js CLI)"
+  component "TypeORM"
 }
 
 database "fichier SQLite"
 
-"index.js" --> "fichier SQLite" : sqlite3 driver (2-tier)
+"index.js (Node.js CLI)" --> "TypeORM" : appels services/metier
+"TypeORM" --> "fichier SQLite" : ORM (sqlite3 driver)
+
 @enduml

@@ -1,23 +1,25 @@
 @startuml
 
 package "src" {
-    package "controllers" as C {
-        class venteController
-        class utilisateurControlleur
+    package "entities" {
+        class Product
+        class Sale
+        class SaleItem
     }
-    package "models" as M {
-        class Produit
-        class Vente
+    package "models" {
+        class product
+        class sale
     }
-    package "views" as V {
-        class produitView
-        class venteView
+    package "services" {
+        class productService
+        class saleService
     }
-
+    package "views" {
+        class cli
+    }
+    class data-source
     class index
+    class initData
 }
 
-C -[hidden]down- M
-M -[hidden]down- V
-V -[hidden]down- index
 @enduml
