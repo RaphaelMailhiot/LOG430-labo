@@ -9,6 +9,7 @@ participant "SaleService\n(saleService.ts)" as SaleService
 database "AppDataSource\n(TypeORM/SQLite)" as Database
 
 Utilisateur -> CLI : Choisir « Enregistrer une vente »
+CLI -> CLI : handleSale()
 
 ' Boucle de saisie des produits
 loop Pour chaque produit à ajouter
@@ -19,7 +20,6 @@ loop Pour chaque produit à ajouter
     CLI -> Utilisateur : Ajouter un autre produit ? (answer:booleen)
 end
 
-CLI -> CLI : handleSale()
 CLI -> SaleService : getProductById(productId:number)
 SaleService -> Database : getRepository(Product).findOneBy(id:number)
 Database --> SaleService : informations

@@ -22,6 +22,25 @@ export const findProducts = async (search: string): Promise<Product[]> => {
 };
 
 /**
+ * Ajoute un nouveau produit à la base de données.
+ */
+export const addProduct = async ({
+  name,
+  category,
+  price,
+  stock
+}: {
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+}): Promise<Product> => {
+  const repo = AppDataSource.getRepository(Product);
+  const produit = repo.create({ name, category, price, stock });
+  return repo.save(produit);
+};
+
+/**
  * Récupère un produit par son ID.
  */
 export const getProductById = async (id: number): Promise<Product | null> => {

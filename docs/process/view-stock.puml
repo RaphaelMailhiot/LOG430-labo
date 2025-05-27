@@ -12,6 +12,7 @@ Utilisateur -> CLI : Choisir 'Consulter le stock'
 CLI -> CLI : handleStock()
 CLI -> ProductService : findProducts(string)
 ProductService -> Database : getRepository(Product).find()
+Database --> ProductService : informations des produits
 ProductService --> CLI : Information des produits (id, name, category, price, stock)
 CLI -> Utilisateur : Afficher résultats
 

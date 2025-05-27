@@ -1,0 +1,22 @@
+@startuml
+
+left to right direction
+
+title Cas d'utilisation du système de gestion des ventes
+actor Utilisateur as U
+
+rectangle "Système" {
+    usecase "Rechercher un produit"  as RP
+    usecase "Ajouter un produit"     as AP
+    usecase "Enregistrer une vente"  as EV
+    usecase "Gérer un retour"        as GR
+    usecase "Consulter le stock"     as CS
+}
+
+U --> RP
+U --> AP
+U --> EV
+U --> GR
+U --> CS
+
+@enduml

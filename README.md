@@ -87,9 +87,6 @@ LOG430-labo/
 │   │   ├── Product.ts
 │   │   ├── Sale.ts
 │   │   └── SaleItem.ts
-│   ├── models/                 # Modèles métiers (interfaces, types)
-│   │   ├── product.ts
-│   │   └── sale.ts
 │   ├── services/               # Logique métier (services)
 │   │   ├── productService.ts
 │   │   └── saleService.ts

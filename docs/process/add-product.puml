@@ -1,0 +1,21 @@
+@startuml
+
+skinparam style strictuml
+
+title Processus d'ajout d'un produit
+actor Utilisateur
+participant "CLI (cli.ts)" as CLI
+participant "ProductService (productService.ts)" as ProductService
+database "AppDataSource\n(TypeORM/SQLite)" as Database
+
+Utilisateur -> CLI : Choisir 'Ajouter un produit'
+CLI -> CLI : handleAddProduct()
+CLI -> Utilisateur : Demander informations produit (nom: string, catégorie: string, prix: number, stock: number)
+Utilisateur -> CLI : Saisir informations produit
+CLI -> ProductService : addProduct({nom: string, catégorie: string, prix: number, stock: number})
+ProductService -> Database : getRepository(Product).save(create({nom: string, catégorie: string, prix: number, stock: number})
+Database --> ProductService : produit ajouté
+ProductService --> CLI : Information du produit (id, name, category, price, stock)
+CLI -> Utilisateur : Afficher résultats
+
+@enduml

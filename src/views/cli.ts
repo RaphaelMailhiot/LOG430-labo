@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { findProducts, getProductById } from '../services/productService';
+import { findProducts, getProductById, addProduct } from '../services/productService';
 import { recordSale, cancelSale } from '../services/saleService';
 
 async function mainMenu() {
@@ -9,6 +9,7 @@ async function mainMenu() {
     message: 'Choisissez une action:',
     choices: [
       'Rechercher un produit',
+      'Ajouter un produit',
       'Enregistrer une vente',
       'Gérer un retour',
       'Consulter le stock',
@@ -19,6 +20,9 @@ async function mainMenu() {
   switch (action) {
     case 'Rechercher un produit':
       await handleSearch();
+      break;
+    case 'Ajouter un produit':
+      await handleAddProduct();
       break;
     case 'Enregistrer une vente':
       await handleSale();
@@ -45,6 +49,20 @@ async function handleSearch() {
   ]);
   const produits = await findProducts(term);
   console.table(produits);
+}
+
+async function handleAddProduct() {
+  const { name, category, price, stock } = await inquirer.prompt([
+    { type: 'input', name: 'name', message: 'Nom du produit ?' },
+    { type: 'input', name: 'category', message: 'Catégorie ?' },
+    { 
+      type: 'input', name: 'price', message: 'Prix ?', 
+      validate: (input) => !isNaN(parseFloat(input)) && parseFloat(input) > 0 ? true : 'Entrez un prix valide'
+    },     
+    { type: 'number', name: 'stock', message: 'Stock initial ?' }
+  ]);
+  const produit = await addProduct({ name, category, price, stock }); 
+  console.log(`Produit ajouté :`, produit);
 }
 
 async function handleSale() {

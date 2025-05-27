@@ -51,8 +51,9 @@
 ## Vue logique
 ![Diagramme de classes (PlantUML)](../out/docs/logical/class-diagram/class-diagram.svg)
 
-## Vue des processus (cas d’utilisation)
+## Vue des processus
 ![Processus de recherche d'un produit (PlantUML)](../out/docs/process/product-search/product-search.svg)
+![Processus d'ajout d'un produit (PlantUML)](../out/docs/process/add-product/add-product.svg)
 ![Processus d'une vente (PlantUML)](../out/docs/process/record-sale/record-sale.svg)
 ![Processus de retour d'une vente (PlantUML)](../out/docs/process/manage-return/manage-return.svg)
 ![Processus de consultation de l'inventaire (PlantUML)](../out/docs/process/view-stock/view-stock.svg)
@@ -62,6 +63,9 @@
 
 ## Vue d’implémentation
 ![Organisation des modules (PlantUML)](../out/docs/development/modules-organisation/modules-organisation.svg)
+
+## Vue des cas d'utilisation
+![Cas d'utilisation (PlantUML)](../out/docs/use-case/use-case/use-case.svg)
 
 ---
 

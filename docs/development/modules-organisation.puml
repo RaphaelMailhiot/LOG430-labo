@@ -8,10 +8,6 @@ package "src" {
         class Sale
         class SaleItem
     }
-    package "models" as M {
-        class product
-        class sale
-    }
     package "services" as S {
         class productService
         class saleService
@@ -24,8 +20,8 @@ package "src" {
     class initData
 }
 
-E -[hidden]down- M
-M -[hidden]down- S
+Product -[hidden]right- Sale
+E -[hidden]down- S
 S -[hidden]down- V
 V -[hidden]down- datasource
 datasource -[hidden]down- index
