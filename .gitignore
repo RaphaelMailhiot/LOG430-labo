@@ -1,6 +1,11 @@
+# base files
 node_modules/
 .idea/
 dist/
-data/magasin.db
+
+# ignore data files but keep the directory
+data/**
+!data/.gitkeep
+
+# ignore environment files
 .env
-store.sqlite
