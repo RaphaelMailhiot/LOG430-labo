@@ -43,7 +43,7 @@ async function handleSearch() {
       message: 'Identifiant, nom ou catégorie ?'
     }
   ]);
-  const produits = findProducts(term);
+  const produits = await findProducts(term);
   console.table(produits);
 }
 
@@ -78,11 +78,12 @@ async function handleSale() {
   }
 
   // On récupère les prix pour calculer le total
-  const saleItems = items.map(it => {
-    const p = getProductById(it.productId);
+  const saleItems = [];
+  for (const it of items) {
+    const p = await getProductById(it.productId);
     if (!p) throw new Error(`Produit ${it.productId} introuvable`);
-    return { productId: it.productId, quantity: it.quantity, price: p.price };
-  });
+    saleItems.push({ productId: it.productId, quantity: it.quantity, price: p.price });
+  }
 
   const total = saleItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
   console.log(`Total de la vente : $${total.toFixed(2)}`);
@@ -95,7 +96,7 @@ async function handleSale() {
     }
   ]);
   if (confirm) {
-    const saleId = recordSale(saleItems);
+    const saleId = await recordSale(saleItems);
     console.log(`Vente #${saleId} enregistrée.`);
   }
 }
@@ -106,12 +107,12 @@ async function handleReturn() {
     message: 'Numéro de vente à annuler ?',
     type: 'number'
   });
-  cancelSale(saleId);
+  await cancelSale(saleId);
   console.log(`Vente #${saleId} annulée et stock remis à jour.`);
 }
 
 async function handleStock() {
-  const produits = findProducts(''); // récupère tout
+  const produits = await findProducts(''); // récupère tout
   console.table(produits.map(p => ({ ID: p.id, Nom: p.name, Stock: p.stock })));
 }
 

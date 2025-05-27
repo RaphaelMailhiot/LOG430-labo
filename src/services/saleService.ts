@@ -1,53 +1,59 @@
-// src/services/saleService.ts
-import { updateStock } from './productService';
-import { db } from '../db/database';
-import { SaleItem } from '../models/sale';
+import { AppDataSource } from '../data-source';
+import { Sale } from '../entities/Sale';
+import { SaleItem } from '../entities/SaleItem';
+import { Product } from '../entities/Product';
 
 /**
  * Enregistre une vente et décale le stock.
  * @returns l’ID de la vente créée
  */
-export function recordSale(items: SaleItem[]): number {
-  const insertSale = db.prepare('INSERT INTO sales DEFAULT VALUES');
-  const saleInfo = insertSale.run();
-  const saleId = saleInfo.lastInsertRowid as number;
+export const recordSale = async (
+  items: { productId: number; quantity: number; price: number }[]
+): Promise<number> => {
+  const saleRepo = AppDataSource.getRepository(Sale);
+  const saleItemRepo = AppDataSource.getRepository(SaleItem);
+  const productRepo = AppDataSource.getRepository(Product);
 
-  const insertItem = db.prepare(`
-    INSERT INTO sale_items(sale_id, product_id, quantity, price)
-    VALUES (@saleId,@productId,@quantity,@price)
-  `);
+  // Création de la vente
+  const sale = new Sale();
+  await saleRepo.save(sale);
 
-  const transaction = db.transaction(() => {
-    for (const it of items) {
-      insertItem.run({
-        saleId,
-        productId: it.productId,
-        quantity: it.quantity,
-        price: it.price
-      });
-      updateStock(it.productId, -it.quantity);
+  // Création des items et mise à jour du stock
+  for (const it of items) {
+    const product = await productRepo.findOneByOrFail({ id: it.productId });
+    if (product.stock < it.quantity) {
+      throw new Error(`Stock insuffisant pour le produit ${product.name}`);
     }
-  });
-  transaction();
-  return saleId;
-}
+    product.stock -= it.quantity;
+    await productRepo.save(product);
+
+    const saleItem = new SaleItem();
+    saleItem.sale_id = sale.id;
+    saleItem.product_id = it.productId;
+    saleItem.quantity = it.quantity;
+    saleItem.price = it.price;
+    await saleItemRepo.save(saleItem);
+  }
+
+  return sale.id;
+};
 
 /**
  * Annule une vente et rétablit le stock.
  */
-export function cancelSale(saleId: number): void {
-  const items = db.prepare(`
-    SELECT product_id AS productId, quantity, price
-    FROM sale_items
-    WHERE sale_id = ?
-  `).all(saleId) as SaleItem[];
+export const cancelSale = async (saleId: number): Promise<void> => {
+  const saleItemRepo = AppDataSource.getRepository(SaleItem);
+  const productRepo = AppDataSource.getRepository(Product);
+  const saleRepo = AppDataSource.getRepository(Sale);
 
-  const transaction = db.transaction(() => {
-    for (const it of items) {
-      updateStock(it.productId, it.quantity);
-    }
-    db.prepare('DELETE FROM sale_items WHERE sale_id = ?').run(saleId);
-    db.prepare('DELETE FROM sales WHERE id = ?').run(saleId);
-  });
-  transaction();
-}
+  const items = await saleItemRepo.find({ where: { sale_id: saleId } });
+
+  for (const it of items) {
+    const product = await productRepo.findOneByOrFail({ id: it.product_id });
+    product.stock += it.quantity;
+    await productRepo.save(product);
+  }
+
+  await saleItemRepo.delete({ sale_id: saleId });
+  await saleRepo.delete({ id: saleId });
+};

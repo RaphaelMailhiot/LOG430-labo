@@ -1,31 +1,38 @@
-// src/services/productService.ts
-import { db } from '../db/database';
-import { Product } from '../models/product';
+import { AppDataSource } from '../data-source';
+import { Product } from '../entities/Product';
+import { ILike } from 'typeorm';
 
 /**
  * Recherche des produits par ID, nom ou catégorie.
  */
-export const findProducts = (search: string): Product[] => {
-  const q = `%${search.trim().toLowerCase()}%`;
-  const exact = search.trim();
-  const stmt = db.prepare(`
-    SELECT * FROM products
-    WHERE LOWER(name) LIKE ?
-       OR LOWER(category) LIKE ?
-       OR CAST(id AS TEXT) = ?
-  `);
-  return stmt.all(q, q, exact) as Product[];
+export const findProducts = async (search: string): Promise<Product[]> => {
+  const repo = AppDataSource.getRepository(Product);
+  const term = search.trim();
+  if (!term) {
+    return repo.find();
+  }
+  const id = Number(term);
+  return repo.find({
+    where: [
+      { name: ILike(`%${term}%`) },
+      { category: ILike(`%${term}%`) },
+      ...(isNaN(id) ? [] : [{ id }])
+    ]
+  });
 };
 
 /**
  * Récupère un produit par son ID.
  */
-export const getProductById = (id: number): Product | undefined => {
-    const stmt = db.prepare('SELECT * FROM products WHERE id = ?');
-    return stmt.get(id) as Product | undefined;
+export const getProductById = async (id: number): Promise<Product | null> => {
+  const repo = AppDataSource.getRepository(Product);
+  return repo.findOneBy({ id });
 };
 
-export const updateStock = (id: number, delta: number): void => {
-  db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?')
-    .run(delta, id);
+/**
+ * Met à jour le stock d'un produit.
+ */
+export const updateStock = async (id: number, delta: number): Promise<void> => {
+  const repo = AppDataSource.getRepository(Product);
+  await repo.increment({ id }, 'stock', delta);
 };
