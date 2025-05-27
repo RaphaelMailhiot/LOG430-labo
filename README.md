@@ -70,19 +70,42 @@ docker run -p 3000:3000 log430-labo
 
 ```
 LOG430-labo/
-├── src/                  # Code source
-│   └── index.js          # Point d’entrée de l’application
-├── __tests__/            # Tests unitaires Jest
-│   └── example.test.js
-├── .github/              # CI/CD (GitHub Actions)
-│   └── workflows/ci-cd.yml
-├── package.json          # Scripts & dépendances
-└── README.md             # Documentation du projet
+├── __tests__/                  # Tests unitaires Jest
+│   ├── example.test.ts
+│   └── index.test.ts
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml          # Pipeline CI/CD GitHub Actions
+├── data/                       # Données persistantes (SQLite, etc.)
+├── dist/                       # Fichiers compilés (TypeScript → JavaScript)
+├── docs/                       # Documentation et diagrammes
+├── node_modules/               # Dépendances npm
+├── out/                        # Diagrammes générés, rapports, etc.
+├── public/                     # Fichiers statiques
+├── src/                        # Code source principal
+│   ├── entities/               # Entités TypeORM (base de données)
+│   │   ├── Product.ts
+│   │   ├── Sale.ts
+│   │   └── SaleItem.ts
+│   ├── models/                 # Modèles métiers (interfaces, types)
+│   │   ├── product.ts
+│   │   └── sale.ts
+│   ├── services/               # Logique métier (services)
+│   │   ├── productService.ts
+│   │   └── saleService.ts
+│   ├── views/                  # Interface utilisateur (CLI)
+│   │   └── cli.ts
+│   ├── data-source.ts          # Configuration de la source de données (TypeORM)
+│   ├── index.ts                # Point d’entrée principal
+│   └── initData.ts             # Initialisation des données
+├── .env                        # Variables d’environnement
+├── package.json                # Scripts & dépendances npm
+└── README.md                   # Documentation du projet
 ```
 
 ## ℹ️ Information supplémentaire
 
-Cette application JavaScript utilise l'intégration continue (CI/CD) quand le code est poussé sur GitHub en quatre étape :
+Cette application TypeScript utilise l'intégration continue (CI/CD) quand le code est poussé sur GitHub en quatre étape :
 * Vérification de la qualité du code avec eslint
 * Vérification des test unitaire Jest
 * Construction de l'image Docker
