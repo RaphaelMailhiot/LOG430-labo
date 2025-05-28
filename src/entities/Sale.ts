@@ -6,7 +6,7 @@ export class Sale {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date!: string;
 
   @OneToMany(() => SaleItem, item => item.sale)

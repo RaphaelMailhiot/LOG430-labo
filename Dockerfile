@@ -7,15 +7,18 @@ WORKDIR /LOG430-labo
 # Copie uniquement les fichiers de dépendances pour profiter du cache Docker
 COPY package*.json ./
 
-# Installe les dépendances en mode production (ignorer devDependencies)
-RUN npm ci --only=production
+# Installe toutes les dépendances (y compris dev pour le build)
+RUN npm ci
 
-# Copie le reste de l’application (src/, __tests__/, README.md, etc.)
+# Copie le reste de l’application
 COPY . .
 
-# Si votre app écoute sur un port, décommentez la ligne suivante (ex : 3000)
+# Build le projet TypeScript
+RUN npm run build:css
+RUN npm run build
+
+# Expose le port de l'app (décommente si besoin)
 # EXPOSE 3000
 
-# Commande par défaut pour démarrer votre application
-# Soit via npm start, soit directement avec node
-CMD ["npm", "start"]
+# Commande par défaut pour démarrer l'app compilée
+CMD ["npm", "run", "dev:web"]

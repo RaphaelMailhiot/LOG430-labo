@@ -1,18 +1,32 @@
-version: "2.35.1"
-
 services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: labuser
+      POSTGRES_PASSWORD: labpassword
+      POSTGRES_DB: labdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: log430-labo:latest        # même nom que votre image Docker
+    image: log430-labo:latest
     container_name: log430-labo-app
-    restart: unless-stopped
     ports:
-      - "3000:3000"                   # adaptez le port si nécessaire
+      - "3000:3000"
+    env_file:
+      - .env
     volumes:
-      - ./:/app                       # monte tout le projet pour le dev
-      - /app/node_modules            # préserve node_modules dans le conteneur
-    environment:
-      NODE_ENV: development           # ou "production" en prod
-    command: npm start                # ou "node src/index.js"
+      - ./:/LOG430-labo
+      - /LOG430-labo/node_modules
+    command: sh -c "npm run build:css -- --watch & npm run dev:web"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
