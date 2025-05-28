@@ -1,6 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { ServicesController } from '../controllers/servicesController';
 
 const router = Router();
+const servicesController = new ServicesController();
 
 router.get('/recherche-produit', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -8,7 +10,7 @@ router.get('/recherche-produit', async (_req: Request, res: Response, next: Next
     const message = 'Bienvenue sur la page de recherche de produit !';
     res.status(200).render('search-product', { title, message });
   } catch (err) {
-    next(err);
+    next(err); 
   }
 });
 
@@ -46,7 +48,9 @@ router.get('/consulter-stock', async (_req: Request, res: Response, next: NextFu
   try {
     const title = 'Consulter le stock';
     const message = 'Bienvenue sur la page de consultation du stock !';
-    res.status(200).render('view-stock', { title, message });
+    const stock = await servicesController.handleStock();
+    const categories = [...new Set(stock.map(item => item.category))];
+    res.status(200).render('view-stock', { title, message, stock, categories });
   } catch (err) {
     next(err);
   }

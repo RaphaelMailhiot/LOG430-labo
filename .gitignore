@@ -3,9 +3,5 @@ node_modules/
 .idea/
 dist/
 
-# ignore data files but keep the directory
-data/**
-!data/.gitkeep
-
 # ignore environment files
 .env
