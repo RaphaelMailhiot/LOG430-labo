@@ -1,9 +1,9 @@
 import express from 'express';
 import * as path from 'path';
-import homeRouter from './routes/homeRouter';
-import servicesRouter from './routes/servicesRouter';
 import { AppDataSource } from './data-source';
 import { initProducts } from './initData';
+import homeRouter from './routes/homeRouter';
+import servicesRouter from './routes/servicesRouter';
 
 AppDataSource.initialize()
   .then(async () => {
