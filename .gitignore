@@ -3,5 +3,8 @@ node_modules/
 .idea/
 dist/
 
+# tailwindcss output
+public/output.css
+
 # ignore environment files
 .env
