@@ -8,18 +8,12 @@ export class ServicesController {
     return produits;
   }
 
-  async handleAddProduct() {
-    const { name, category, price, stock } = await inquirer.prompt([
-      { type: 'input', name: 'name', message: 'Nom du produit ?' },
-      { type: 'input', name: 'category', message: 'Catégorie ?' },
-      { 
-        type: 'input', name: 'price', message: 'Prix ?', 
-        validate: (input) => !isNaN(parseFloat(input)) && parseFloat(input) > 0 ? true : 'Entrez un prix valide'
-      },     
-      { type: 'number', name: 'stock', message: 'Stock initial ?' }
-    ]);
+  async handleAddProduct(name: string, category: string, price: number, stock: number) {
     const produit = await addProduct({ name, category, price, stock }); 
-    console.log('Produit ajouté :', produit);
+    if (!produit) {
+      return false;
+    }
+    return true;
   }
 
   async handleSale() {

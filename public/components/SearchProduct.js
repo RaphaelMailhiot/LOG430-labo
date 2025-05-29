@@ -5,29 +5,29 @@ export default class SearchProduct {
     this.init();
   }
 
-init() {
-  console.log('SearchProduct component initialized');
-  const searchForm = document.getElementById('searchForm');
-  if (searchForm) {
-    searchForm.addEventListener('submit', this.handleSubmit.bind(this));
+  init() {
+    console.log('SearchProduct component initialized');
+    const searchForm = document.getElementById('searchProductForm');
+    if (searchForm) {
+      searchForm.addEventListener('submit', this.handleSubmit.bind(this));
+    }
   }
-}
 
-async handleSubmit(e) {
-  e.preventDefault();
-  const productNameInput = document.getElementById('productNameInput').value;
-  const results = await this.fetchResults(productNameInput);
-  this.renderResults(results);
-}
+  async handleSubmit(e) {
+    e.preventDefault();
+    const productNameInput = document.getElementById('productNameInput').value;
+    const results = await this.fetchResults(productNameInput);
+    this.renderResults(results);
+  }
 
-async fetchResults(productNameInput) {
-  const res = await fetch('/api/search-product', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ productNameInput })
-  });
-  return res.json();
-}
+  async fetchResults(productNameInput) {
+    const res = await fetch('/api/search-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productNameInput })
+    });
+    return res.json();
+  }
 
   renderResults(results) {
     if (!results || results.length === 0) {

@@ -30,23 +30,28 @@ npm install
 ### Avec Docker (recommandé)
 
 ```bash
-docker build -t log430-labo .
-docker run -p 3000:3000 log430-labo
+docker compose up --build
+```
+
+dans un autre terminal il est possible que vous deviez build le css
+```bash
+npm run build:css
 ```
 
 ### Sans Docker
 
+Il faut que vous soyez connecté avec une base de donnée PostgreSQL
 * **Démarrer**
 
   ```bash
   npm run build
+  npm run build:css
   npm start
   ```
 * **Mode développement** (avec nodemon)
 
   ```bash
-  npm run build
-  npm run dev
+  npm run dev:web
   ```
 
 ---
@@ -71,11 +76,10 @@ docker run -p 3000:3000 log430-labo
 ```
 LOG430-labo/
 ├── __tests__/                  # Tests unitaires Jest
-│   ├── example.test.ts
-│   └── index.test.ts
+│   └── *.test.ts
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yml          # Pipeline CI/CD GitHub Actions
+│       └── ci-cd.yml           # Pipeline CI/CD GitHub Actions
 ├── data/                       # Données persistantes (SQLite, etc.)
 ├── dist/                       # Fichiers compilés (TypeScript → JavaScript)
 ├── docs/                       # Documentation et diagrammes
@@ -83,21 +87,29 @@ LOG430-labo/
 ├── out/                        # Diagrammes générés, rapports, etc.
 ├── public/                     # Fichiers statiques
 ├── src/                        # Code source principal
+│   ├── controllers/            # Contrôleurs
+│   │   └── *Controller.ts
 │   ├── entities/               # Entités TypeORM (base de données)
 │   │   ├── Product.ts
 │   │   ├── Sale.ts
 │   │   └── SaleItem.ts
+│   ├── routes/                 # Routes
+│   │   └── *Router.ts
 │   ├── services/               # Logique métier (services)
 │   │   ├── productService.ts
 │   │   └── saleService.ts
-│   ├── views/                  # Interface utilisateur (CLI)
-│   │   └── cli.ts
+│   ├── views/                  # Interface utilisateur (vues)
+│   │   ├── _partials/
+│   │   |   └── *.ejs
+│   │   └── *.ejs
 │   ├── data-source.ts          # Configuration de la source de données (TypeORM)
-│   ├── index.ts                # Point d’entrée principal
+│   ├── server.ts                # Point d’entrée principal
 │   └── initData.ts             # Initialisation des données
 ├── .env                        # Variables d’environnement
+├── docker-compose              # Pour la création de conteneur Docker
 ├── package.json                # Scripts & dépendances npm
-└── README.md                   # Documentation du projet
+├── README.md                   # Documentation du projet
+└── *.*                         # Autres fichiers de configuration
 ```
 
 ## ℹ️ Information supplémentaire
