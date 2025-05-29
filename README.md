@@ -30,12 +30,8 @@ npm install
 ### Avec Docker (recommandé)
 
 ```bash
-docker compose up --build
-```
-
-dans un autre terminal il est possible que vous deviez build le css
-```bash
 npm run build:css
+docker compose up --build
 ```
 
 ### Sans Docker
@@ -44,8 +40,8 @@ Il faut que vous soyez connecté avec une base de donnée PostgreSQL
 * **Démarrer**
 
   ```bash
-  npm run build
   npm run build:css
+  npm run build
   npm start
   ```
 * **Mode développement** (avec nodemon)
