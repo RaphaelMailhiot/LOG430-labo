@@ -45,7 +45,7 @@ async fetchResults(productNameInput) {
       productName.textContent = product.name;
       productCategory.textContent = product.category;
       productId.textContent = product.id;
-      productPrice.textContent = product.price;
+      productPrice.textContent = product.price + "$";
       productStock.textContent = product.stock;
     });
   }
