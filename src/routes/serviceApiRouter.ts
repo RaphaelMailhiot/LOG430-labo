@@ -23,4 +23,14 @@ router.post('/add-product', async (req, res, next) => {
   }
 });
 
+router.post('/record-sale', async (req, res, next) => {
+  try {
+    const { items } = req.body;
+    const result = await servicesController.handleSale(items);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

@@ -28,7 +28,8 @@ router.get('/enregistrer-vente', async (_req: Request, res: Response, next: Next
   try {
     const title = 'Enregistrer une vente';
     const message = 'Bienvenue sur la page d’enregistrement de vente !';
-    res.status(200).render('record-sale', { title, message });
+    const stock = await servicesController.handleStock();
+    res.status(200).render('record-sale', { title, message, stock });
   } catch (err) {
     next(err);
   }

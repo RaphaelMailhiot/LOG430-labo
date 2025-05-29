@@ -16,37 +16,7 @@ export class ServicesController {
     return true;
   }
 
-  async handleSale() {
-    const items: { productId: number; quantity: number }[] = [];
-    let ajouter = true;
-
-    while (ajouter) {
-      const { id, qty } = await inquirer.prompt<{ id: number; qty: number }>([
-        {
-          type: 'number',
-          name: 'id',
-          message: 'ID produit ?'
-        },
-        {
-          type: 'number',
-          name: 'qty',
-          message: 'Quantité ?'
-        }
-      ]);
-
-      items.push({ productId: id, quantity: qty });
-
-      const { more } = await inquirer.prompt<{ more: boolean }>([
-        {
-          type: 'confirm',
-          name: 'more',
-          message: 'Ajouter un autre produit ?'
-        }
-      ]);
-      ajouter = more;
-    }
-
-    // On récupère les prix pour calculer le total
+  async handleSale(items: { productId: number; quantity: number }[] = []) {
     const saleItems = [];
     for (const it of items) {
       const p = await getProductById(it.productId);
@@ -54,22 +24,10 @@ export class ServicesController {
       saleItems.push({ productId: it.productId, quantity: it.quantity, price: p.price });
     }
 
-    const total = saleItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
-    console.log(`Total de la vente : $${total.toFixed(2)}`);
+    const total = Number(saleItems.reduce((sum, it) => sum + it.price * it.quantity, 0).toFixed(2));
+    const id = await recordSale(saleItems);
 
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>([
-      {
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Confirmer la vente ?'
-      }
-    ]);
-    if (confirm) {
-      const saleId = await recordSale(saleItems);
-      console.log(`Vente #${saleId} enregistrée.`);
-    } else {
-      console.log('Vente annulée.');
-    }
+    return { id, total }; // Enregistre la vente et retourne l'ID de la vente et le total
   }
 
   async handleReturn() {

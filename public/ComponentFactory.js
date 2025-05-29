@@ -1,5 +1,6 @@
 import AddProduct from './components/AddProduct.js';
 import SearchProduct from './components/SearchProduct.js';
+import RecordSale from './components/RecordSale.js';
 
 export default class ComponentFactory {
   constructor() {
@@ -7,6 +8,7 @@ export default class ComponentFactory {
     this.componentList = {
       AddProduct,
       SearchProduct,
+      RecordSale,
     };
     this.init();
   }
