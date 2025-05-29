@@ -4,6 +4,7 @@ import { AppDataSource } from './data-source';
 import { initProducts } from './initData';
 import homeRouter from './routes/homeRouter';
 import servicesRouter from './routes/servicesRouter';
+import servicesApiRouter from './routes/serviceApiRouter';
 
 AppDataSource.initialize()
   .then(async () => {
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Routes 
 app.use('/', homeRouter);
 app.use('/services', servicesRouter);
+app.use('/api', servicesApiRouter);
 
 // 404 handler
 app.use((req, res) => {

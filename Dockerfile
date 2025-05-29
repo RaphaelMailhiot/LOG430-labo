@@ -1,24 +1,18 @@
-# Utilise la dernière LTS de Node.js sous Alpine pour une image légère
+# Utilise la dernière LTS de Node.js sous Alpine
 FROM node:18-alpine
 
-# Définit le répertoire de travail dans le conteneur
+# Répertoire de travail
 WORKDIR /LOG430-labo
 
-# Copie uniquement les fichiers de dépendances pour profiter du cache Docker
+# Copie des fichiers de dépendances et installation
 COPY package*.json ./
-
-# Installe toutes les dépendances (y compris dev pour le build)
 RUN npm ci
 
-# Copie le reste de l’application
+# Copie du reste de l’application
 COPY . .
 
-# Build le projet TypeScript
-RUN npm run build:css
-RUN npm run build
-
-# Expose le port de l'app (décommente si besoin)
+# Expose le port (optionnel, à décommenter si nécessaire)
 # EXPOSE 3000
 
-# Commande par défaut pour démarrer l'app compilée
-CMD ["npm", "run", "dev:web"]
+# Par défaut, on lancera nodemon (la build sera gérée par docker-compose)
+CMD ["npm", "run", "dev:web:docker"]

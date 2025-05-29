@@ -3,16 +3,9 @@ import { findProducts, getProductById, addProduct } from '../services/productSer
 import { recordSale, cancelSale } from '../services/saleService';
 
 export class ServicesController {
-  async handleSearch() {
-    const { term } = await inquirer.prompt<{ term: string }>([
-      {
-        type: 'input',
-        name: 'term',
-        message: 'Identifiant, nom ou catégorie ?'
-      }
-    ]);
-    const produits = await findProducts(term);
-    console.table(produits);
+  async handleSearch(productNameInput: string) {
+    const produits = await findProducts(productNameInput);
+    return produits;
   }
 
   async handleAddProduct() {
@@ -97,7 +90,6 @@ export class ServicesController {
 
   async handleStock() {
     const produits = await findProducts(''); // récupère tout
-    console.table(produits);
     return produits;
   }
 }

@@ -1,18 +1,90 @@
 <%- include('_partials/header') %>
 
-<main>
+    <main>
 
-    <section>
-        <div class="container mx-auto py-8 text-center">
-            <h1>Rechercher un produit</h1>
-            <h2><%= message %></h2>
+        <section>
+            <div class="container mx-auto py-8 text-center">
+                <h1>Rechercher un produit</h1>
+                <h2>
+                    <%= message %>
+                </h2>
+            </div>
+        </section>
 
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita cum harum, repudiandae asperiores eius
-                quibusdam doloribus beatae cumque, provident modi non minima ipsum incidunt delectus voluptates, error
-                aliquam! Ipsa, vitae!</p>
-        </div>
-    </section>
+        <section data-component="SearchProduct" class="bg-gray-50 dark:bg-gray-900 py-8">
+            <div class="container mx-auto py-8">
+                <form id="searchForm" class="max-w-md mx-auto">
+                    <div id="errorMessage" class="text-red-600 font-semibold"></div>
+                    <div class="mb-4">
+                        <label for="productNameInput" class="block text-white text-sm font-bold mb-2">Nom du produit</label>
+                        <input type="text" id="productNameInput" name="productNameInput"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            required>
+                    </div>
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Rechercher
+                    </button>
+                </form>
 
-</main>
+                <div class="max-w-md mx-auto mt-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                            <span id="productName">Faite une recherche</span>
+                        </h5>
+                        <a href="#" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+                            <span id="productCategory">Catégorie</span>
+                        </a>
+                    </div>
+                    <div class="flow-root">
+                        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <li class="py-3 sm:py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-1 min-w-0 ms-4">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            ID
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <span id="productId">à déterminer</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3 sm:py-4">
+                                <div class="flex items-center ">
+                                    <div class="flex-1 min-w-0 ms-4">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            Prix
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <span id="productPrice">à déterminer</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3 sm:py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-1 min-w-0 ms-4">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            Stock
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <span id="productStock">à déterminer</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-<%- include('_partials/footer') %>
+
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('_partials/footer') %>
