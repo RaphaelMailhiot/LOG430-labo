@@ -5,7 +5,7 @@
   "description": "Projet pour le labo du cours de LOG430",
   "main": "server.js",
   "scripts": {
-    "build": "tsc && cp -r src/views/* dist/views/",
+    "build": "tsc && mkdir -p dist/views && cp -r src/views/* dist/views/",
     "build:css": "tailwindcss -i ./public/input.css -o ./public/output.css",
     "build:css:docker": "cd /LOG430-labo && npx tailwindcss -i ./public/input.css -o ./public/output.css",
     "start": "node dist/server.js",
