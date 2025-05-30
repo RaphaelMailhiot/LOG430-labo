@@ -6,7 +6,6 @@ export default class AddProduct {
   }
 
   init() {
-    console.log('AddProduct component initialized');
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
       addForm.addEventListener('submit', this.handleSubmit.bind(this));

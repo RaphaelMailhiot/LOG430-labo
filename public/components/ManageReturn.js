@@ -6,7 +6,6 @@ export default class ManageReturn {
     }
 
     init() {
-        console.log('ManageReturn component initialized');
         const cancelSaleButtons = document.querySelectorAll('[id$="-cancelSaleButton"]');
         cancelSaleButtons.forEach(button => {
             button.addEventListener('click', this.handleCancelSale.bind(this));

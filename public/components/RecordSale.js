@@ -6,7 +6,6 @@ export default class RecordSale {
     }
 
     init() {
-        console.log('RecordSale component initialized');
         const recordSaleForm = document.getElementById('recordSaleForm');
         if (recordSaleForm) {
             recordSaleForm.addEventListener('submit', this.handleSubmit.bind(this));

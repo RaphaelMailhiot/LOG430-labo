@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import { findProducts, getProductById, addProduct } from '../services/productService';
 import { recordSale, cancelSale, findOldSales } from '../services/saleService';
 

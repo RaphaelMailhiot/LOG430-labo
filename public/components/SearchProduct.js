@@ -6,7 +6,6 @@ export default class SearchProduct {
   }
 
   init() {
-    console.log('SearchProduct component initialized');
     const searchForm = document.getElementById('searchProductForm');
     if (searchForm) {
       searchForm.addEventListener('submit', this.handleSubmit.bind(this));
