@@ -57,3 +57,25 @@ export const cancelSale = async (saleId: number): Promise<void> => {
   await saleItemRepo.delete({ sale_id: saleId });
   await saleRepo.delete({ id: saleId });
 };
+
+/**
+ * Récupère toutes les ventes passées.
+ */
+export const findOldSales = async (): Promise<any[]> => {
+  const saleItemRepo = AppDataSource.getRepository(SaleItem);
+  const items = await saleItemRepo.find();
+
+  // Regrouper les items par sale_id
+  const grouped: Record<number, any> = {};
+  for (const item of items) {
+    if (!grouped[item.sale_id]) {
+      grouped[item.sale_id] = {
+        sale_id: item.sale_id,
+        items: []
+      };
+    }
+    grouped[item.sale_id].items.push(item);
+  }
+
+  return Object.values(grouped);
+};

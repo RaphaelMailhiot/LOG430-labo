@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 import { findProducts, getProductById, addProduct } from '../services/productService';
-import { recordSale, cancelSale } from '../services/saleService';
+import { recordSale, cancelSale, findOldSales } from '../services/saleService';
 
 export class ServicesController {
   async handleSearch(productNameInput: string) {
@@ -30,14 +30,13 @@ export class ServicesController {
     return { id, total }; // Enregistre la vente et retourne l'ID de la vente et le total
   }
 
-  async handleReturn() {
-    const { saleId } = await inquirer.prompt({
-      name: 'saleId',
-      message: 'Numéro de vente à annuler ?',
-      type: 'number'
-    });
+  async handleReturn(saleId: number) {
     await cancelSale(saleId);
-    console.log(`Vente #${saleId} annulée et stock remis à jour.`);
+  }
+
+  async handleOldSales() {
+    const oldSales = await findOldSales();
+    return oldSales; // Retourne toutes les ventes passées
   }
 
   async handleStock() {

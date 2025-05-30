@@ -39,7 +39,8 @@ router.get('/gerer-retour', async (_req: Request, res: Response, next: NextFunct
   try {
     const title = 'Gérer un retour';
     const message = 'Bienvenue sur la page de gestion des retours !';
-    res.status(200).render('manage-return', { title, message });
+    const oldSales = await servicesController.handleOldSales();
+    res.status(200).render('manage-return', { title, message, oldSales });
   } catch (err) {
     next(err);
   }

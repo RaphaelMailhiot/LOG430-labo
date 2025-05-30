@@ -1,6 +1,7 @@
 import AddProduct from './components/AddProduct.js';
 import SearchProduct from './components/SearchProduct.js';
 import RecordSale from './components/RecordSale.js';
+import ManageReturn from './components/ManageReturn.js';
 
 export default class ComponentFactory {
   constructor() {
@@ -9,6 +10,7 @@ export default class ComponentFactory {
       AddProduct,
       SearchProduct,
       RecordSale,
+      ManageReturn,
     };
     this.init();
   }

@@ -1,19 +1,37 @@
 <%- include('_partials/header') %>
 
-<main>
+    <main>
 
-    <section>
-        <div class="container mx-auto py-8 text-center">
-            <h1 class="text-3xl font-bold underline mb-4">
-                Gérer un retour</h1>
-            <h2><%= message %></h2>
+        <section>
+            <div class="container mx-auto py-8 text-center">
+                <h1 class="text-3xl font-bold underline mb-4">
+                    Gérer un retour</h1>
+                <h2>
+                    <%= message %>
+                </h2>
+            </div>
+        </section>
 
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita cum harum, repudiandae asperiores eius
-                quibusdam doloribus beatae cumque, provident modi non minima ipsum incidunt delectus voluptates, error
-                aliquam! Ipsa, vitae!</p>
-        </div>
-    </section>
+        <section data-component="ManageReturn" class="bg-gray-50 dark:bg-gray-900 py-8">
+            <% oldSales.forEach(sale => { %>
+            <article class="container mx-auto mb-8 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    ID de la vente : <%= sale.sale_id %></h5>
 
-</main>
+                <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                    <% sale.items.forEach(item => { %>
+                    <li>ID du produit: <%= item.product_id %> | Quantité: <%= item.quantity %> | Prix: <%= item.price %></li>
+                    <% }) %>
+                </ul>
 
-<%- include('_partials/footer') %>
+                <button type="button" id="<%= sale.sale_id %>-cancelSaleButton"
+                    class="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Annuler la vente
+                </button> 
+            </article>
+            <% }) %>
+        </section>
+
+    </main>
+
+    <%- include('_partials/footer') %>
