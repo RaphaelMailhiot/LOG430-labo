@@ -64,16 +64,20 @@
                     <button id="dropdownButton2" data-dropdown-toggle="dropdownMenu2"
                         class="text-blue-600 bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 ml-2">
                         <%= currentStore?.name %>
-                        <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
+                            <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
                     </button>
 
                     <div id="dropdownMenu2" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
                         <ul class="py-1 text-sm text-gray-700" aria-labelledby="dropdownButton2">
                             <li>
-                                <button type="button" class="block px-4 py-2 hover:bg-gray-100">
-                                    Déconnexion</button>
+                                <form action="/logout" method="POST" style="margin:0;">
+                                    <button type="submit" class="block px-4 py-2 hover:bg-gray-100">
+                                        Déconnexion
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>

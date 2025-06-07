@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 const router = Router();
 
-router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const title = 'Accueil';
     const message = 'Bienvenue sur la page d’accueil !';

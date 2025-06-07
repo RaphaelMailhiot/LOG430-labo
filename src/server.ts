@@ -5,10 +5,13 @@ import { AppDataSource } from './data-source';
 import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
 import homeRouter from './routes/homeRouter';
-import loginRouter from './routes/loginRouter';
+import authRouter from './routes/authRouter';
 import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 
+const app = express();
+
+// Initialisation de la base de données
 AppDataSource.initialize()
   .then(async () => {
     console.log('Connexion à la base de données réussie !');
@@ -19,11 +22,8 @@ AppDataSource.initialize()
     console.error('Erreur de connexion à la base de données :', error);
   });
 
-const app = express();
-
-// Middleware
+// Middlewares globaux
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -32,6 +32,7 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+// Middleware pour injecter le magasin courant dans res.locals
 app.use(async (req, res, next) => {
   if (req.session.selectedStore) {
     const storeRepo = AppDataSource.getRepository(Store);
@@ -42,23 +43,30 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Middleware pour injecter tous les magasins (pratique pour les menus)
+app.use(async (req, res, next) => {
+  const storeRepo = AppDataSource.getRepository(Store);
+  res.locals.stores = await storeRepo.find();
+  next();
+});
+
+// Middleware de protection des routes (sauf login/public/api)
 app.use((req, res, next) => {
-  // Autorise l'accès à la page de connexion ou aux assets publics
   if (
     req.path === '/login' ||
+    req.path === '/logout' ||
     req.path.startsWith('/public') ||
     req.path.startsWith('/api')
   ) {
     return next();
   }
-  // Vérifie si un magasin est sélectionné
   if (!req.session.selectedStore) {
     return res.redirect('/login');
   }
   next();
 });
 
-// Logger simple (optionnel)
+// Logger simple
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
@@ -68,12 +76,12 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static (css, js, images)
+// Static files
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Routes 
+// Routes
 app.use('/', homeRouter);
-app.use('/login', loginRouter);
+app.use('/', authRouter);
 app.use('/services', servicesRouter);
 app.use('/api', servicesApiRouter);
 
@@ -82,6 +90,7 @@ app.use((req, res) => {
   res.status(404).send('Page non trouvée');
 });
 
+// Lancement du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);

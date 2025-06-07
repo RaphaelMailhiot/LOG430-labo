@@ -4,7 +4,8 @@ import { Store } from '../entities/Store';
 
 const router = Router();
 
-router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
+// Login
+router.get('/login', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const storeRepo = AppDataSource.getRepository(Store);
     const stores = await storeRepo.find();
@@ -15,17 +16,23 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-router.post('/', async (_req: Request, res: Response, next: NextFunction) => {
+router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const storeId = _req.body.storeId;
+    const storeId = req.body.storeId;
     if (!storeId) {
-      return res.redirect('/');
+      return res.redirect('/login');
     }
-    _req.session.selectedStore = storeId;
+    req.session.selectedStore = storeId;
     res.redirect('/');
   } catch (err) {
     next(err);
   }
+});
+
+// Logout
+router.post('/logout', (req, res) => {
+  req.session.selectedStore = undefined;
+  res.redirect('/login');
 });
 
 export default router;

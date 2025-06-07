@@ -1,19 +1,39 @@
 <%- include('_partials/header') %>
 
-<main>
+  <main>
 
-  <section>
-    <div class="container mx-auto py-8 text-center">
+    <section>
+      <div class="container mx-auto py-8 text-center">
 
-      <h1 class="text-3xl font-bold underline mb-4">
-        Bienvenue sur le site de gestion des ventes
-      </h1>
+        <h1 class="text-3xl font-bold underline mb-4">
+          Bienvenue sur le site de gestion des ventes
+        </h1>
 
-      <a href="/services" class="">Services</a>
+        <a href="/services" class="">Services</a>
 
-    </div>
-  </section>
+      </div>
+    </section>
 
-</main>
+    <% if (currentStore?.isMain) { %>
+      <section>
 
-<%- include('_partials/footer') %>
+        <div class="container mx-auto py-8 text-center">
+
+          <h2 class="text-3xl font-bold underline mb-4">
+            Magasin sélectionné : <%= currentStore.name %>
+          </h2>
+
+          <form action="/services/rapport" method="GET" style="display:inline;">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+              Générer le rapport global
+            </button>
+          </form>
+
+        </div>
+
+      </section>
+      <% } %>
+
+  </main>
+
+  <%- include('_partials/footer') %>
