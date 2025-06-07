@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Store } from './Store';
 
 @Entity()
 export class Product {
@@ -16,4 +17,7 @@ export class Product {
 
   @Column('int', { default: 0 })
   stock!: number;
+
+  @ManyToOne(() => Store, store => store.products)
+  store!: Store;
 }

@@ -1,0 +1,11 @@
+<h1>Choisissez un magasin</h1>
+<form action="/login" method="POST">
+    <select name="storeId" required>
+        <% stores.forEach(function(store) { %>
+            <option value="<%= store.id %>">
+                <%= store.name %>
+            </option>
+            <% }); %>
+    </select>
+    <button type="submit">Se connecter</button>
+</form>

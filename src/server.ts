@@ -1,14 +1,17 @@
 import express from 'express';
+import session from 'express-session';
 import * as path from 'path';
 import { AppDataSource } from './data-source';
-import { initProducts } from './initData';
+import { initStores, initProducts } from './initData';
 import homeRouter from './routes/homeRouter';
+import loginRouter from './routes/loginRouter';
 import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 
 AppDataSource.initialize()
   .then(async () => {
     console.log('Connexion à la base de données réussie !');
+    await initStores();
     await initProducts();
   })
   .catch((error) => {
@@ -19,6 +22,30 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'votre_secret',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use((req, res, next) => {
+  // Autorise l'accès à la page de connexion ou aux assets publics
+  if (
+    req.path === '/login' ||
+    req.path.startsWith('/public') ||
+    req.path.startsWith('/api')
+  ) {
+    return next();
+  }
+  // Vérifie si un magasin est sélectionné
+  if (!req.session.selectedStore) {
+    return res.redirect('/login');
+  }
+  next();
+});
 
 // Logger simple (optionnel)
 app.use((req, res, next) => {
@@ -35,6 +62,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Routes 
 app.use('/', homeRouter);
+app.use('/login', loginRouter);
 app.use('/services', servicesRouter);
 app.use('/api', servicesApiRouter);
 

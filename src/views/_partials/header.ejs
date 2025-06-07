@@ -61,6 +61,25 @@
                         </ul>
                     </div>
 
+                    <button id="dropdownButton2" data-dropdown-toggle="dropdownMenu2"
+                        class="text-blue-600 bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 ml-2">
+                        Magasins
+                        <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div id="dropdownMenu2" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
+                        <ul class="py-1 text-sm text-gray-700" aria-labelledby="dropdownButton2">
+                            <% stores.forEach(store => { %>
+                            <li>
+                                <button type="button" class="block px-4 py-2 hover:bg-gray-100">
+                                    <%= store.name %></button>
+                            </li>
+                            <% }) %>
+                        </ul>
+                    </div>
+
                     <button data-collapse-toggle="mobile-menu-2" type="button"
                         class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                         aria-controls="mobile-menu-2" aria-expanded="false">
