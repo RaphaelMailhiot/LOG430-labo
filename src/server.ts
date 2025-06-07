@@ -2,6 +2,7 @@ import express from 'express';
 import session from 'express-session';
 import * as path from 'path';
 import { AppDataSource } from './data-source';
+import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
 import homeRouter from './routes/homeRouter';
 import loginRouter from './routes/loginRouter';
@@ -30,6 +31,16 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
+
+app.use(async (req, res, next) => {
+  if (req.session.selectedStore) {
+    const storeRepo = AppDataSource.getRepository(Store);
+    res.locals.currentStore = await storeRepo.findOneBy({ id: Number(req.session.selectedStore) });
+  } else {
+    res.locals.currentStore = null;
+  }
+  next();
+});
 
 app.use((req, res, next) => {
   // Autorise l'accès à la page de connexion ou aux assets publics

@@ -3,7 +3,7 @@ import { Product } from './Product';
 import { Sale } from './Sale';
 
 @Entity()
-@Unique(['isMain'])
+//@Unique(['isMain'])
 export class Store {
   @PrimaryGeneratedColumn()
   id!: number;

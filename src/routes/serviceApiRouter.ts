@@ -6,7 +6,8 @@ const servicesController = new ServicesController();
 
 router.post('/search-product', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const results = await servicesController.handleSearch(req.body.productNameInput);
+    const storeId = Number(req.session.selectedStore);
+    const results = await servicesController.handleSearch(req.body.productNameInput, storeId);
     res.status(200).json(results);
   } catch (err) {
     next(err);
@@ -16,7 +17,8 @@ router.post('/search-product', async (req: Request, res: Response, next: NextFun
 router.post('/add-product', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, category, price, stock } = req.body;
-    const success = await servicesController.handleAddProduct(name, category, price, stock);
+    const storeId = Number(req.session.selectedStore);
+    const success = await servicesController.handleAddProduct(name, category, price, stock, storeId);
     res.status(200).json({ success });
   } catch (err) {
     next(err);
@@ -25,7 +27,8 @@ router.post('/add-product', async (req: Request, res: Response, next: NextFuncti
 
 router.post('/record-sale', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await servicesController.handleSale(req.body);
+    const storeId = Number(req.session.selectedStore);
+    const result = await servicesController.handleSale(req.body, storeId);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -35,7 +38,8 @@ router.post('/record-sale', async (req: Request, res: Response, next: NextFuncti
 router.post('/manage-return', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { saleId } = req.body;
-    await servicesController.handleReturn(Number(saleId));
+    const storeId = Number(req.session.selectedStore);
+    await servicesController.handleReturn(Number(saleId), storeId);
     res.json({ success: true });
   } catch (err) {
     next(err);

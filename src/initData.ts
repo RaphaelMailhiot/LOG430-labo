@@ -8,9 +8,9 @@ export async function initStores() {
   if (count === 0) {
     await repo.save([
       repo.create({ name: 'Maison mère', isMain: true }),
-      repo.create({ name: 'Magasin Montréal', isMain: false }),
-      repo.create({ name: 'Magasin Québec', isMain: false }),
-      repo.create({ name: 'Magasin Saint-Hyacinthe', isMain: false }),
+      repo.create({ name: 'Magasin Montréal' }),
+      repo.create({ name: 'Magasin Québec' }),
+      repo.create({ name: 'Magasin Saint-Hyacinthe' }),
     ]);
   }
 }

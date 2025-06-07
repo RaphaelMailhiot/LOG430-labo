@@ -2,44 +2,44 @@ import { findProducts, getProductById, addProduct } from '../services/productSer
 import { recordSale, cancelSale, findOldSales } from '../services/saleService';
 
 export class ServicesController {
-  async handleSearch(productNameInput: string) {
-    const produits = await findProducts(productNameInput);
+  async handleSearch(productNameInput: string, storeId: number) {
+    const produits = await findProducts(productNameInput, storeId);
     return produits;
   }
 
-  async handleAddProduct(name: string, category: string, price: number, stock: number) {
-    const produit = await addProduct({ name, category, price, stock }); 
+  async handleAddProduct(name: string, category: string, price: number, stock: number, storeId: number) {
+    const produit = await addProduct({ name, category, price, stock, storeId }); 
     if (!produit) {
       return false;
     }
     return true;
   }
 
-  async handleSale(items: { productId: number; quantity: number }[] = []) {
+  async handleSale(items: { productId: number; quantity: number }[] = [], storeId: number) {
     const saleItems = [];
     for (const it of items) {
-      const p = await getProductById(it.productId);
+      const p = await getProductById(it.productId, storeId);
       if (!p) throw new Error(`Produit ${it.productId} introuvable`);
       saleItems.push({ productId: it.productId, quantity: it.quantity, price: p.price });
     }
 
     const total = Number(saleItems.reduce((sum, it) => sum + it.price * it.quantity, 0).toFixed(2));
-    const id = await recordSale(saleItems);
+    const id = await recordSale(saleItems, storeId);
 
-    return { id, total }; // Enregistre la vente et retourne l'ID de la vente et le total
+    return { id, total };
   }
 
-  async handleReturn(saleId: number) {
-    await cancelSale(saleId);
+  async handleReturn(saleId: number, storeId: number) {
+    await cancelSale(saleId, storeId);
   }
 
-  async handleOldSales() {
-    const oldSales = await findOldSales();
-    return oldSales; // Retourne toutes les ventes passées
+  async handleOldSales(storeId: number) {
+    const oldSales = await findOldSales(storeId);
+    return oldSales;
   }
 
-  async handleStock() {
-    const produits = await findProducts(''); // récupère tout
+  async handleStock(storeId: number) {
+    const produits = await findProducts('', storeId);
     return produits;
   }
 }

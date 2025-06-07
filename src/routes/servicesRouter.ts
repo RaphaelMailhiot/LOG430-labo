@@ -35,33 +35,36 @@ router.get('/ajouter-produit', async (_req: Request, res: Response, next: NextFu
   }
 });
 
-router.get('/enregistrer-vente', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/enregistrer-vente', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const title = 'Enregistrer une vente';
     const message = 'Bienvenue sur la page d’enregistrement de vente !';
-    const stock = await servicesController.handleStock();
+    const storeId = Number(req.session.selectedStore);
+    const stock = await servicesController.handleStock(storeId);
     res.status(200).render(`${folderName}/record-sale`, { title, message, stock });
   } catch (err) {
     next(err);
   }
 });
 
-router.get('/gerer-retour', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/gerer-retour', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const title = 'Gérer un retour';
     const message = 'Bienvenue sur la page de gestion des retours !';
-    const oldSales = await servicesController.handleOldSales();
+    const storeId = Number(req.session.selectedStore);
+    const oldSales = await servicesController.handleOldSales(storeId);
     res.status(200).render(`${folderName}/manage-return`, { title, message, oldSales });
   } catch (err) {
     next(err);
   }
 });
 
-router.get('/consulter-stock', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/consulter-stock', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const title = 'Consulter le stock';
     const message = 'Bienvenue sur la page de consultation du stock !';
-    const stock = await servicesController.handleStock();
+    const storeId = Number(req.session.selectedStore);
+    const stock = await servicesController.handleStock(storeId);
     const categories = [...new Set(stock.map(item => item.category))];
     res.status(200).render(`${folderName}/view-stock`, { title, message, stock, categories });
   } catch (err) {
