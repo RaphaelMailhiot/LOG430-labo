@@ -1,12 +1,12 @@
 import { AppDataSource } from '../data-source';
-import { Product } from '../entities/Product';
 import { Sale } from '../entities/Sale';
 import { SaleItem } from '../entities/SaleItem';
 import { Store } from '../entities/Store';
+import { Inventory } from '../entities/Inventory';
 import { In } from 'typeorm';
 
 /**
- * Enregistre une vente pour un magasin et décale le stock.
+ * Enregistre une vente pour un magasin et décale le stock dans Inventory.
  * @returns l’ID de la vente créée
  */
 export const recordSale = async (
@@ -15,22 +15,25 @@ export const recordSale = async (
 ): Promise<number> => {
   const saleRepo = AppDataSource.getRepository(Sale);
   const saleItemRepo = AppDataSource.getRepository(SaleItem);
-  const productRepo = AppDataSource.getRepository(Product);
+  const inventoryRepo = AppDataSource.getRepository(Inventory);
+  const storeRepo = AppDataSource.getRepository(Store);
 
   // Création de la vente
-  const storeRepo = AppDataSource.getRepository(Store);
   const sale = new Sale();
   sale.store = await storeRepo.findOneByOrFail({ id: storeId });
   await saleRepo.save(sale);
 
-  // Création des items et mise à jour du stock
+  // Création des items et mise à jour du stock dans Inventory
   for (const it of items) {
-    const product = await productRepo.findOneByOrFail({ id: it.productId, store: { id: storeId } });
-    if (product.stock < it.quantity) {
-      throw new Error(`Stock insuffisant pour le produit ${product.name}`);
+    const inventory = await inventoryRepo.findOneOrFail({
+      where: { product: { id: it.productId }, store: { id: storeId } },
+      relations: ['product', 'store'],
+    });
+    if (inventory.stock < it.quantity) {
+      throw new Error(`Stock insuffisant pour le produit ${inventory.product.name}`);
     }
-    product.stock -= it.quantity;
-    await productRepo.save(product);
+    inventory.stock -= it.quantity;
+    await inventoryRepo.save(inventory);
 
     const saleItem = new SaleItem();
     saleItem.sale_id = sale.id;
@@ -44,12 +47,12 @@ export const recordSale = async (
 };
 
 /**
- * Annule une vente et rétablit le stock pour un magasin donné.
+ * Annule une vente et rétablit le stock dans Inventory pour un magasin donné.
  */
 export const cancelSale = async (saleId: number, storeId: number): Promise<void> => {
   const saleItemRepo = AppDataSource.getRepository(SaleItem);
-  const productRepo = AppDataSource.getRepository(Product);
   const saleRepo = AppDataSource.getRepository(Sale);
+  const inventoryRepo = AppDataSource.getRepository(Inventory);
 
   // Vérifie que la vente appartient bien au magasin
   await saleRepo.findOneByOrFail({ id: saleId, store: { id: storeId } });
@@ -57,9 +60,12 @@ export const cancelSale = async (saleId: number, storeId: number): Promise<void>
   const items = await saleItemRepo.find({ where: { sale_id: saleId } });
 
   for (const it of items) {
-    const product = await productRepo.findOneByOrFail({ id: it.product_id, store: { id: storeId } });
-    product.stock += it.quantity;
-    await productRepo.save(product);
+    const inventory = await inventoryRepo.findOneOrFail({
+      where: { product: { id: it.product_id }, store: { id: storeId } },
+      relations: ['product', 'store'],
+    });
+    inventory.stock += it.quantity;
+    await inventoryRepo.save(inventory);
   }
 
   await saleItemRepo.delete({ sale_id: saleId });

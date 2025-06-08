@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
+import { Inventory } from './Inventory';
 import { Product } from './Product';
 import { Sale } from './Sale';
 
@@ -19,4 +20,7 @@ export class Store {
 
   @OneToMany(() => Sale, sale => sale.store)
   sales!: Sale[];
+
+  @OneToMany(() => Inventory, inventory => inventory.store)
+  storeProducts!: Inventory[];
 }

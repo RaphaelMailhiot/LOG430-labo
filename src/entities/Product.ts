@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Inventory } from './Inventory';
 import { Store } from './Store';
 
 @Entity()
@@ -20,4 +21,7 @@ export class Product {
 
   @ManyToOne(() => Store, store => store.products)
   store!: Store;
+
+  @OneToMany(() => Inventory, inventory => inventory.product)
+  storeProducts!: Inventory[];
 }

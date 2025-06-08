@@ -1,6 +1,7 @@
 import { AppDataSource } from './data-source';
 import { Product } from './entities/Product';
 import { Store } from './entities/Store';
+import { Inventory } from './entities/Inventory';
 
 export async function initStores() {
   const repo = AppDataSource.getRepository(Store);
@@ -16,11 +17,10 @@ export async function initStores() {
 }
 
 export async function initProducts() {
-  const storeRepo = AppDataSource.getRepository(Store);
   const productRepo = AppDataSource.getRepository(Product);
+  const storeRepo = AppDataSource.getRepository(Store);
+  const inventoryRepo = AppDataSource.getRepository(Inventory);
 
-  const mainStore = await storeRepo.findOneBy({ isMain: true });
-  const stores = await storeRepo.find();
   const baseProducts = [
     { name: 'Clavier', category: 'Informatique', price: 49.99 },
     { name: 'Souris', category: 'Informatique', price: 19.99 },
@@ -29,21 +29,21 @@ export async function initProducts() {
     { name: 'Casque audio', category: 'Audio', price: 59.99 },
   ];
 
-  // Vérifie si des produits existent déjà
+  const stores = await storeRepo.find();
   const count = await productRepo.count();
   if (count === 0) {
+    // Crée les produits globaux (une seule fois)
+    const products = [];
+    for (const base of baseProducts) {
+      const product = await productRepo.save(productRepo.create(base));
+      products.push(product);
+    }
+    // Crée l'inventaire pour chaque magasin et chaque produit
     for (const store of stores) {
-      for (const base of baseProducts) {
-        let stock: number;
-        if (store === mainStore) {
-          // Stock fixe pour la maison mère
-          stock = 100;
-        } else {
-          // Stock aléatoire pour les autres magasins
-          stock = Math.floor(Math.random() * 50) + 10;
-        }
-        await productRepo.save(
-          productRepo.create({ ...base, stock, store })
+      for (const product of products) {
+        const stock = store.isMain ? 100 : 50;
+        await inventoryRepo.save(
+          inventoryRepo.create({ store, product, stock })
         );
       }
     }

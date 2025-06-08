@@ -9,8 +9,8 @@ router.get('/login', async (req: Request, res: Response, next: NextFunction) => 
   try {
     const storeRepo = AppDataSource.getRepository(Store);
     const stores = await storeRepo.find();
-    console.log('Available stores:', stores);
-    res.render('login', { stores });
+    const title = 'Connexion';
+    res.render('login', { stores, title });
   } catch (err) {
     next(err);
   }

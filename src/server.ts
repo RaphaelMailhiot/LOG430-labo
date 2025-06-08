@@ -53,13 +53,16 @@ app.use(async (req, res, next) => {
 // Middleware de protection des routes (sauf login/public/api)
 app.use((req, res, next) => {
   if (
-    req.path === '/login' ||
-    req.path === '/logout' ||
-    req.path.startsWith('/public') ||
-    req.path.startsWith('/api')
-  ) {
-    return next();
-  }
+  req.path === '/login' ||
+  req.path === '/logout' ||
+  req.path.startsWith('/public') ||
+  req.path.startsWith('/api') ||
+  req.path === '/output.css' ||
+  req.path === '/favicon.ico' ||
+  req.path === '/Main.js'
+) {
+  return next();
+}
   if (!req.session.selectedStore) {
     return res.redirect('/login');
   }

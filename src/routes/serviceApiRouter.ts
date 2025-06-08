@@ -25,10 +25,11 @@ router.post('/add-product', async (req: Request, res: Response, next: NextFuncti
   }
 });
 
-router.post('/record-sale', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/record-sale', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const storeId = Number(req.session.selectedStore);
-    const result = await servicesController.handleSale(req.body, storeId);
+    const { items } = req.body;
+    const result = await servicesController.handleSale(items, storeId);
     res.status(200).json(result);
   } catch (err) {
     next(err);
