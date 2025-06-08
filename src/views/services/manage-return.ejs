@@ -18,9 +18,9 @@
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     ID de la vente : <%= sale.sale_id %></h5>
 
-                <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
                     <% sale.items.forEach(item => { %>
-                    <li>ID du produit: <%= item.product_id %> | Quantité: <%= item.quantity %> | Prix: <%= item.price %></li>
+                    <li>ID du produit: <%= item.product_id %> | Nom du produit: <%= item.productName %> | Quantité: <%= item.quantity %> | Prix: <%= item.price %></li>
                     <% }) %>
                 </ul>
 

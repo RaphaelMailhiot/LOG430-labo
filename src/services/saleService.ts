@@ -83,7 +83,11 @@ export const findOldSales = async (storeId: number): Promise<any[]> => {
   const sales = await saleRepo.find({ where: { store: { id: storeId } } });
   const saleIds = sales.map(s => s.id);
 
-  const items = await saleItemRepo.find({ where: saleIds.length ? { sale_id: In(saleIds) } : undefined });
+  // On récupère les items avec la relation produit
+  const items = await saleItemRepo.find({
+    where: saleIds.length ? { sale_id: In(saleIds) } : undefined,
+    relations: ['product'],
+  });
 
   // Regrouper les items par sale_id
   const grouped: Record<number, any> = {};
@@ -94,7 +98,10 @@ export const findOldSales = async (storeId: number): Promise<any[]> => {
         items: []
       };
     }
-    grouped[item.sale_id].items.push(item);
+    grouped[item.sale_id].items.push({
+      ...item,
+      productName: item.product?.name,
+    });
   }
 
   return Object.values(grouped);

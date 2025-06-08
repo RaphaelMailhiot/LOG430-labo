@@ -54,18 +54,30 @@ export const addProduct = async ({
 }): Promise<Product> => {
   const productRepo = AppDataSource.getRepository(Product);
   const inventoryRepo = AppDataSource.getRepository(Inventory);
-  // Vérifie si le produit existe déjà globalement (par nom/catégorie/prix)
+  const storeRepo = AppDataSource.getRepository(Store);
+
+  // Vérifie si le produit existe déjà globalement
   let product = await productRepo.findOneBy({ name, category, price });
   if (!product) {
     product = await productRepo.save(productRepo.create({ name, category, price }));
   }
-  // Crée l'inventaire pour ce magasin
-  const store = await AppDataSource.getRepository(Store).findOneByOrFail({ id: storeId });
-  let inventory = await inventoryRepo.findOne({ where: { product: { id: product.id }, store: { id: storeId } } });
-  if (!inventory) {
-    inventory = inventoryRepo.create({ store, product, stock });
-    await inventoryRepo.save(inventory);
+
+  // Récupère tous les magasins
+  const stores = await storeRepo.find();
+
+  for (const store of stores) {
+    let inventory = await inventoryRepo.findOne({ where: { product: { id: product.id }, store: { id: store.id } } });
+    if (!inventory) {
+      inventory = inventoryRepo.create({
+        store,
+        product,
+        stock: store.id === storeId ? stock : 0
+      });
+      await inventoryRepo.save(inventory);
+    }
+    // Si l'inventaire existe déjà, ne rien faire (évite d'écraser le stock d'autres magasins)
   }
+
   return product;
 };
 

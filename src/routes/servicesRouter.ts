@@ -66,7 +66,6 @@ router.get('/consulter-stock', async (req: Request, res: Response, next: NextFun
     const message = 'Bienvenue sur la page de consultation du stock !';
     const storeId = Number(req.session.selectedStore);
     const stock = await servicesController.handleStock(storeId);
-    console.log('Stock:', stock);
     const categories = [...new Set(stock.map(item => item.product.category))];
     res.status(200).render(`${folderName}/view-stock`, { title, message, stock, categories });
   } catch (err) {
