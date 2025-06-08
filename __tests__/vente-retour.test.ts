@@ -29,13 +29,14 @@ describe('Simulation des services de vente', () => {
     });
 
     afterAll(async () => {
-        // Respecte l'ordre des dépendances (enfants -> parents)
-        await AppDataSource.query('DELETE FROM "sale_item"');
-        await AppDataSource.query('DELETE FROM "sale"');
-        await AppDataSource.query('DELETE FROM "inventory"');
-        await AppDataSource.query('DELETE FROM "product"');
-        await AppDataSource.query('DELETE FROM "store"');
-        await AppDataSource.destroy();
+        if (AppDataSource.isInitialized) {
+            await AppDataSource.query('DELETE FROM "sale_item"');
+            await AppDataSource.query('DELETE FROM "sale"');
+            await AppDataSource.query('DELETE FROM "inventory"');
+            await AppDataSource.query('DELETE FROM "product"');
+            await AppDataSource.query('DELETE FROM "store"');
+            await AppDataSource.destroy();
+        }
     });
 
     test('vente et retour de produit', async () => {
