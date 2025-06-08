@@ -19,7 +19,7 @@ export default class ManageReturn {
         const confirmed = confirm(`Êtes-vous sûr de vouloir annuler la vente ${saleId} ?`);
         if (!confirmed) return;
 
-        const res = await fetch('/api/manage-return', {
+        const res = await fetch('/api/v1/manage-return', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ saleId })

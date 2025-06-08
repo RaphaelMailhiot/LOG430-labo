@@ -20,7 +20,7 @@ export default class SearchProduct {
   }
 
   async fetchResults(productNameInput) {
-    const res = await fetch('/api/search-product', {
+    const res = await fetch('/api/v1/search-product', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ productNameInput })

@@ -36,7 +36,7 @@ export default class RecordSale {
     }
 
     async fetchResults(productData) {
-        const res = await fetch('/api/record-sale', {
+        const res = await fetch('/api/v1/record-sale', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(productData)

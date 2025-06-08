@@ -86,7 +86,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/', homeRouter);
 app.use('/', authRouter);
 app.use('/services', servicesRouter);
-app.use('/api', servicesApiRouter);
+app.use('/api/v1', servicesApiRouter);
 
 // 404 handler
 app.use((req, res) => {

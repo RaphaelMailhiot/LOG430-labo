@@ -29,7 +29,7 @@ export default class AddProduct {
   }
 
   async fetchResults(productData) {
-    const res = await fetch('/api/add-product', {
+    const res = await fetch('/api/v1/add-product', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(productData)
