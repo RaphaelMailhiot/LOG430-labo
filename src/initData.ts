@@ -1,7 +1,7 @@
 import { AppDataSource } from './data-source';
+import { Inventory } from './entities/Inventory';
 import { Product } from './entities/Product';
 import { Store } from './entities/Store';
-import { Inventory } from './entities/Inventory';
 
 export async function initStores() {
   const repo = AppDataSource.getRepository(Store);

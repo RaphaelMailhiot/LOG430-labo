@@ -1,9 +1,9 @@
+import { In } from 'typeorm';
 import { AppDataSource } from '../data-source';
+import { Inventory } from '../entities/Inventory';
 import { Sale } from '../entities/Sale';
 import { SaleItem } from '../entities/SaleItem';
 import { Store } from '../entities/Store';
-import { Inventory } from '../entities/Inventory';
-import { In } from 'typeorm';
 
 /**
  * Enregistre une vente pour un magasin et décale le stock dans Inventory.

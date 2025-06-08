@@ -1,62 +1,83 @@
 import { DataSource, Repository } from 'typeorm';
 import { Product } from '../src/entities/Product';
-
-const updateStock = async (
-  repo: Repository<Product>,
-  id: number,
-  delta: number
-): Promise<void> => {
-  await repo.increment({ id }, 'stock', delta);
-};
-
-const getProductById = async (
-  repo: Repository<Product>,
-  id: number
-): Promise<Product | null> => {
-  return repo.findOneBy({ id });
-};
+import { Store } from '../src/entities/Store';
+import { Inventory } from '../src/entities/Inventory';
+import { Sale } from '../src/entities/Sale';
+import { SaleItem } from '../src/entities/SaleItem';
 
 let dataSource: DataSource;
 let productRepo: Repository<Product>;
+let storeRepo: Repository<Store>;
+let inventoryRepo: Repository<Inventory>;
 let productId: number;
+let storeId: number;
 
-describe('Vente de produit', () => {
+describe('Vente de produit via Inventory', () => {
   const nomProduit = 'TestProduit';
   const stockInitial = 10;
 
   beforeAll(async () => {
-    // Initialise la connexion TypeORM
+    // Initialise la connexion TypeORM avec PostgreSQL
     dataSource = new DataSource({
-      type: 'sqlite',
-      database: ':memory:',
+      type: 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5432,
+      username: process.env.DB_USER || 'labuser',
+      password: process.env.DB_PASSWORD || 'labpassword',
+      database: process.env.DB_NAME || 'labdb',
       synchronize: true,
-      entities: [Product],
+      entities: [Product, Store, Inventory, Sale, SaleItem], // <-- ajoute Sale et SaleItem ici
     });
     await dataSource.initialize();
 
-    // Prépare le repository
     productRepo = dataSource.getRepository(Product);
+    storeRepo = dataSource.getRepository(Store);
+    inventoryRepo = dataSource.getRepository(Inventory);
+
+    // Ajoute un magasin de test
+    const store = await storeRepo.save(storeRepo.create({ name: 'TestMagasin' }));
+    storeId = store.id;
 
     // Ajoute un produit de test
-    const product = productRepo.create({
+    const product = await productRepo.save(productRepo.create({
       name: nomProduit,
       category: 'Test',
       price: 1.99,
+    }));
+    productId = product.id;
+
+    // Ajoute l'inventaire pour ce magasin/produit
+    await inventoryRepo.save(inventoryRepo.create({
+      store,
+      product,
       stock: stockInitial,
-    });
-    const savedProduct = await productRepo.save(product);
-    productId = savedProduct.id;
+    }));
   });
 
   afterAll(async () => {
-    // Nettoie le produit de test et ferme la connexion
-    await productRepo.delete(productId);
-    await dataSource.destroy();
+    if (inventoryRepo && productRepo && storeRepo) {
+      await inventoryRepo.delete({});
+      await productRepo.delete({});
+      await storeRepo.delete({});
+    }
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy();
+    }
   });
 
   test('le stock diminue après une vente', async () => {
-    await updateStock(productRepo, productId, -3); // Simule la vente de 3 unités
-    const produit = await getProductById(productRepo, productId);
-    expect(produit?.stock).toBe(stockInitial - 3);
+    // Simule la vente de 3 unités
+    const inventory = await inventoryRepo.findOneOrFail({
+      where: { product: { id: productId }, store: { id: storeId } },
+      relations: ['product', 'store'],
+    });
+    inventory.stock -= 3;
+    await inventoryRepo.save(inventory);
+
+    const updatedInventory = await inventoryRepo.findOneOrFail({
+      where: { product: { id: productId }, store: { id: storeId } },
+      relations: ['product', 'store'],
+    });
+    expect(updatedInventory.stock).toBe(stockInitial - 3);
   });
 });

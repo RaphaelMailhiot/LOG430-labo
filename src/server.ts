@@ -4,8 +4,8 @@ import * as path from 'path';
 import { AppDataSource } from './data-source';
 import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
-import homeRouter from './routes/homeRouter';
 import authRouter from './routes/authRouter';
+import homeRouter from './routes/homeRouter';
 import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 

@@ -1,7 +1,7 @@
 import { ILike } from 'typeorm';
 import { AppDataSource } from '../data-source';
-import { Product } from '../entities/Product';
 import { Inventory } from '../entities/Inventory';
+import { Product } from '../entities/Product';
 import { Store } from '../entities/Store';
 
 /**
