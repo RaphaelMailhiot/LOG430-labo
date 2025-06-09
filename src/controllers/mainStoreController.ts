@@ -6,6 +6,18 @@ import { Parser } from 'json2csv';
 import { Response } from 'express';
 
 export class MainStoreController {
+
+  async getMainStoreId(): Promise<number> {
+    const storeRepo = AppDataSource.getRepository(Store);
+    const mainStore = await storeRepo.findOne({ where: { isMain: true } });
+
+    if (!mainStore) {
+      throw new Error('Magasin principal non trouvé');
+    }
+
+    return Number(mainStore.id);
+  }
+
   async generateReport(res: Response) {
     const storeRepo = AppDataSource.getRepository(Store);
     const saleRepo = AppDataSource.getRepository(Sale);

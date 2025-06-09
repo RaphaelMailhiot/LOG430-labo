@@ -1,9 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { ServicesController } from '../controllers/servicesController';
+import { MainStoreController } from '../controllers/mainStoreController';
 
 
 const router = Router();
 const servicesController = new ServicesController();
+const mainStoreController = new MainStoreController();
 const folderName = 'services';
 
 router.get('', async (req: Request, res: Response, next: NextFunction) => {
@@ -65,9 +67,11 @@ router.get('/consulter-stock', async (req: Request, res: Response, next: NextFun
     const title = 'Consulter le stock';
     const message = 'Bienvenue sur la page de consultation du stock !';
     const storeId = Number(req.session.selectedStore);
+    const mainStoreId = await mainStoreController.getMainStoreId();
     const stock = await servicesController.handleStock(storeId);
+    const mainStoreStock = await servicesController.handleStock(mainStoreId);
     const categories = [...new Set(stock.map(item => item.product.category))];
-    res.status(200).render(`${folderName}/view-stock`, { title, message, stock, categories });
+    res.status(200).render(`${folderName}/view-stock`, { title, message, stock, categories, mainStoreStock });
   } catch (err) {
     next(err);
   }
