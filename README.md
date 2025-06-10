@@ -54,7 +54,13 @@ Il faut que vous soyez connecté avec une base de donnée PostgreSQL
 
 ## 🧪 Tests unitaires & couverture
 
-* **Lancer les tests Jest**
+* **Lancer docker dans un terminal**
+
+  ```bash
+  docker compose up --build
+  ```
+
+* **Dans un autre terminal lancer les tests Jest**
 
   ```bash
   npm test

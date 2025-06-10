@@ -16,13 +16,14 @@ import apiProductsRouter from './routes/apiProductsRouter';
 import apiStoresRouter from './routes/apiStoresRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
 import cors from 'cors';
+import { staticTokenAuth } from './middleware/staticTokenAuth';
 import { contentNegotiation } from './middleware/contentNegotiation';
 // Swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swaggerConfig';
 
 
-const app = express();
+export const app = express();
 
 // Initialisation de la base de données
 AppDataSource.initialize()
@@ -108,12 +109,30 @@ app.use('/', authRouter);
 app.use('/services', servicesRouter);
 app.use('/api/v1', servicesApiRouter);
 
+app.use('/api/v2', staticTokenAuth);
 app.use('/api/v2', contentNegotiation);
 app.use('/api/v2', apiProductsRouter);
 app.use('/api/v2', apiStoresRouter);
 app.use('/api/v2', apiSalesRouter);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
+const swaggerUiOptions = {
+  swaggerOptions: {
+    authAction: {
+      bearerAuth: {
+        name: 'bearerAuth',
+        schema: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'Token',
+        },
+        value: `${API_STATIC_TOKEN}`,
+      }
+    }
+  }
+};
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Api errors handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
@@ -130,10 +149,4 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 // 404 handler
 app.use((req, res) => {
   res.status(404).send('Page non trouvée');
-});
-
-// Lancement du serveur
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });

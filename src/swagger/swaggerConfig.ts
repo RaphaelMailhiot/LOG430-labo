@@ -11,8 +11,21 @@ const options = {
     servers: [
       { url: 'http://localhost:3000/api/v2' }
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Entrez **Bearer &lt;token>**',
+        }
+      }
+    },
+    security: [
+      { bearerAuth: [] }
+    ]
   },
-  apis: ['./src/routes/*.ts'], // Chemin vers tes fichiers de routes avec JSDoc
+  apis: ['./src/routes/*.ts'],
 };
 
 export default swaggerJSDoc(options);
