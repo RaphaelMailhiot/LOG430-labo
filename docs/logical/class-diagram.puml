@@ -7,39 +7,68 @@ class Product {
   - name: string
   - category: string
   - price: number
+}
+
+class Store {
+  - id: number
+  - name: string
+  - isMain: boolean
+}
+
+class Inventory {
+  - id: number
   - stock: number
+  - product: Product
+  - store: Store
 }
 
 class Sale {
   - id: number
   - date: string
+  - store: Store
   - items: SaleItem[]
 }
 
 class SaleItem {
-  - sale_id: number
-  - product_id: number
-  - quantity: number
-  - price: number
+  - id: number
   - sale: Sale
   - product: Product
+  - quantity: number
+  - price: number
+}
+
+class SupplyRequest {
+  - id: number
+  - product: Product
+  - quantity: number
+  - store: Store
 }
 
 class ProductService {
-  + findProducts(term: string): Product[]
+  + findProducts(term: string, storeId: number): Product[]
   + getProductById(id: number): Product
-  + updateStock(id: number, delta: number): void
+  + updateStock(productId: number, storeId: number, delta: number): void
 }
 
 class SaleService {
-  + recordSale(items: SaleItem[]): number
-  + cancelSale(saleId: number): void
+  + recordSale(items: SaleItem[], storeId: number): number
+  + cancelSale(saleId: number, storeId: number): void
+  + findOldSales(storeId: number): Sale[]
 }
 
+Product "1" -- "0..*" Inventory : "product"
+Store "1" -- "0..*" Inventory : "store"
+Inventory "1" -- "0..*" SaleItem : "inventory"
 Product "1" -- "0..*" SaleItem : "product"
 Sale "1" -- "0..*" SaleItem : "items"
+Store "1" -- "0..*" Sale : "store"
+Product "1" -- "0..*" SupplyRequest : "product"
+Store "1" -- "0..*" SupplyRequest : "store"
+
 ProductService ..> Product
+ProductService ..> Inventory
 SaleService ..> Sale
 SaleService ..> SaleItem
+SaleService ..> Inventory
 
 @enduml

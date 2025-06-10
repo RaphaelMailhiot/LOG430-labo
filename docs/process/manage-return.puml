@@ -2,22 +2,23 @@
 
 skinparam style strictuml
 
-title Processus de retour d'une vente
-actor Utilisateur
-participant "CLI (cli.ts)" as CLI
-participant "SaleService (saleService.ts)" as SaleService
-database "AppDataSource\n(TypeORM/SQLite)" as Database
+title Processus de retour d'une vente (multi-magasin, Express, PostgreSQL)
 
-Utilisateur -> CLI : Choisir 'Gérer un retour'
-CLI -> CLI : handleReturn()
-CLI -> Utilisateur : Demander numéro de vente à annuler (number)
-Utilisateur -> CLI : Saisir critère (number)
-CLI -> SaleService : cancelSale(saleId:number)
-SaleService -> Database : getRepository(Sale).findOneBy(id:number)
+actor Utilisateur
+participant "Navigateur Web" as Web
+participant "Express.js\n(serviceApiRouter.ts)" as Express
+participant "SaleService\n(saleService.ts)" as SaleService
+database "PostgreSQL\n(TypeORM)" as Database
+
+Utilisateur -> Web : Choisir 'Gérer un retour'
+Web -> Express : POST /manage-return (saleId, storeId)
+Express -> SaleService : cancelSale(saleId, storeId)
+SaleService -> Database : getRepository(Sale).findOneBy({id: saleId, store: storeId})
 Database --> SaleService : informations de la vente
-SaleService -> Database : delete(saleId:number)
-Database --> SaleService : confirmation de la suppression
-SaleService --> CLI : confirmation de l'annulation
-CLI --> Utilisateur : Vente {id} annulée
+SaleService -> Database : delete(saleId)
+SaleService -> Database : Mettre à jour le stock dans Inventory (+quantité retournée)
+Database --> SaleService : confirmation de la suppression et mise à jour stock
+SaleService --> Express : confirmation de l'annulation
+Express --> Web : Afficher confirmation à l'utilisateur
 
 @enduml

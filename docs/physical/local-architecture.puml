@@ -1,15 +1,20 @@
 @startuml
 
-title Architecture locale 2-tier
+title Architecture locale 3-tier
 
-node "Machine utilisateur" {
-  component "index.js (Node.js CLI)"
+node "Machine utilisateur N" {
+  component "Navigateur Web"
+}
+
+node "Serveur Node.js N" {
+  component "Express.js (API & Vue)"
   component "TypeORM"
 }
 
-database "fichier SQLite"
+database "PostgreSQL"
 
-"index.js (Node.js CLI)" --> "TypeORM" : appels services/metier
-"TypeORM" --> "fichier SQLite" : ORM (sqlite3 driver)
+"Navigateur Web" --> "Express.js (API & Vue)" : HTTP (REST/EJS)
+"Express.js (API & Vue)" --> "TypeORM" : appels ORM
+"TypeORM" --> "PostgreSQL" : ORM (pg driver)
 
 @enduml

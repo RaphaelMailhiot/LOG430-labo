@@ -3,28 +3,58 @@
 title Organisation des modules
 
 package "src" {
+    package "controllers" as C {
+        class mainStoreController
+        class servicesController
+    }
     package "entities" as E {
+        class Inventory
         class Product
         class Sale
         class SaleItem
+        class Store
+    }
+    package "routes" as R {
+        class authRouter
+        class homeRouter
+        class serviceApiRouter
+        class servicesRouter
     }
     package "services" as S {
         class productService
         class saleService
     }
+    package "types" as T {
+        class express-session
+    }
     package "views" as V {
-        class cli
+        package "_partiels" {
+            class footer
+            class header
+        }
+        package "services" {
+            class services
+            class autresServices
+        }
+        class home
+        class login
     }
     class datasource
-    class index
     class initData
+    class server
 }
 
 Product -[hidden]right- Sale
-E -[hidden]down- S
-S -[hidden]down- V
+Sale -[hidden]right- Store
+homeRouter -[hidden]right- serviceApiRouter
+serviceApiRouter -[hidden]right- servicesRouter
+C -[hidden]down- E
+E -[hidden]down- R
+R -[hidden]down- S
+S -[hidden]down- T
+T -[hidden]down- V
 V -[hidden]down- datasource
-datasource -[hidden]down- index
-index -[hidden]down- initData
+datasource -[hidden]down- initData
+initData -[hidden]down- server
 
 @enduml

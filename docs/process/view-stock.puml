@@ -2,18 +2,20 @@
 
 skinparam style strictuml
 
-title Processus de consultation de l'inventaire
-actor Utilisateur
-participant "CLI (cli.ts)" as CLI
-participant "ProductService (productService.ts)" as ProductService
-database "AppDataSource\n(TypeORM/SQLite)" as Database
+title Processus de consultation de l'inventaire (multi-magasin, Express, PostgreSQL)
 
-Utilisateur -> CLI : Choisir 'Consulter le stock'
-CLI -> CLI : handleStock()
-CLI -> ProductService : findProducts(string)
-ProductService -> Database : getRepository(Product).find()
-Database --> ProductService : informations des produits
-ProductService --> CLI : Information des produits (id, name, category, price, stock)
-CLI -> Utilisateur : Afficher résultats
+actor Utilisateur
+participant "Navigateur Web" as Web
+participant "Express.js\n(serviceApiRouter.ts)" as Express
+participant "ProductService\n(productService.ts)" as ProductService
+database "PostgreSQL\n(TypeORM)" as Database
+
+Utilisateur -> Web : Choisir 'Consulter le stock'
+Web -> Express : GET /consulter-stock?storeId=...
+Express -> ProductService : handleStock(storeId)
+ProductService -> Database : getRepository(Inventory).find({ store: storeId })
+Database --> ProductService : informations des stocks (produit, stock)
+ProductService --> Express : liste des stocks
+Express --> Web : Afficher résultats (produit, catégorie, prix, stock)
 
 @enduml

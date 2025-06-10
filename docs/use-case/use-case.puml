@@ -3,20 +3,29 @@
 left to right direction
 
 title Cas d'utilisation du système de gestion des ventes
-actor Utilisateur as U
+actor Magasin as M
+actor MaisonMère as MM
 
 rectangle "Système" {
-    usecase "Rechercher un produit"  as RP
-    usecase "Ajouter un produit"     as AP
-    usecase "Enregistrer une vente"  as EV
-    usecase "Gérer un retour"        as GR
-    usecase "Consulter le stock"     as CS
+    usecase "Rechercher un produit"                         as RP
+    usecase "Ajouter un produit"                            as AP
+    usecase "Enregistrer une vente"                         as EV
+    usecase "Gérer un retour"                               as GR
+    usecase "Consulter le stock"                            as CS
+    usecase "Générer un rapport consolidé des ventes"       as GRV
+    usecase "Consulter le stock central et déclencher un réapprovisionnement" as CR
+    usecase "Visualiser les performances des magasins"      as VPM
+    usecase "Offrir une interface web minimale pour les gestionnaires"        as IW
 }
 
-U --> RP
-U --> AP
-U --> EV
-U --> GR
-U --> CS
+M --> RP
+M --> AP
+M --> EV
+M --> GR
+M --> CS
+MM --> GRV
+M --> CR
+MM --> VPM
+M --> IW
 
 @enduml

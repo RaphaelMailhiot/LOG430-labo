@@ -18,7 +18,8 @@ export class MainStoreController {
     return Number(mainStore.id);
   }
 
-  async generateReport(res: Response) {
+  // Récupère les données pour le rapport
+  async getStoresData() {
     const storeRepo = AppDataSource.getRepository(Store);
     const saleRepo = AppDataSource.getRepository(Sale);
     const saleItemRepo = AppDataSource.getRepository(SaleItem);
@@ -54,22 +55,34 @@ export class MainStoreController {
       Stock: s.stock
     }));
 
-    // Génère chaque section séparément
+    return { ventesParMagasin, produitsVendus, stocksData };
+  }
+
+  // Génère le CSV à partir des données du rapport
+  generateReportCsv(data: { ventesParMagasin: any[], produitsVendus: any[], stocksData: any[] }) {
     const parserVentes = new Parser({ fields: ['Magasin', 'Ventes'] });
     const parserProduits = new Parser({ fields: ['ProduitID', 'TotalVendu'] });
     const parserStocks = new Parser({ fields: ['Produit', 'Magasin', 'Stock'] });
 
     let csv = '';
     csv += 'Ventes par magasin\n';
-    csv += parserVentes.parse(ventesParMagasin) + '\n\n';
+    csv += parserVentes.parse(data.ventesParMagasin) + '\n\n';
     csv += 'Top 10 produits les plus vendus\n';
-    csv += parserProduits.parse(produitsVendus) + '\n\n';
+    csv += parserProduits.parse(data.produitsVendus) + '\n\n';
     csv += 'Stocks restants\n';
-    csv += parserStocks.parse(stocksData);
+    csv += parserStocks.parse(data.stocksData);
+
+    return '\uFEFF' + csv;
+  }
+
+  // Méthode principale pour générer et envoyer le rapport
+  async generateReport(res: Response) {
+    const data = await this.getStoresData();
+    const csv = this.generateReportCsv(data);
 
     res.header('Content-Type', 'text/csv; charset=utf-8');
     res.attachment('rapport.csv');
-    res.send('\uFEFF' + csv);
+    res.send(csv);
 
     return { success: true };
   }

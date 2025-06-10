@@ -2,20 +2,26 @@
 
 skinparam style strictuml
 
-title Processus d'ajout d'un produit
-actor Utilisateur
-participant "CLI (cli.ts)" as CLI
-participant "ProductService (productService.ts)" as ProductService
-database "AppDataSource\n(TypeORM/SQLite)" as Database
+title Processus d'ajout d'un produit (multi-magasin, Express, PostgreSQL)
 
-Utilisateur -> CLI : Choisir 'Ajouter un produit'
-CLI -> CLI : handleAddProduct()
-CLI -> Utilisateur : Demander informations produit (nom: string, catégorie: string, prix: number, stock: number)
-Utilisateur -> CLI : Saisir informations produit
-CLI -> ProductService : addProduct({nom: string, catégorie: string, prix: number, stock: number})
-ProductService -> Database : getRepository(Product).save(create({nom: string, catégorie: string, prix: number, stock: number})
-Database --> ProductService : produit ajouté
-ProductService --> CLI : Information du produit (id, name, category, price, stock)
-CLI -> Utilisateur : Afficher résultats
+actor Utilisateur
+participant "Navigateur Web" as Web
+participant "Express.js\n(serviceApiRouter.ts)" as Express
+participant "ProductService\n(productService.ts)" as ProductService
+database "PostgreSQL\n(TypeORM)" as Database
+
+Utilisateur -> Web : Cliquer "Ajouter un produit"
+Web -> Express : POST /add-product (nom, catégorie, prix, stock, magasin)
+Express -> ProductService : addProduct({nom, catégorie, prix, stock, storeId})
+ProductService -> Database : Vérifier si le produit existe
+alt Produit existe déjà
+    ProductService -> Database : Créer Inventory (stock, product, store)
+else Nouveau produit
+    ProductService -> Database : Créer Product
+    ProductService -> Database : Créer Inventory (stock, product, store)
+end
+Database --> ProductService : Produit et stock ajoutés
+ProductService --> Express : Succès/erreur
+Express --> Web : Afficher confirmation
 
 @enduml
