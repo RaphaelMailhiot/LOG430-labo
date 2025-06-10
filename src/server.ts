@@ -15,6 +15,7 @@ import servicesApiRouter from './routes/serviceApiRouter';
 import apiProductsRouter from './routes/apiProductsRouter';
 import apiStoresRouter from './routes/apiStoresRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
+import cors from 'cors';
 import { contentNegotiation } from './middleware/contentNegotiation';
 // Swagger
 import swaggerUi from 'swagger-ui-express';
@@ -93,6 +94,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));
+
+// CORS configuration for API
+app.use('/api', cors({
+  origin: '*', // Mettre l'URL client
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Routes
 app.use('/', homeRouter);
