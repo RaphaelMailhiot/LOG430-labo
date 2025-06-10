@@ -1,13 +1,17 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import * as path from 'path';
 import { AppDataSource } from './data-source';
 import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
+import { contentNegotiation } from './middleware/contentNegotiation';
+import apiRouter from './routes/apiRouter';
 import authRouter from './routes/authRouter';
 import homeRouter from './routes/homeRouter';
 import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger/swaggerConfig';
 
 const app = express();
 
@@ -87,6 +91,23 @@ app.use('/', homeRouter);
 app.use('/', authRouter);
 app.use('/services', servicesRouter);
 app.use('/api/v1', servicesApiRouter);
+
+app.use('/api/v2', contentNegotiation);
+app.use('/api/v2', apiRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Api errors handler
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    const status = typeof err.status === 'number' ? err.status : 500;
+    res.status(status).json({
+        timestamp: new Date().toISOString(),
+        status: status,
+        error: err.error || res.statusMessage || 'Internal Server Error',
+        message: err.message || 'Une erreur est survenue.',
+        path: req.originalUrl || req.url
+    });
+});
 
 // 404 handler
 app.use((req, res) => {
