@@ -21,7 +21,7 @@ router.get('/stores', async (req: Request, res: Response, next: NextFunction) =>
         res.status(200).sendData(stores);
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -44,11 +44,11 @@ router.get('/stores/main', async (req: Request, res: Response, next: NextFunctio
         if (store) {
             res.status(200).sendData(store);
         } else {
-            res.status(404).sendData({ error: "Store not found" });
+            res.status(404).sendData({ error: 'Store not found' });
         }
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -79,11 +79,11 @@ router.get('/stores/:storeId', async (req: Request, res: Response, next: NextFun
         if (store) {
             res.status(200).sendData(store);
         } else {
-            res.status(404).sendData({ error: "Store not found" });
+            res.status(404).sendData({ error: 'Store not found' });
         }
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });

@@ -57,7 +57,7 @@ router.get('/products', async (req: Request, res: Response, next: NextFunction) 
         });
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -79,7 +79,7 @@ router.get('/stores/main/products', async (req: Request, res: Response, next: Ne
         res.status(200).sendData(products);
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -110,7 +110,7 @@ router.get('/stores/:storeId/products', async (req: Request, res: Response, next
         res.status(200).sendData(products);
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -122,11 +122,11 @@ router.get('/stores/:storeId/products/:productId', async (req: Request, res: Res
         if (product) {
             res.status(200).sendData(product);
         } else {
-            res.status(404).sendData({ error: "Product not found" });
+            res.status(404).sendData({ error: 'Product not found' });
         }
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -177,11 +177,11 @@ router.put('/stores/:storeId/products/:productId', async (req: Request, res: Res
         if (product) {
             res.status(200).sendData(product);
         } else {
-            res.status(404).sendData({ error: "Product not found" });
+            res.status(404).sendData({ error: 'Product not found' });
         }
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });

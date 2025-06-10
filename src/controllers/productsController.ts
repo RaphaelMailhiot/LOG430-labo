@@ -1,6 +1,6 @@
 import { AppDataSource } from '../data-source';
-import { Product } from '../entities/Product';
 import { Inventory } from '../entities/Inventory';
+import { Product } from '../entities/Product';
 
 export class ProductsController {
     async getProducts() {

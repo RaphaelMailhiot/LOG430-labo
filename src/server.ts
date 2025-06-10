@@ -1,25 +1,25 @@
+import cors from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import * as path from 'path';
 // Database
+import swaggerUi from 'swagger-ui-express';
 import { AppDataSource } from './data-source';
 import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
 // Routes
+import { contentNegotiation } from './middleware/contentNegotiation';
+import { staticTokenAuth } from './middleware/staticTokenAuth';
+import apiProductsRouter from './routes/apiProductsRouter';
+import apiSalesRouter from './routes/apiSalesRouter';
+import apiStoresRouter from './routes/apiStoresRouter';
 import authRouter from './routes/authRouter';
 import homeRouter from './routes/homeRouter';
+import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 // API v1
-import servicesApiRouter from './routes/serviceApiRouter';
 // API v2
-import apiProductsRouter from './routes/apiProductsRouter';
-import apiStoresRouter from './routes/apiStoresRouter';
-import apiSalesRouter from './routes/apiSalesRouter';
-import cors from 'cors';
-import { staticTokenAuth } from './middleware/staticTokenAuth';
-import { contentNegotiation } from './middleware/contentNegotiation';
 // Swagger
-import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swaggerConfig';
 
 

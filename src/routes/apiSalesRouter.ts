@@ -21,7 +21,7 @@ router.get('/sales', async (req: Request, res: Response, next: NextFunction) => 
         res.status(200).sendData(sales);
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -52,7 +52,7 @@ router.get('/stores/:storeId/sales', async (req: Request, res: Response, next: N
         res.status(200).sendData(sales);
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
@@ -90,11 +90,11 @@ router.get('/stores/:storeId/sales/:saleId', async (req: Request, res: Response,
         if (sale) {
             res.status(200).sendData(sale);
         } else {
-            res.status(404).sendData({ error: "Sale not found" });
+            res.status(404).sendData({ error: 'Sale not found' });
         }
     } catch (err) {
         (err as any).status = 400;
-        (err as any).error = "Bad Request";
+        (err as any).error = 'Bad Request';
         next(err);
     }
 });
