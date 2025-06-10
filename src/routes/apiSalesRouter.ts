@@ -27,7 +27,7 @@ router.get('/sales', async (req: Request, res: Response, next: NextFunction) => 
 });
 /**
  * @openapi
- * /stores/:storeId/sales:
+ * /stores/{storeId}/sales:
  *   get:
  *     summary: Récupère les ventes d'un magasin par son ID
  *     tags:
@@ -58,7 +58,7 @@ router.get('/stores/:storeId/sales', async (req: Request, res: Response, next: N
 });
 /**
  * @openapi
- * /stores/:storeId/sales/:saleId:
+ * /stores/{storeId}/sales/{saleId}:
  *   get:
  *     summary: Récupère une vente d'un magasin par son ID
  *     tags:

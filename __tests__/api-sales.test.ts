@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
-import { initStores, initProducts } from '../src/initData';
 
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
 
@@ -9,8 +8,6 @@ beforeAll(async () => {
     if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize();
     }
-    await initStores();
-    await initProducts();
 });
 
 afterAll(async () => {

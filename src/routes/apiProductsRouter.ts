@@ -85,7 +85,7 @@ router.get('/stores/main/products', async (req: Request, res: Response, next: Ne
 });
 /**
  * @openapi
- * /stores/:storeId/products:
+ * /stores/{storeId}/products:
  *   get:
  *     summary: Récupère les produits d'un magasin par son ID
  *     tags:
@@ -132,7 +132,7 @@ router.get('/stores/:storeId/products/:productId', async (req: Request, res: Res
 });
 /**
  * @openapi
- * /stores/:storeId/products/:productId:
+ * /stores/{storeId}/products/{productId}:
  *   put:
  *     summary: Met à jour un produit d'un magasin par son ID
  *     tags:

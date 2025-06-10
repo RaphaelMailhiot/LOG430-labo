@@ -1,16 +1,19 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
-import { initStores, initProducts } from '../src/initData';
+import { Store } from '../src/entities/Store';
 
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
 
 beforeAll(async () => {
+    let store: Store;
+
     if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize();
     }
-    await initStores();
-    await initProducts();
+
+    const storeRepo = AppDataSource.getRepository(Store);
+    store = await storeRepo.save(storeRepo.create({ name: 'Magasin Test' }));
 });
 
 afterAll(async () => {

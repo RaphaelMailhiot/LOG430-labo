@@ -54,7 +54,7 @@ router.get('/stores/main', async (req: Request, res: Response, next: NextFunctio
 });
 /**
  * @openapi
- * /stores/:storeId:
+ * /stores/{storeId}:
  *   get:
  *     summary: Récupère un magasin par son ID
  *     tags:

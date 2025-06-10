@@ -1,14 +1,11 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
-import { initStores, initProducts } from '../src/initData';
 
 beforeAll(async () => {
     if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize();
     }
-    await initStores();
-    await initProducts();
 });
 
 afterAll(async () => {
