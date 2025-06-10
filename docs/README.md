@@ -2,6 +2,8 @@
 
 ## Besoins fonctionnels
 
+(Labo1)
+
 1. **Recherche de produits**  
    - Recherche par identifiant, nom ou catégorie  
 2. **Enregistrement d’une vente**  
@@ -16,6 +18,17 @@
    - Transactions atomiques pour chaque vente
 6. **Couche de persistance abstraite**  
    - Accès direct à la base de données via un ORM
+
+(Labo2)
+
+7. **Générer un rapport consolidé des ventes**
+    - La maison mère peut générer un rapport détaillé des ventes de tous les magasins et stocks
+8. **Consulter le stock central et d´eclencher un réapprovisionnement**
+    - Un employé voit le stock central et peux faire une demande de réapprovisionnement
+9. **Visualiser les performances des magasins dans un tableau de bord**
+    - La maison mère peut voir les infos des magasins sur un tableau de bord
+10. **Offrir une interface web minimale pour les gestionnaires**
+    - Une interface web permet de gérer le POS du magasin
 
 ---
 
@@ -35,11 +48,12 @@
 
 ## Architecture et Technologies
 
-- **Client/Serveur 2 tiers**  
-  - Interface : application console légère  
-  - Serveur : couche métier + persistance  
+- **Client/Serveur 3 tiers**  
+  - Interface : application web
+  - Serveur : Node.js avec Express.js
+  - Base de données : PostgreSQL
 - **ORM abstrait** (TypeORM)  
-- **SGBD** : SQLite
+- **SGBD** : PostgreSQL
 - **Conteneurisation** : Docker & Docker-Compose  
 - **CI/CD** : GitHub Actions / GitLab CI  
 - **Tests** : Jest
@@ -73,7 +87,7 @@
 
 ## ADR-1 : Choix de plateform
 
-Il faut une plateforme pour faire une service de gestion de POS avec un modèle 2-tier qui est modulaire et fiable.
+Il faut une plateforme pour faire une service de gestion de POS avec un modèle 3-tier qui est modulaire et fiable.
 La plateforme choisit est Node.js avec TypeScript parce qu'on peut utiliser npm pour facilité le développement, TypeScript est plus sécuriataire que JavaScript grâce au typage et ma connaissance de la plateforme aide le développement.
 
 ## ADR-2 : Séparation des responsabilités
@@ -84,7 +98,7 @@ L'architecture adopté est inspiré des celle Modèle-Vue-Contrôleur (MVC). Cel
 ## ADR-3 : Choix de m´ecanisme de base de données
 
 Il faut une base de données pour gérer l'inventaire et les ventes.
-Le type de base de données choisit est SQLite parce que c'est léger, sans serveur et facile à utiliser avec Node.js. Permet d'utiliser TypeORM facilement pour l’abstraction de la couche de persistance.
+Le type de base de données choisit est PostgreSQL parce que j'avais à la base une base de données SQLite et je devais migré vers une base de données qui est multi-utilisateurs puisqu'il y a maintenant plusieurs magasin et PostgreSQL est une base de données relationnelles ce qui facilite la migration.
 
 # 4. Choix technologiques
 
@@ -97,8 +111,8 @@ Le type de base de données choisit est SQLite parce que c'est léger, sans serv
 - **TypeORM**  
   Fournit une abstraction de la couche de persistance, simplifie l’accès aux données et compatible avec SQLite.
 
-- **SQLite**  
-  Base de données légère, sans serveur, parfaitement adapté à une application locale. Facile à sauvegarder, déployer et ne nécessite aucune configuration complexe.
+- **PostgreSQL**  
+  Base de données client-serveur pour les applications à grande échelle qui est multi-utilisateurs et faite pour des multiples connexions.
 
 - **Jest**  
   Outil de tests unitaires moderne, rapide et facile à intégrer dans un projet TypeScript. Permet d’assurer la fiabilité du code et de faciliter la maintenance.

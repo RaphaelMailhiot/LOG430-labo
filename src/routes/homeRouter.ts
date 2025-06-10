@@ -1,6 +1,4 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { AppDataSource } from '../data-source';
-import { Store } from '../entities/Store';
 import { MainStoreController } from '../controllers/mainStoreController';
 
 const router = Router();

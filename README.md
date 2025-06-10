@@ -86,9 +86,11 @@ LOG430-labo/
 │   ├── controllers/            # Contrôleurs
 │   │   └── *Controller.ts
 │   ├── entities/               # Entités TypeORM (base de données)
+│   │   ├── Inventory.ts
 │   │   ├── Product.ts
 │   │   ├── Sale.ts
-│   │   └── SaleItem.ts
+│   │   ├── SaleItem.ts
+│   │   └── Store.ts
 │   ├── routes/                 # Routes
 │   │   └── *Router.ts
 │   ├── services/               # Logique métier (services)

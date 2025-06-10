@@ -1,9 +1,9 @@
+import { Response } from 'express';
+import { Parser } from 'json2csv';
 import { AppDataSource } from '../data-source';
 import { Sale } from '../entities/Sale';
 import { SaleItem } from '../entities/SaleItem';
 import { Store } from '../entities/Store';
-import { Parser } from 'json2csv';
-import { Response } from 'express';
 
 export class MainStoreController {
 

@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { ServicesController } from '../controllers/servicesController';
 import { MainStoreController } from '../controllers/mainStoreController';
+import { ServicesController } from '../controllers/servicesController';
 
 
 const router = Router();
