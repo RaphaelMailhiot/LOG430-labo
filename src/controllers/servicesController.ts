@@ -1,4 +1,4 @@
-import { findProducts, getProductById, addProduct, getStoreInventory } from '../services/productService';
+import { findProducts, getProductById, addProduct, getStoreInventory, createSupplyRequest } from '../services/productService';
 import { recordSale, cancelSale, findOldSales } from '../services/saleService';
 
 export class ServicesController {
@@ -37,5 +37,9 @@ export class ServicesController {
   async handleStock(storeId: number) {
     // Retourne l'inventaire du magasin (produits + stock)
     return await getStoreInventory(storeId);
+  }
+
+  async handleSupplyRequest(productId: number, quantity: number, storeId: number) {
+    return await createSupplyRequest(storeId, productId, quantity);
   }
 }

@@ -3,6 +3,7 @@ import { AppDataSource } from '../data-source';
 import { Inventory } from '../entities/Inventory';
 import { Product } from '../entities/Product';
 import { Store } from '../entities/Store';
+import { SupplyRequest } from '../entities/SupplyRequest';
 
 /**
  * Recherche des produits par ID, nom ou catégorie, pour un magasin donné.
@@ -117,4 +118,14 @@ export const getStoreInventory = async (storeId: number) => {
     where: { store: { id: storeId } },
     relations: ['product'],
   });
+};
+
+/**
+ * Crée une demande de réapprovisionnement pour un produit dans un magasin.
+ */
+export const createSupplyRequest = async (storeId: number, productId: number, quantity: number) => {
+  const supplyRequestRepo = AppDataSource.getRepository(SupplyRequest);
+  const supplyRequest = supplyRequestRepo.create({ store: { id: storeId }, product: { id: productId }, quantity });
+  await supplyRequestRepo.save(supplyRequest);
+  return supplyRequest;
 };

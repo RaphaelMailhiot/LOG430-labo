@@ -58,6 +58,36 @@
           </div>
         </div>
       </section>
+
+      <section class="mt-10">
+        <div class="container mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-300 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-500 dark:text-blue-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M16 3v4M8 3v4m-5 4h18"></path></svg>
+        Demandes de réapprovisionnement
+          </h2>
+          <% if (supplyRequest.length === 0) { %>
+        <p class="text-gray-500 dark:text-gray-400">Aucune demande en attente.</p>
+          <% } else { %>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          <% supplyRequest.forEach(request => { %>
+        <li class="py-3 flex items-center justify-between">
+          <div>
+            <span class="font-medium text-gray-800 dark:text-gray-200">
+          <%= request.product.name %>
+            </span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
+          (<%= request.store.name %>)
+            </span>
+          </div>
+          <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
+            <%= request.quantity %>
+          </span>
+        </li>
+          <% }) %>
+        </ul>
+          <% } %>
+        </div>
+      </section>
       <% } %>
 
   </main>

@@ -4,6 +4,7 @@ import { AppDataSource } from '../data-source';
 import { Sale } from '../entities/Sale';
 import { SaleItem } from '../entities/SaleItem';
 import { Store } from '../entities/Store';
+import { SupplyRequest } from '../entities/SupplyRequest';
 
 export class MainStoreController {
 
@@ -16,6 +17,11 @@ export class MainStoreController {
     }
 
     return Number(mainStore.id);
+  }
+
+  async getSupplyRequest() {
+    const supplyRequestRepo = AppDataSource.getRepository(SupplyRequest);
+    return supplyRequestRepo.find({ relations: ['store', 'product'] });
   }
 
   // Récupère les données pour le rapport

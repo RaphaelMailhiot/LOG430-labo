@@ -58,4 +58,17 @@ router.get('/rapport', async (_: Request, res: Response, next: NextFunction) => 
   }
 });
 
+router.post('/supply-request', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const productId = Number(req.body.productId);
+    const quantity = Number(req.body.quantity);
+    const storeId = Number(req.session.selectedStore);
+    console.log(`Demande de réapprovisionnement pour le produit ${productId} (quantité: ${quantity}) dans le magasin ${storeId}`);
+    await servicesController.handleSupplyRequest(productId, quantity, storeId);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

@@ -2,6 +2,7 @@ import AddProduct from './components/AddProduct.js';
 import SearchProduct from './components/SearchProduct.js';
 import RecordSale from './components/RecordSale.js';
 import ManageReturn from './components/ManageReturn.js';
+import SupplyRequest from './components/SupplyRequest.js';
 
 export default class ComponentFactory {
   constructor() {
@@ -11,6 +12,7 @@ export default class ComponentFactory {
       SearchProduct,
       RecordSale,
       ManageReturn,
+      SupplyRequest,
     };
     this.init();
   }

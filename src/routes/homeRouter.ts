@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { MainStoreController } from '../controllers/mainStoreController';
+import { SupplyRequest } from '../entities/SupplyRequest';
 
 const router = Router();
 const mainStoreController = new MainStoreController();
@@ -14,11 +15,15 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     const mainStoreId = await mainStoreController.getMainStoreId();
 
     let storesData = undefined;
+    let supplyRequest: SupplyRequest[] = [];
     if (storeId === mainStoreId) {
       storesData = await mainStoreController.getStoresData();
+      supplyRequest = await mainStoreController.getSupplyRequest();
     }
 
-    res.status(200).render('home', { title, message, storesData });
+    console.log(supplyRequest);
+
+    res.status(200).render('home', { title, message, storesData, supplyRequest });
   } catch (err) {
     next(err);
   }
