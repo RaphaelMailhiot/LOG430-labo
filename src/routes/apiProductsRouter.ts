@@ -1,64 +1,22 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { StoresController } from '../controllers/storesController';
 import { ProductsController } from '../controllers/productsController';
-import { SalesController } from '../controllers/salesController';
+import { StoresController } from '../controllers/storesController';
 
 const router = Router();
-const storesController = new StoresController();
 const productsController = new ProductsController();
-const salesController = new SalesController();
+const storesController = new StoresController();
 
-//Stores Routes
 /**
  * @openapi
- * /stores:
+ * /products:
  *   get:
- *     summary: Liste tous les magasins
+ *     summary: Liste tous les produits
+ *     tags:
+ *       - Produits
  *     responses:
  *       200:
- *         description: Liste des magasins
+ *         description: Liste des produits
  */
-router.get('/stores', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const stores = await storesController.getAllStores();
-        res.status(200).sendData(stores);
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-router.get('/stores/main', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const store = await storesController.getMainStore();
-        if (store) {
-            res.status(200).sendData(store);
-        } else {
-            res.status(404).sendData({ error: "Store not found" });
-        }
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-router.get('/stores/:storeId', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const storeId = Number(req.params.storeId);
-        const store = await storesController.getStoreById(storeId);
-        if (store) {
-            res.status(200).sendData(store);
-        } else {
-            res.status(404).sendData({ error: "Store not found" });
-        }
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-
-//Products Routes
 router.get('/products', async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Pagination
@@ -103,6 +61,17 @@ router.get('/products', async (req: Request, res: Response, next: NextFunction) 
         next(err);
     }
 });
+/**
+ * @openapi
+ * /stores/main/products:
+ *   get:
+ *     summary: Récupère les produits du magasin principal
+ *     tags:
+ *       - Produits
+ *     responses:
+ *       200:
+ *         description: Liste des produits du magasin principal
+ */
 router.get('/stores/main/products', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const store = await storesController.getMainStore();
@@ -114,6 +83,26 @@ router.get('/stores/main/products', async (req: Request, res: Response, next: Ne
         next(err);
     }
 });
+/**
+ * @openapi
+ * /stores/:storeId/products:
+ *   get:
+ *     summary: Récupère les produits d'un magasin par son ID
+ *     tags:
+ *       - Produits
+ *     parameters:
+ *       - in: path
+ *         name: storeId
+ *         required: true
+ *         description: ID du magasin à récupérer
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Liste des produits du magasin
+ *       404:
+ *         description: Magasin non trouvé
+ */
 router.get('/stores/:storeId/products', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const storeId = Number(req.params.storeId);
@@ -141,6 +130,45 @@ router.get('/stores/:storeId/products/:productId', async (req: Request, res: Res
         next(err);
     }
 });
+/**
+ * @openapi
+ * /stores/:storeId/products/:productId:
+ *   put:
+ *     summary: Met à jour un produit d'un magasin par son ID
+ *     tags:
+ *       - Produits
+ *     parameters:
+ *       - in: path
+ *         name: storeId
+ *         required: true
+ *         description: ID du magasin
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         description: ID du produit à mettre à jour
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Produit mis à jour
+ *       404:
+ *         description: Produit ou magasin non trouvé
+ */
 router.put('/stores/:storeId/products/:productId', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const storeId = Number(req.params.storeId);
@@ -150,45 +178,6 @@ router.put('/stores/:storeId/products/:productId', async (req: Request, res: Res
             res.status(200).sendData(product);
         } else {
             res.status(404).sendData({ error: "Product not found" });
-        }
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-
-//Sales Routes
-router.get('/sales', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const sales = await salesController.getAllSales();
-        res.status(200).sendData(sales);
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-router.get('/stores/:storeId/sales', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const storeId = Number(req.params.storeId);
-        const sales = await salesController.getSaleByStore(storeId);
-        res.status(200).sendData(sales);
-    } catch (err) {
-        (err as any).status = 400;
-        (err as any).error = "Bad Request";
-        next(err);
-    }
-});
-router.get('/stores/:storeId/sales/:saleId', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const storeId = Number(req.params.storeId);
-        const saleId = Number(req.params.saleId);
-        const sale = await salesController.getSaleById(storeId, saleId);
-        if (sale) {
-            res.status(200).sendData(sale);
-        } else {
-            res.status(404).sendData({ error: "Sale not found" });
         }
     } catch (err) {
         (err as any).status = 400;

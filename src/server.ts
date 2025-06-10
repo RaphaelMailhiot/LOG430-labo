@@ -1,17 +1,25 @@
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import * as path from 'path';
+// Database
 import { AppDataSource } from './data-source';
 import { Store } from './entities/Store';
 import { initStores, initProducts } from './initData';
-import { contentNegotiation } from './middleware/contentNegotiation';
-import apiRouter from './routes/apiRouter';
+// Routes
 import authRouter from './routes/authRouter';
 import homeRouter from './routes/homeRouter';
-import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
+// API v1
+import servicesApiRouter from './routes/serviceApiRouter';
+// API v2
+import apiProductsRouter from './routes/apiProductsRouter';
+import apiStoresRouter from './routes/apiStoresRouter';
+import apiSalesRouter from './routes/apiSalesRouter';
+import { contentNegotiation } from './middleware/contentNegotiation';
+// Swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swaggerConfig';
+
 
 const app = express();
 
@@ -93,7 +101,9 @@ app.use('/services', servicesRouter);
 app.use('/api/v1', servicesApiRouter);
 
 app.use('/api/v2', contentNegotiation);
-app.use('/api/v2', apiRouter);
+app.use('/api/v2', apiProductsRouter);
+app.use('/api/v2', apiStoresRouter);
+app.use('/api/v2', apiSalesRouter);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
