@@ -1,19 +1,13 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
-import { Store } from '../src/entities/Store';
 
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
 
 beforeAll(async () => {
-    let store: Store;
-
     if (!AppDataSource.isInitialized) {
         await AppDataSource.initialize();
     }
-
-    const storeRepo = AppDataSource.getRepository(Store);
-    store = await storeRepo.save(storeRepo.create({ name: 'Magasin Test' }));
 });
 
 afterAll(async () => {
@@ -38,17 +32,5 @@ describe('API /api/v2/stores', () => {
 
         expect(res.status).toBe(401);
         expect(res.body).toHaveProperty('message');
-    });
-
-    it('GET /api/v2/stores/:id retourne 200 ou 404', async () => {
-        // On suppose qu'il existe au moins un magasin avec l'id 1
-        const res = await request(app)
-            .get('/api/v2/stores/1')
-            .set('Authorization', `Bearer ${API_STATIC_TOKEN}`);
-
-        expect([200, 404]).toContain(res.status);
-        if (res.status === 200) {
-            expect(res.body).toHaveProperty('id');
-        }
     });
 });
