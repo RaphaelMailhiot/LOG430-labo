@@ -14,9 +14,6 @@
     "dev:web:docker": "nodemon --watch src --ext ts,ejs --exec \"npm run build && node dist/start.js && npm run build:css:docker\"",
     "test": "jest"
   },
-  "jest": {
-    "globalTeardown": "<rootDir>/__tests__/global-teardown.ts"
-  },
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
