@@ -8,5 +8,4 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
-  globalTeardown: "<rootDir>/__tests__/global-teardown.ts"
 };
