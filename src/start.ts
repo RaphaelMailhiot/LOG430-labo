@@ -1,7 +1,7 @@
 // src/start.ts
-import { app } from './server';
 import { AppDataSource } from './data-source';
 import { initStores, initProducts } from './initData';
+import { app } from './server';
 
 const PORT = process.env.PORT || 3000;
 
