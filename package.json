@@ -12,12 +12,14 @@
     "dev": "nodemon dist/start.js",
     "dev:web": "nodemon --watch src --ext ts,ejs --exec \"npm run build && node dist/start.js && npm run build:css\"",
     "dev:web:docker": "nodemon --watch src --ext ts,ejs --exec \"npm run build && node dist/start.js && npm run build:css:docker\"",
-    "test": "jest"
+    "test": "jest",
+    "load-test": "npx artillery run load-test.yml -o report.json && npx artillery report --output report.html report.json"
   },
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
+    "@faker-js/faker": "^9.8.0",
     "@types/body-parser": "^1.19.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -30,6 +32,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
+    "artillery": "^2.0.23",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
