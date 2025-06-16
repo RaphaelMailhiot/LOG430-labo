@@ -21,14 +21,24 @@ import { contentNegotiation } from './middleware/contentNegotiation';
 // Swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swaggerConfig';
+// Logger - Prometheus
+import { logger } from './logger';
+import client from 'prom-client';
 
+// Prometheus metrics
+client.collectDefaultMetrics();
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Nombre total de requêtes HTTP',
+  labelNames: ['method', 'route', 'status'],
+});
 
 export const app = express();
 
 // Initialisation de la base de données
 AppDataSource.initialize()
   .then(async () => {
-    console.log('Connexion à la base de données réussie !');
+    logger.info('Connexion à la base de données réussie !');
     await initStores();
     await initProducts();
   })
@@ -45,6 +55,18 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
+
+// Middleware pour incrémenter le compteur à chaque requête
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.route ? req.route.path : req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
 
 // Middleware pour injecter le magasin courant dans res.locals
 app.use(async (req, res, next) => {
@@ -85,7 +107,10 @@ app.use((req, res, next) => {
 
 // Logger simple
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
+  logger.info({ message: 'Requête entrante', method: req.method, url: req.originalUrl });
+  res.on('finish', () => {
+    logger.info({ message: 'Réponse envoyée', method: req.method, url: req.originalUrl, status: res.statusCode });
+  });
   next();
 });
 
@@ -133,6 +158,12 @@ const swaggerUiOptions = {
   }
 };
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+// Endpoint /metrics pour Prometheus
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
 
 // Api errors handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {

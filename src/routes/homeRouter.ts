@@ -21,8 +21,6 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
       supplyRequest = await mainStoreController.getSupplyRequest();
     }
 
-    console.log(supplyRequest);
-
     res.status(200).render('home', { title, message, storesData, supplyRequest });
   } catch (err) {
     next(err);

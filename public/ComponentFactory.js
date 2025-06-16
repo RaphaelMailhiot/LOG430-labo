@@ -3,6 +3,7 @@ import SearchProduct from './components/SearchProduct.js';
 import RecordSale from './components/RecordSale.js';
 import ManageReturn from './components/ManageReturn.js';
 import SupplyRequest from './components/SupplyRequest.js';
+import { logger } from './logger';
 
 export default class ComponentFactory {
   constructor() {
@@ -28,7 +29,7 @@ export default class ComponentFactory {
         const instance = new this.componentList[componentName](element);
         this.componentInstances.push(instance);
       } else {
-        console.log(`La composante ${componentName} n'existe pas`);
+        logger.warn(`La composante ${componentName} n'existe pas`);
       }
     }
   }
