@@ -1,4 +1,4 @@
-@startuml
+@startuml Processus de retour d'une vente
 
 skinparam style strictuml
 

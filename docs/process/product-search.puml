@@ -1,4 +1,4 @@
-@startuml
+@startuml Processus de recherche d'un produit
 
 skinparam style strictuml
 

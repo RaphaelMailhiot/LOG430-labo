@@ -23,17 +23,11 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger/swaggerConfig';
 // Logger - Prometheus
 import { logger } from './logger';
-import client from 'prom-client';
-
-// Prometheus metrics
-client.collectDefaultMetrics();
-const httpRequestCounter = new client.Counter({
-  name: 'http_requests_total',
-  help: 'Nombre total de requêtes HTTP',
-  labelNames: ['method', 'route', 'status'],
-});
+import { metricsMiddleware, metricsRoute } from './metrics';
 
 export const app = express();
+
+app.use(metricsMiddleware);
 
 // Initialisation de la base de données
 AppDataSource.initialize()
@@ -55,18 +49,6 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
-
-// Middleware pour incrémenter le compteur à chaque requête
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    httpRequestCounter.inc({
-      method: req.method,
-      route: req.route ? req.route.path : req.path,
-      status: res.statusCode,
-    });
-  });
-  next();
-});
 
 // Middleware pour injecter le magasin courant dans res.locals
 app.use(async (req, res, next) => {
@@ -93,6 +75,7 @@ app.use((req, res, next) => {
   req.path === '/logout' ||
   req.path.startsWith('/public') ||
   req.path.startsWith('/api') ||
+  req.path === '/metrics' ||
   req.path === '/output.css' ||
   req.path === '/favicon.ico' ||
   req.path === '/Main.js'
@@ -160,10 +143,7 @@ const swaggerUiOptions = {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Endpoint /metrics pour Prometheus
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', client.register.contentType);
-  res.end(await client.register.metrics());
-});
+app.get('/metrics', metricsRoute);
 
 // Api errors handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {

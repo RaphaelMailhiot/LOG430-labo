@@ -1,4 +1,4 @@
-@startuml
+@startuml Processus d'ajout d'un produit
 
 skinparam style strictuml
 
