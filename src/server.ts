@@ -33,8 +33,6 @@ app.use(metricsMiddleware);
 AppDataSource.initialize()
   .then(async () => {
     logger.info('Connexion à la base de données réussie !');
-    await initStores();
-    await initProducts();
   })
   .catch((error) => {
     console.error('Erreur de connexion à la base de données :', error);
