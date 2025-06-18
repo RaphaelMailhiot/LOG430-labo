@@ -1,5 +1,5 @@
-import client from 'prom-client';
 import express from 'express';
+import client from 'prom-client';
 
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics(); // CPU, mémoire, event loop, etc.

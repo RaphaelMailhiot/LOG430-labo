@@ -1,6 +1,6 @@
+import Redis from 'ioredis';
 import { AppDataSource } from '../data-source';
 import { Sale } from '../entities/Sale';
-import Redis from 'ioredis';
 
 const redis = new Redis({ host: 'redis' });
 
