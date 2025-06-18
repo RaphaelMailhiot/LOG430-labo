@@ -63,7 +63,6 @@ router.post('/supply-request', async (req: Request, res: Response, next: NextFun
     const productId = Number(req.body.productId);
     const quantity = Number(req.body.quantity);
     const storeId = Number(req.session.selectedStore);
-    console.log(`Demande de réapprovisionnement pour le produit ${productId} (quantité: ${quantity}) dans le magasin ${storeId}`);
     await servicesController.handleSupplyRequest(productId, quantity, storeId);
     res.json({ success: true });
   } catch (err) {

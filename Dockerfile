@@ -1,5 +1,5 @@
 # Utilise la dernière LTS de Node.js sous Alpine
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Répertoire de travail
 WORKDIR /LOG430-labo

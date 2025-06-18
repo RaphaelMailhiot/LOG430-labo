@@ -1,4 +1,4 @@
-@startuml
+@startuml Processus de consultation de l'inventaire
 
 skinparam style strictuml
 

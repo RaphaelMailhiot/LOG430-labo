@@ -1,0 +1,55 @@
+config:
+  target: "http://localhost:3000/api/v2"
+  phases:
+    - duration: 120
+      arrivalRate: 1
+      rampTo: 100
+      name: "Montée en charge initiale"
+    - duration: 300
+      arrivalRate: 100
+      name: "Charge soutenue"
+    - duration: 300
+      arrivalRate: 100
+      rampTo: 500
+      name: "Stress test"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  variables:
+    storeIds: [1,2,3,4,5]
+    productIds: [101,102,103,104]
+  processor: "./processors.js"
+  thresholds:
+    http_req_duration:
+      max: 1000
+    http_req_failed:
+      max: 0.01
+
+scenarios:
+  - name: "Consultation stocks"
+    flow:
+      - loop:
+          - function: "pickRandomStore"
+          - get:
+              url: "/stores/{{ storeId }}/stock"
+          - think: 1
+        count: 2
+
+  - name: "Rapports consolidés"
+    flow:
+      - post:
+          url: "/reports/consolidated"
+          json:
+            startDate: "{{ moment().subtract(7,'days').format('YYYY-MM-DD') }}"
+            endDate:   "{{ moment().format('YYYY-MM-DD') }}"
+      - think: 2
+
+  - name: "Mises à jour produits haute fréquence"
+    flow:
+      - function: "pickRandomProduct"
+      - put:
+          url: "/products/{{ productId }}"
+          json:
+            price: "{{ faker.commerce.price() }}"
+            stock: "{{ faker.datatype.number({ min:10, max:100 }) }}"
+      - think: 0.5

@@ -1,11 +1,21 @@
+import Redis from 'ioredis';
 import { AppDataSource } from '../data-source';
 import { Inventory } from '../entities/Inventory';
 import { Product } from '../entities/Product';
 
+const redis = new Redis({ host: 'redis' });
+
 export class ProductsController {
     async getProducts() {
+        const cacheKey = 'products:all';
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
         const productRepo = AppDataSource.getRepository(Product);
-        return await productRepo.find();
+        const products = await productRepo.find();
+        await redis.set(cacheKey, JSON.stringify(products), 'EX', 300); // cache for 5 min
+        return products;
     }
     async getProductsPaginated({
         skip, take, category, sort,
@@ -18,6 +28,12 @@ export class ProductsController {
         const where: any = {};
         if (category) where.category = category;
 
+        const cacheKey = `products:paginated:${JSON.stringify({ skip, take, category, sort })}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
         const [data, total] = await AppDataSource.getRepository(Product).findAndCount({
             where,
             order: sort,
@@ -25,18 +41,31 @@ export class ProductsController {
             take
         });
 
+        await redis.set(cacheKey, JSON.stringify({ data, total }), 'EX', 300); // cache for 5 min
         return { data, total };
     }
 
     async getStoreInventory(storeId: number) {
+        const cacheKey = `inventory:store:${storeId}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
         const inventoryRepo = AppDataSource.getRepository(Inventory);
-        return inventoryRepo.find({
+        const inventory = await inventoryRepo.find({
             where: { store: { id: storeId } },
             relations: ['product'],
         });
+        await redis.set(cacheKey, JSON.stringify(inventory), 'EX', 300);
+        return inventory;
     };
 
     async getProductById(storeId: number, productId: number) {
+        const cacheKey = `inventory:store:${storeId}:product:${productId}`;
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
         const inventoryRepo = AppDataSource.getRepository(Inventory);
         const inventoryItem = await inventoryRepo.findOne({
             where: {
@@ -91,6 +120,18 @@ export class ProductsController {
         if (body.stock !== undefined) {
             inventoryItem.stock = body.stock;
             await inventoryRepo.save(inventoryItem);
+        }
+
+        // Invalidate Redis cache
+        await redis.del(
+            'products:all',
+            `inventory:store:${storeId}`,
+            `inventory:store:${storeId}:product:${productId}`
+        );
+        // Invalidate all paginated products cache
+        const paginatedKeys = await redis.keys('products:paginated:*');
+        if (paginatedKeys.length) {
+            await redis.del(...paginatedKeys);
         }
 
         return inventoryItem;
