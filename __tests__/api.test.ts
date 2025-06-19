@@ -1,19 +1,23 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
+import Redis from 'ioredis';
+
 
 beforeAll(async () => {
-    if (!AppDataSource.isInitialized) {
-        await AppDataSource.initialize();
-    }
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
 });
 
 afterAll(async () => {
     if (AppDataSource.isInitialized) {
         await AppDataSource.destroy();
     }
+    await redis.quit();
 });
 
+const redis = new Redis({ host: 'redis' });
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
 
 //API Tests

@@ -27,13 +27,15 @@ export const app = express();
 app.use(metricsMiddleware);
 
 // Initialisation de la base de données
-AppDataSource.initialize()
-  .then(async () => {
-    logger.info('Connexion à la base de données réussie !');
-  })
-  .catch((error) => {
-    console.error('Erreur de connexion à la base de données :', error);
-  });
+if (process.env.NODE_ENV !== 'test') {
+  AppDataSource.initialize()
+    .then(() => {
+      console.log('Connecté à la base de données');
+    })
+    .catch((error) => {
+      console.error('Erreur de connexion à la base de données :', error);
+    });
+}
 
 // Middlewares globaux
 app.use(express.json());
