@@ -41,8 +41,13 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
 
     env:
+      NODE_ENV: test
       DB_HOST: localhost
       DB_PORT: 5432
       DB_USER: user
