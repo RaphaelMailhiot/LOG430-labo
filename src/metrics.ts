@@ -27,8 +27,13 @@ export function metricsMiddleware(req: express.Request, res: express.Response, n
   next();
 }
 
-// Route /metrics
-export function metricsRoute(req: express.Request, res: express.Response) {
-  res.set('Content-Type', client.register.contentType);
-  res.end(client.register.metrics());
+// ✅ Route /metrics corrigée
+export async function metricsRoute(req: express.Request, res: express.Response) {
+  try {
+    res.set('Content-Type', client.register.contentType);
+    const metrics = await client.register.metrics();
+    res.end(metrics);
+  } catch (error) {
+    res.status(500).end('Error generating metrics');
+  }
 }

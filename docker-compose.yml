@@ -18,6 +18,7 @@ services:
       - db
     networks:
       - monitoring
+
   db:
     image: postgres:15-alpine
     restart: always
@@ -36,7 +37,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: log430-labo:latest
     container_name: log430-labo-app
     ports:
       - "3000:3000"
@@ -45,33 +45,6 @@ services:
     volumes:
       - ./:/LOG430-labo
       - node_modules:/LOG430-labo/node_modules
-    command: sh -c "npm run dev:web:docker"
-    depends_on:
-      - db
-    networks:
-      - monitoring
-
-  app1:
-    image: log430-labo:latest
-    env_file:
-      - .env
-    volumes:
-      - ./:/LOG430-labo
-      - node_modules:/LOG430-labo/node_modules
-    command: sh -c "npm run dev:web:docker"
-    depends_on:
-      - db
-    networks:
-      - monitoring
-
-  app2:
-    image: log430-labo:latest
-    env_file:
-      - .env
-    volumes:
-      - ./:/LOG430-labo
-      - node_modules:/LOG430-labo/node_modules
-    command: sh -c "npm run dev:web:docker"
     depends_on:
       - db
     networks:
@@ -95,6 +68,10 @@ services:
       - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
     depends_on:
       - prometheus
     restart: always
@@ -116,9 +93,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - app1
-      - app2
-      # Ajoute autant d'apps que tu veux
+      - app
     networks:
       - monitoring
 
@@ -153,6 +128,7 @@ services:
 volumes:
   pgdata:
   node_modules:
+  grafana-data:
 
 networks:
   monitoring:

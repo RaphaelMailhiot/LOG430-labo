@@ -31,6 +31,7 @@ npm install
 
 ```bash
 npm run build:css
+docker build -t log430-labo .
 docker compose up --build
 ```
 
