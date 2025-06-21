@@ -20,7 +20,13 @@ import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 // Swagger
 import swaggerSpec from './swagger/swaggerConfig';
-// Logger - Prometheus
+// Redis
+import { redis } from './redisClient';
+
+process.on('SIGINT', async () => {
+  await redis.quit();
+  process.exit(0);
+});
 
 export const app = express();
 

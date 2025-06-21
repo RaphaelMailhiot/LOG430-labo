@@ -1,14 +1,6 @@
-import Redis from 'ioredis';
+import { redis } from '../redisClient';
 import { AppDataSource } from '../data-source';
 import { Store } from '../entities/Store';
-
-const redis = new Redis({ host: 'redis' });
-
-// Fermeture propre de Redis à l'arrêt
-process.on('SIGINT', async () => {
-    await redis.quit();
-    process.exit(0);
-});
 
 export class StoresController {
     async getAllStores() {

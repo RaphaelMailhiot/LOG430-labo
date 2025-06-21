@@ -1,24 +1,22 @@
 import request from 'supertest';
 import { app } from '../src/server';
 import { AppDataSource } from '../src/data-source';
-import Redis from 'ioredis';
-
+import { redis } from '../src/redisClient';
 
 beforeAll(async () => {
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
-  }
-  await redis.flushall();
-});
+    if (!AppDataSource.isInitialized) {
+        await AppDataSource.initialize();
+    }
+    await redis.flushall();
+}, 30000);
 
 afterAll(async () => {
     if (AppDataSource.isInitialized) {
         await AppDataSource.destroy();
     }
     await redis.quit();
-});
+}, 30000);
 
-const redis = new Redis({ host: 'redis' });
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
 
 //API Tests
