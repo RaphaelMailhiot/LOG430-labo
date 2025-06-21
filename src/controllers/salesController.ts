@@ -4,53 +4,69 @@ import { Sale } from '../entities/Sale';
 
 const redis = new Redis({ host: 'redis' });
 
+// Fermeture propre de Redis à l'arrêt
+process.on('SIGINT', async () => {
+    await redis.quit();
+    process.exit(0);
+});
+
 export class SalesController {
     async getAllSales() {
         const cacheKey = 'sales:all';
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-            return JSON.parse(cached);
+        try {
+            const cached = await redis.get(cacheKey);
+            if (cached) return JSON.parse(cached);
+        } catch (err) {
+            // Log l’erreur mais continue sans bloquer
+            console.error('Erreur Redis (getAllSales):', err);
         }
         const saleRepo = AppDataSource.getRepository(Sale);
         const sales = await saleRepo.find();
-        await redis.set(cacheKey, JSON.stringify(sales), 'EX', 300); // cache for 5 min
+        try {
+            await redis.set(cacheKey, JSON.stringify(sales), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getAllSales):', err);
+        }
         return sales;
     }
 
     async getSaleByStore(storeId: number) {
         const cacheKey = `sales:store:${storeId}`;
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-            return JSON.parse(cached);
+        try {
+            const cached = await redis.get(cacheKey);
+            if (cached) return JSON.parse(cached);
+        } catch (err) {
+            console.error('Erreur Redis (getSaleByStore):', err);
         }
         const saleRepo = AppDataSource.getRepository(Sale);
         const sales = await saleRepo.findBy({ store: { id: storeId } });
-        if (!sales) {
-            throw new Error(`No sales found for store ID ${storeId}`);
+        if (!sales) throw new Error(`No sales found for store ID ${storeId}`);
+        try {
+            await redis.set(cacheKey, JSON.stringify(sales), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getSaleByStore):', err);
         }
-        await redis.set(cacheKey, JSON.stringify(sales), 'EX', 300);
         return sales;
     }
 
     async getSaleById(storeId: number, saleId: number) {
         const cacheKey = `sales:store:${storeId}:sale:${saleId}`;
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-            return JSON.parse(cached);
+        try {
+            const cached = await redis.get(cacheKey);
+            if (cached) return JSON.parse(cached);
+        } catch (err) {
+            console.error('Erreur Redis (getSaleById):', err);
         }
         const saleRepo = AppDataSource.getRepository(Sale);
         const sale = await saleRepo.findOne({
-            where: {
-                id: saleId,
-                store: { id: storeId },
-            },
+            where: { id: saleId, store: { id: storeId } },
         });
-
-        if (!sale) {
-            throw new Error(`Sale with ID ${saleId} not found in store ${storeId}`);
+        if (!sale) throw new Error(`Sale with ID ${saleId} not found in store ${storeId}`);
+        try {
+            await redis.set(cacheKey, JSON.stringify(sale), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getSaleById):', err);
         }
-
-        await redis.set(cacheKey, JSON.stringify(sale), 'EX', 300);
         return sale;
     }
 }

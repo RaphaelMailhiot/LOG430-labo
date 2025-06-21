@@ -5,21 +5,37 @@ import { Product } from '../entities/Product';
 
 const redis = new Redis({ host: 'redis' });
 
+// Fermeture propre de Redis à l'arrêt
+process.on('SIGINT', async () => {
+    await redis.quit();
+    process.exit(0);
+});
+
 export class ProductsController {
     async getProducts() {
         const cacheKey = 'products:all';
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getProducts):', err);
+        }
         if (cached) {
             return JSON.parse(cached);
         }
         const productRepo = AppDataSource.getRepository(Product);
         const products = await productRepo.find();
-        await redis.set(cacheKey, JSON.stringify(products), 'EX', 300); // cache for 5 min
+        try {
+            await redis.set(cacheKey, JSON.stringify(products), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getProducts):', err);
+        }
         return products;
     }
+
     async getProductsPaginated({
-        skip, take, category, sort,
-    }: {
+                                   skip, take, category, sort,
+                               }: {
         skip: number;
         take: number;
         category?: string;
@@ -29,7 +45,12 @@ export class ProductsController {
         if (category) where.category = category;
 
         const cacheKey = `products:paginated:${JSON.stringify({ skip, take, category, sort })}`;
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getProductsPaginated):', err);
+        }
         if (cached) {
             return JSON.parse(cached);
         }
@@ -41,13 +62,22 @@ export class ProductsController {
             take
         });
 
-        await redis.set(cacheKey, JSON.stringify({ data, total }), 'EX', 300); // cache for 5 min
+        try {
+            await redis.set(cacheKey, JSON.stringify({ data, total }), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getProductsPaginated):', err);
+        }
         return { data, total };
     }
 
     async getStoreInventory(storeId: number) {
         const cacheKey = `inventory:store:${storeId}`;
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getStoreInventory):', err);
+        }
         if (cached) {
             return JSON.parse(cached);
         }
@@ -56,13 +86,22 @@ export class ProductsController {
             where: { store: { id: storeId } },
             relations: ['product'],
         });
-        await redis.set(cacheKey, JSON.stringify(inventory), 'EX', 300);
+        try {
+            await redis.set(cacheKey, JSON.stringify(inventory), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getStoreInventory):', err);
+        }
         return inventory;
     };
 
     async getProductById(storeId: number, productId: number) {
         const cacheKey = `inventory:store:${storeId}:product:${productId}`;
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getProductById):', err);
+        }
         if (cached) {
             return JSON.parse(cached);
         }
@@ -77,6 +116,12 @@ export class ProductsController {
 
         if (!inventoryItem) {
             throw new Error(`Product with ID ${productId} not found in store ${storeId}`);
+        }
+
+        try {
+            await redis.set(cacheKey, JSON.stringify(inventoryItem), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getProductById):', err);
         }
 
         return inventoryItem;
@@ -90,7 +135,6 @@ export class ProductsController {
         const inventoryRepo = AppDataSource.getRepository(Inventory);
         const productRepo = AppDataSource.getRepository(Product);
 
-        // Find inventory item for the store and product
         const inventoryItem = await inventoryRepo.findOne({
             where: {
                 store: { id: storeId },
@@ -103,7 +147,6 @@ export class ProductsController {
             throw new Error(`Product with ID ${productId} not found in store ${storeId}`);
         }
 
-        // Update global product fields if provided
         if (body.name !== undefined || body.price !== undefined || body.category !== undefined) {
             const product = await productRepo.findOneBy({ id: productId });
             if (!product) {
@@ -116,22 +159,24 @@ export class ProductsController {
             inventoryItem.product = product;
         }
 
-        // Update inventory stock if provided
         if (body.stock !== undefined) {
             inventoryItem.stock = body.stock;
             await inventoryRepo.save(inventoryItem);
         }
 
-        // Invalidate Redis cache
-        await redis.del(
-            'products:all',
-            `inventory:store:${storeId}`,
-            `inventory:store:${storeId}:product:${productId}`
-        );
-        // Invalidate all paginated products cache
-        const paginatedKeys = await redis.keys('products:paginated:*');
-        if (paginatedKeys.length) {
-            await redis.del(...paginatedKeys);
+        // Invalidation du cache Redis
+        try {
+            await redis.del(
+                'products:all',
+                `inventory:store:${storeId}`,
+                `inventory:store:${storeId}:product:${productId}`
+            );
+            const paginatedKeys = await redis.keys('products:paginated:*');
+            if (paginatedKeys.length) {
+                await redis.del(...paginatedKeys);
+            }
+        } catch (err) {
+            console.error('Erreur Redis (del updateProductById):', err);
         }
 
         return inventoryItem;

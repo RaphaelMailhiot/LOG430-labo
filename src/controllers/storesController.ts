@@ -4,10 +4,21 @@ import { Store } from '../entities/Store';
 
 const redis = new Redis({ host: 'redis' });
 
+// Fermeture propre de Redis à l'arrêt
+process.on('SIGINT', async () => {
+    await redis.quit();
+    process.exit(0);
+});
+
 export class StoresController {
     async getAllStores() {
         const cacheKey = 'stores:all';
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getAllStores):', err);
+        }
 
         if (cached) {
             return JSON.parse(cached);
@@ -15,14 +26,23 @@ export class StoresController {
 
         const storeRepo = AppDataSource.getRepository(Store);
         const stores = await storeRepo.find();
-        await redis.set(cacheKey, JSON.stringify(stores), 'EX', 3600); // Cache for 1 hour
+        try {
+            await redis.set(cacheKey, JSON.stringify(stores), 'EX', 3600);
+        } catch (err) {
+            console.error('Erreur Redis (set getAllStores):', err);
+        }
 
         return stores;
     }
 
     async getMainStore(): Promise<Store> {
         const cacheKey = 'stores:main';
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getMainStore):', err);
+        }
 
         if (cached) {
             return JSON.parse(cached);
@@ -35,14 +55,23 @@ export class StoresController {
             throw new Error('Magasin principal non trouvé');
         }
 
-        await redis.set(cacheKey, JSON.stringify(mainStore), 'EX', 3600);
+        try {
+            await redis.set(cacheKey, JSON.stringify(mainStore), 'EX', 3600);
+        } catch (err) {
+            console.error('Erreur Redis (set getMainStore):', err);
+        }
 
         return mainStore;
     }
 
     async getStoreById(storeId: number) {
         const cacheKey = `stores:${storeId}`;
-        const cached = await redis.get(cacheKey);
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getStoreById):', err);
+        }
 
         if (cached) {
             return JSON.parse(cached);
@@ -55,7 +84,11 @@ export class StoresController {
             throw new Error(`Store with ID ${storeId} not found`);
         }
 
-        await redis.set(cacheKey, JSON.stringify(store), 'EX', 3600);
+        try {
+            await redis.set(cacheKey, JSON.stringify(store), 'EX', 3600);
+        } catch (err) {
+            console.error('Erreur Redis (set getStoreById):', err);
+        }
 
         return store;
     }

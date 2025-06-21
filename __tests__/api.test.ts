@@ -8,6 +8,7 @@ beforeAll(async () => {
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
+  await redis.flushall();
 });
 
 afterAll(async () => {
