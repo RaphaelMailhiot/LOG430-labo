@@ -27,13 +27,17 @@ export function metricsMiddleware(req: express.Request, res: express.Response, n
   next();
 }
 
-// ✅ Route /metrics corrigée
+// Route /metrics
 export async function metricsRoute(req: express.Request, res: express.Response) {
   try {
     res.set('Content-Type', client.register.contentType);
     const metrics = await client.register.metrics();
     res.end(metrics);
   } catch (error) {
-    res.status(500).end('Error generating metrics');
+    if (error instanceof Error) {
+      res.status(500).end('Error generating metrics: ' + error.message);
+    } else {
+      res.status(500).end('Error generating metrics: Unknown error');
+    }
   }
 }
