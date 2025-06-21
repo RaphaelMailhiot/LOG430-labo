@@ -12,6 +12,7 @@ import { metricsMiddleware, metricsRoute } from './metrics';
 import { contentNegotiation } from './middleware/contentNegotiation';
 import { staticTokenAuth } from './middleware/staticTokenAuth';
 import { redis } from './redisClient';
+import apiCustomersRouter from './routes/apiCustomersRouter';
 import apiProductsRouter from './routes/apiProductsRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
 import apiStoresRouter from './routes/apiStoresRouter';
@@ -122,6 +123,7 @@ app.use('/api/v1', servicesApiRouter);
 
 app.use('/api/v2', staticTokenAuth);
 app.use('/api/v2', contentNegotiation);
+app.use('/api/v2', apiCustomersRouter);
 app.use('/api/v2', apiProductsRouter);
 app.use('/api/v2', apiStoresRouter);
 app.use('/api/v2', apiSalesRouter);
