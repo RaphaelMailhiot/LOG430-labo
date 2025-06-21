@@ -29,12 +29,22 @@ export class CustomersController {
 
     async createCustomer(body: any) {
         const customerRepo = AppDataSource.getRepository(Customer);
+        const shoppingCartRepo = AppDataSource.getRepository('ShoppingCart');
         const newCustomer = customerRepo.create(body);
         const savedCustomer = await customerRepo.save(newCustomer);
 
-        // Invalidate cache for all customers
+        // Créer un panier et le lier au client
+        const newCart = shoppingCartRepo.create({customer: savedCustomer});
+        await shoppingCartRepo.save(newCart);
+
+        // Invalider le cache pour tous les clients et les chariots
         try {
             await redis.del('customers:all');
+        } catch (err) {
+            console.error('Erreur Redis (del createCustomer):', err);
+        }
+        try {
+            await redis.del('shoppingCarts:all');
         } catch (err) {
             console.error('Erreur Redis (del createCustomer):', err);
         }

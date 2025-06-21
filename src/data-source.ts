@@ -4,6 +4,8 @@ import { Inventory } from './entities/Inventory';
 import { Product } from './entities/Product';
 import { Sale } from './entities/Sale';
 import { SaleItem } from './entities/SaleItem';
+import { ShoppingCart } from './entities/ShoppingCart';
+import { ShoppingCartProduct } from './entities/ShoppingCartProduct';
 import { Store } from './entities/Store';
 import { SupplyRequest } from './entities/SupplyRequest';
 
@@ -14,7 +16,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'labuser',
   password: process.env.DB_PASSWORD || 'labpassword',
   database: process.env.DB_NAME || 'labdb',
-  entities: [Customer, Inventory, Product, Sale, SaleItem, Store, SupplyRequest],
+  entities: [Customer, Inventory, Product, Sale, SaleItem, Store, SupplyRequest, ShoppingCart, ShoppingCartProduct],
   synchronize: true,
   dropSchema: process.env.NODE_ENV === 'test',
 });

@@ -15,6 +15,7 @@ import { redis } from './redisClient';
 import apiCustomersRouter from './routes/apiCustomersRouter';
 import apiProductsRouter from './routes/apiProductsRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
+import apiShoppingCartsRouter from './routes/apiShoppingCartsRouter';
 import apiStoresRouter from './routes/apiStoresRouter';
 import authRouter from './routes/authRouter';
 import homeRouter from './routes/homeRouter';
@@ -125,8 +126,10 @@ app.use('/api/v2', staticTokenAuth);
 app.use('/api/v2', contentNegotiation);
 app.use('/api/v2', apiCustomersRouter);
 app.use('/api/v2', apiProductsRouter);
-app.use('/api/v2', apiStoresRouter);
 app.use('/api/v2', apiSalesRouter);
+app.use('/api/v2', apiShoppingCartsRouter);
+app.use('/api/v2', apiStoresRouter);
+
 
 
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';
