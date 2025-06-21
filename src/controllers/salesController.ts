@@ -1,6 +1,6 @@
-import { redis } from '../redisClient';
 import { AppDataSource } from '../data-source';
 import { Sale } from '../entities/Sale';
+import { redis } from '../redisClient';
 
 export class SalesController {
     async getAllSales() {

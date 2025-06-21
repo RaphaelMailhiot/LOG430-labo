@@ -11,6 +11,7 @@ import { logger } from './logger';
 import { metricsMiddleware, metricsRoute } from './metrics';
 import { contentNegotiation } from './middleware/contentNegotiation';
 import { staticTokenAuth } from './middleware/staticTokenAuth';
+import { redis } from './redisClient';
 import apiProductsRouter from './routes/apiProductsRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
 import apiStoresRouter from './routes/apiStoresRouter';
@@ -21,7 +22,6 @@ import servicesRouter from './routes/servicesRouter';
 // Swagger
 import swaggerSpec from './swagger/swaggerConfig';
 // Redis
-import { redis } from './redisClient';
 
 process.on('SIGINT', async () => {
   await redis.quit();

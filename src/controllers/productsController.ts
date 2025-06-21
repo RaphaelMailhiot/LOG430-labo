@@ -1,7 +1,7 @@
-import { redis } from '../redisClient';
 import { AppDataSource } from '../data-source';
 import { Inventory } from '../entities/Inventory';
 import { Product } from '../entities/Product';
+import { redis } from '../redisClient';
 
 export class ProductsController {
     async getProducts() {
