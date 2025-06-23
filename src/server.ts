@@ -12,6 +12,7 @@ import { metricsMiddleware, metricsRoute } from './metrics';
 import { contentNegotiation } from './middleware/contentNegotiation';
 import { staticTokenAuth } from './middleware/staticTokenAuth';
 import { redis } from './redisClient';
+import apiCheckoutRouter from "./routes/apiCheckoutRouter";
 import apiCustomersRouter from './routes/apiCustomersRouter';
 import apiProductsRouter from './routes/apiProductsRouter';
 import apiSalesRouter from './routes/apiSalesRouter';
@@ -23,8 +24,9 @@ import servicesApiRouter from './routes/serviceApiRouter';
 import servicesRouter from './routes/servicesRouter';
 // Swagger
 import swaggerSpec from './swagger/swaggerConfig';
-// Redis
 
+
+// Gestion des signaux d'arrêt
 process.on('SIGINT', async () => {
   await redis.quit();
   process.exit(0);
@@ -124,12 +126,12 @@ app.use('/api/v1', servicesApiRouter);
 
 app.use('/api/v2', staticTokenAuth);
 app.use('/api/v2', contentNegotiation);
+app.use('/api/v2', apiCheckoutRouter);
 app.use('/api/v2', apiCustomersRouter);
 app.use('/api/v2', apiProductsRouter);
 app.use('/api/v2', apiSalesRouter);
 app.use('/api/v2', apiShoppingCartsRouter);
 app.use('/api/v2', apiStoresRouter);
-
 
 
 const API_STATIC_TOKEN = process.env.API_STATIC_TOKEN || 'api-static-token';

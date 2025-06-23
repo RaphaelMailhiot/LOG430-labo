@@ -9,7 +9,6 @@ export class SalesController {
             const cached = await redis.get(cacheKey);
             if (cached) return JSON.parse(cached);
         } catch (err) {
-            // Log l’erreur mais continue sans bloquer
             console.error('Erreur Redis (getAllSales):', err);
         }
         const saleRepo = AppDataSource.getRepository(Sale);

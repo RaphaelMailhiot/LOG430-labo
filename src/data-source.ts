@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { Checkout } from './entities/Checkout';
 import { Customer } from './entities/Customer';
 import { Inventory } from './entities/Inventory';
 import { Product } from './entities/Product';
@@ -16,7 +17,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'labuser',
   password: process.env.DB_PASSWORD || 'labpassword',
   database: process.env.DB_NAME || 'labdb',
-  entities: [Customer, Inventory, Product, Sale, SaleItem, Store, SupplyRequest, ShoppingCart, ShoppingCartProduct],
+  entities: [Checkout, Customer, Inventory, Product, Sale, SaleItem, Store, SupplyRequest, ShoppingCart, ShoppingCartProduct],
   synchronize: true,
   dropSchema: process.env.NODE_ENV === 'test',
 });
