@@ -24,6 +24,19 @@ export class CheckoutsController {
         return checkouts;
     }
 
+    async createCheckout(body: any) {
+        const checkoutRepo = AppDataSource.getRepository(Checkout);
+        const newCheckout = checkoutRepo.create(body);
+        const savedCheckout = await checkoutRepo.save(newCheckout);
+        // Invalider le cache pour tous les checkouts
+        try {
+            await redis.del('checkouts:all');
+        } catch (err) {
+            console.error('Erreur Redis (del createCheckout):', err);
+        }
+        return savedCheckout;
+    }
+
     async getCheckoutById(checkoutId: number) {
         const cacheKey = `checkouts:${checkoutId}`;
         let cached: string | null = null;

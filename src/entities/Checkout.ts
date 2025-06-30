@@ -16,6 +16,6 @@ export class Checkout {
     @Column('int', { default: 0 })
     totalAmount!: number;
 
-    @Column('string')
+    @Column('varchar')
     paymentMethod!: string;
 }
