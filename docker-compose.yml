@@ -1,135 +1,174 @@
 services:
-
-  initdata:
-    image: log430-labo:latest
-    env_file:
-      - .env
-    command: sh -c "npx ts-node src/initDataRunner.ts"
-    depends_on:
-      - db
-    networks:
-      - monitoring
-  migrate:
-    image: log430-labo:latest
-    env_file:
-      - .env
-    command: sh -c "npx typeorm migration:run"
-    depends_on:
-      - db
-    networks:
-      - monitoring
-
-  db:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - monitoring
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: log430-labo-app
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    volumes:
-      - ./:/LOG430-labo
-      - node_modules:/LOG430-labo/node_modules
-    depends_on:
-      - db
-    networks:
-      - monitoring
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    restart: always
-    networks:
-      - monitoring
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
+  # AUTH SERVICE
+  auth:
+    build: ./src/services/auth
+    env_file: ./src/services/auth/.env
     ports:
       - "3001:3000"
+    depends_on:
+      - auth-db
+    networks:
+      - microservices
+
+  auth-db:
+    image: postgres:15-alpine
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: auth_db
     volumes:
-      - grafana-data:/var/lib/grafana
-      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+      - auth_pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  # INVENTORY SERVICE
+  inventory:
+    build: ./src/services/inventory
+    env_file: ./src/services/inventory/.env
+    ports:
+      - "3002:3000"
     depends_on:
-      - prometheus
-    restart: always
+      - inventory-db
     networks:
-      - monitoring
+      - microservices
 
-  nodeexporter:
-    image: prom/node-exporter
-    container_name: nodeexporter
-    ports:
-      - "9100:9100"
-    networks:
-      - monitoring
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:8080"
+  inventory-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: inventory_pass
+      POSTGRES_DB: inventory_db
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - app
+      - inventory_pgdata:/var/lib/postgresql/data
     networks:
-      - monitoring
+      - microservices
 
-  nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:latest
-    command:
-      - '--nginx.scrape-uri=http://nginx:8080/nginx_status'
+  # PRODUCTS SERVICE
+  products:
+    build: ./src/services/products
+    env_file: ./src/services/products/.env
     ports:
-      - "9113:9113"
+      - "3003:3000"
     depends_on:
-      - nginx
+      - products-db
     networks:
-      - monitoring
+      - microservices
 
+  products-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: products_user
+      POSTGRES_PASSWORD: products_pass
+      POSTGRES_DB: products_db
+    volumes:
+      - products_pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  # SALES SERVICE
+  sales:
+    build: ./src/services/sales
+    env_file: ./src/services/sales/.env
+    ports:
+      - "3004:3000"
+    depends_on:
+      - sales-db
+    networks:
+      - microservices
+
+  sales-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: sales_user
+      POSTGRES_PASSWORD: sales_pass
+      POSTGRES_DB: sales_db
+    volumes:
+      - sales_pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  # STORE SERVICE
+  store:
+    build: ./src/services/store
+    env_file: ./src/services/store/.env
+    ports:
+      - "3005:3000"
+    depends_on:
+      - store-db
+    networks:
+      - microservices
+
+  store-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: store_user
+      POSTGRES_PASSWORD: store_pass
+      POSTGRES_DB: store_db
+    volumes:
+      - store_pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices
+
+  # KONG API GATEWAY
+  kong:
+    image: kong:3.4
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    volumes:
+      - ./kong/kong.yml:/kong/kong.yml
+    ports:
+      - "8000:8000"  # Public (proxy)
+      - "8001:8001"  # Admin
+    networks:
+      - microservices
+
+  # REDIS
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
     networks:
-      - monitoring
+      - microservices
 
-  redis-exporter:
-    image: oliver006/redis_exporter:latest
+  # PROMETHEUS
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9121:9121"
-    command: --redis.addr=redis:6379
-    depends_on:
-      - redis
+      - "9090:9090"
     networks:
-      - monitoring
+      - microservices
+
+  # GRAFANA
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3005:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - microservices
+
+  # NGINX (reverse proxy)
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - microservices
 
 volumes:
+  auth_pgdata:
+  products_pgdata:
+  sales_pgdata:
   pgdata:
+  grafana_data:
   node_modules:
-  grafana-data:
 
 networks:
-  monitoring:
-    driver: bridge
+  microservices:
