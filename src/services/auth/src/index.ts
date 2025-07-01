@@ -66,4 +66,4 @@ app.use((_req:Request, res:Response) => {
 });
 
 //Listening
-app.listen(3001, () => console.log('Service Auth démarré sur le port 3001'));
+app.listen(3000, () => console.log('Service Auth démarré sur le port 3000'));

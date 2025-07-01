@@ -1,18 +1,19 @@
-import {Entity, PrimaryGeneratedColumn, ManyToOne, Column} from 'typeorm';
-/* TODO add relation to Customer */
-import { ShoppingCart } from './ShoppingCart';
+import {Entity, PrimaryGeneratedColumn, Column} from 'typeorm';
 
 @Entity()
 export class Checkout {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @ManyToOne(() => ShoppingCart, { eager: true })
-    shoppingCart!: ShoppingCart;
+    @Column()
+    customer_id!: number;
 
-    @Column('int', { default: 0 })
-    totalAmount!: number;
+    @Column()
+    store_id!: number;
+
+    @Column('int', {default: 0})
+    total_amount!: number;
 
     @Column('varchar')
-    paymentMethod!: string;
+    payment_method!: string;
 }

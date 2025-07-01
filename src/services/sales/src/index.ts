@@ -68,4 +68,4 @@ app.use((_req:Request, res:Response) => {
 });
 
 //Listening
-app.listen(3004, () => console.log('Service Sales démarré sur le port 3004'));
+app.listen(3000, () => console.log('Service Sales démarré sur le port 3000'));

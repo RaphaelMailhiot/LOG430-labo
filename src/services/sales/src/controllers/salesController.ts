@@ -1,5 +1,5 @@
-import { AppDataSource } from '../data-source';
-import { Sale } from '../entities/Sale';
+import {AppDataSource} from '../data-source';
+import {Sale} from '../entities/Sale';
 import {redis} from '../middleware/redisClient';
 
 export class SalesController {
@@ -30,7 +30,7 @@ export class SalesController {
             console.error('Erreur Redis (getSaleByStore):', err);
         }
         const saleRepo = AppDataSource.getRepository(Sale);
-        const sales = await saleRepo.findBy({ store: { id: storeId } });
+        const sales = await saleRepo.findBy({store_id: storeId});
         if (!sales) throw new Error(`No sales found for store ID ${storeId}`);
         try {
             await redis.set(cacheKey, JSON.stringify(sales), 'EX', 300);
@@ -50,7 +50,7 @@ export class SalesController {
         }
         const saleRepo = AppDataSource.getRepository(Sale);
         const sale = await saleRepo.findOne({
-            where: { id: saleId, store: { id: storeId } },
+            where: {id: saleId, store_id: storeId},
         });
         if (!sale) throw new Error(`Sale with ID ${saleId} not found in store ${storeId}`);
         try {

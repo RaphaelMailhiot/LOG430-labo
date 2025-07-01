@@ -1,5 +1,4 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-/* TODO add relation to Products */
 import { Sale } from './Sale';
 
 @Entity()

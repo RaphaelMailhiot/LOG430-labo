@@ -1,15 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
-import { SaleItem } from './SaleItem';
-/* TODO add relation to Store */
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
+import {SaleItem} from './SaleItem';
 
 @Entity()
 export class Sale {
-  @PrimaryGeneratedColumn()
-  id!: number;
+    @PrimaryGeneratedColumn()
+    id!: number;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  date!: string;
+    @Column()
+    store_id!: number;
 
-  @OneToMany(() => SaleItem, item => item.sale)
-  items!: SaleItem[];
+    @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    date!: string;
+
+    @OneToMany(() => SaleItem, item => item.sale)
+    items!: SaleItem[];
 }

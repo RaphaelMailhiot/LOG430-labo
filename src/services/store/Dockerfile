@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Crée le dossier de l'app
-WORKDIR /auth-service
+WORKDIR /store-service
 
 # Copie les fichiers de dépendances
 COPY package*.json ./

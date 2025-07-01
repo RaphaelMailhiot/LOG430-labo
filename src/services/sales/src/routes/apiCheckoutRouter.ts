@@ -15,7 +15,7 @@ const checkoutsController = new CheckoutsController();
  *       200:
  *         description: Liste des checkouts
  */
-router.get('/checkouts', async (req: Request, res: Response) => {
+router.get('/checkouts', async (_req: Request, res: Response) => {
     try {
         const checkouts = await checkoutsController.getAllCheckouts();
         res.status(200).sendData(checkouts);

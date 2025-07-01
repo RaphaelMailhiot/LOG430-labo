@@ -66,4 +66,4 @@ app.use((_req:Request, res:Response) => {
 });
 
 //Listening
-app.listen(3002, () => console.log('Service Store démarré sur le port 3002'));
+app.listen(3000, () => console.log('Service Inventory démarré sur le port 3000'));

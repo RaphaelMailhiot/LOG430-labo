@@ -31,13 +31,12 @@ export class ShoppingCartsController {
     async addProductToCart(productsId: number, body: any) {
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
         const shoppingCart = await shoppingCartRepo.findOne({
-            where: { customer: { id: body.customerId } },
-            relations: ['products.product']
+            where: { customer_id: body.customerId }
         });
         if (!shoppingCart) {
             throw new Error('Shopping cart not found for the given customer');
         }
-        const product = shoppingCart.products.find(p => p.product.id === productsId);
+        const product = shoppingCart.products.find(p => p.product_id === productsId);
         if (product) {
             product.quantity += body.quantity;
         } else {

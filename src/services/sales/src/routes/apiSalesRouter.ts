@@ -15,7 +15,7 @@ const salesController = new SalesController();
  *       200:
  *         description: Liste des ventes
  */
-router.get('/sales', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/sales', async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const sales = await salesController.getAllSales();
         res.status(200).sendData(sales);

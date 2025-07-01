@@ -15,7 +15,7 @@ const shoppingCartsController = new ShoppingCartsController();
  *       200:
  *         description: Liste des chariots
  */
-router.get('/shopping-carts', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/shopping-carts', async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const shoppingCarts = await shoppingCartsController.getAllShoppingCarts();
         res.status(200).sendData(shoppingCarts);
