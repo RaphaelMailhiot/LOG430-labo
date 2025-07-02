@@ -60,7 +60,7 @@ app.use((err:any, req:Request, res:Response, _next:NextFunction) => {
     });
 });
 app.use((_req:Request, res:Response) => {
-    res.status(404).send('Page non trouvée');
+    res.status(404).send('Page non trouvée du service Store');
 });
 
 //Listening

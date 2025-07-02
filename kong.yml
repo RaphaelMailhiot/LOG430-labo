@@ -1,0 +1,61 @@
+_format_version: "3.0"
+services:
+  - name: auth
+    url: http://auth-service:3000
+    routes:
+      - name: auth-service
+        paths:
+          - /auth
+        strip_path: true
+      - name: auth-api-docs
+        paths:
+          - /auth/api-docs
+        strip_path: false
+
+  - name: inventory
+    url: http://inventory-service:3000
+    routes:
+      - name: inventory-service
+        paths:
+          - /inventory
+        strip_path: true
+      - name: inventory-api-docs
+        paths:
+          - /inventory/api-docs
+        strip_path: false
+
+  - name: products
+    url: http://products-service:3000
+    routes:
+      - name: products-service
+        paths:
+          - /products
+        strip_path: true
+      - name: products-api-docs
+        paths:
+          - /products/api-docs
+        strip_path: false
+
+  - name: sales
+    url: http://sales-service:3000
+    routes:
+      - name: sales-service
+        paths:
+          - /sales
+        strip_path: true
+      - name: sales-api-docs
+        paths:
+          - /sales/api-docs
+        strip_path: false
+
+  - name: store
+    url: http://store-service:3000
+    routes:
+      - name: store-service
+        paths:
+          - /store
+        strip_path: true
+      - name: store-api-docs
+        paths:
+          - /store/api-docs
+        strip_path: false
