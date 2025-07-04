@@ -19,7 +19,8 @@ const inventoriesController = new InventoriesController();
  */
 router.get('/stores/main/inventory', async (_req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await axios.get('http://service-store/stores/main');
+        //TODO fix this
+        const response = await axios.get('http://store/stores/main');
         const mainStoreId = response.data.id;
         const products = await inventoriesController.getStoreInventory(mainStoreId);
         res.status(200).sendData(products);

@@ -38,7 +38,6 @@ export class InventoriesController {
         const inventoryRepo = AppDataSource.getRepository(InventoryProduct);
         const inventory = await inventoryRepo.find({
             where: {storeId: storeId},
-            relations: ['product'],
         });
         try {
             await redis.set(cacheKey, JSON.stringify(inventory), 'EX', 300);
