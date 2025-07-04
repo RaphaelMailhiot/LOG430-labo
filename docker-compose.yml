@@ -9,6 +9,7 @@ services:
       - auth-db
     networks:
       - microservices
+    command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   auth-db:
     image: postgres:15-alpine
@@ -31,6 +32,7 @@ services:
       - inventory-db
     networks:
       - microservices
+    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   inventory-db:
     image: postgres:15-alpine
@@ -53,6 +55,7 @@ services:
       - products-db
     networks:
       - microservices
+    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   products-db:
     image: postgres:15-alpine
@@ -75,6 +78,7 @@ services:
       - sales-db
     networks:
       - microservices
+    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   sales-db:
     image: postgres:15-alpine
@@ -97,6 +101,7 @@ services:
       - store-db
     networks:
       - microservices
+    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   store-db:
     image: postgres:15-alpine

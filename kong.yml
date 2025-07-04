@@ -10,7 +10,7 @@ services:
       - name: auth-api-docs
         paths:
           - /auth/api-docs
-        strip_path: false
+        strip_path: true
 
   - name: inventory
     url: http://inventory-service:3000
@@ -22,7 +22,7 @@ services:
       - name: inventory-api-docs
         paths:
           - /inventory/api-docs
-        strip_path: false
+        strip_path: true
 
   - name: products
     url: http://products-service:3000
@@ -34,7 +34,7 @@ services:
       - name: products-api-docs
         paths:
           - /products/api-docs
-        strip_path: false
+        strip_path: true
 
   - name: sales
     url: http://sales-service:3000
@@ -46,7 +46,7 @@ services:
       - name: sales-api-docs
         paths:
           - /sales/api-docs
-        strip_path: false
+        strip_path: true
 
   - name: store
     url: http://store-service:3000
@@ -58,4 +58,4 @@ services:
       - name: store-api-docs
         paths:
           - /store/api-docs
-        strip_path: false
+        strip_path: true
