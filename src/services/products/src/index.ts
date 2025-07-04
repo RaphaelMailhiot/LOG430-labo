@@ -11,6 +11,7 @@ import swaggerSpec from './swagger/swaggerConfig';
 import { swaggerUiOptions } from './swagger/swaggerUiOptions';
 import apiProductsRouter from "./routes/apiProductsRouter";
 import apiCategoriesRouter from "./routes/apiCategoriesRouter";
+import { AppDataSource } from './data-source';
 
 // Gestion des signaux d'arrêt
 process.on('SIGINT', async () => {
@@ -20,6 +21,16 @@ process.on('SIGINT', async () => {
 
 const app = express();
 app.use(metricsMiddleware);
+
+if (process.env.NODE_ENV !== 'test') {
+    AppDataSource.initialize()
+        .then(() => {
+            console.log('Connecté à la base de données');
+        })
+        .catch((error) => {
+            console.error('Erreur de connexion à la base de données :', error);
+        });
+}
 
 // Middleware
 app.use(express.json());
@@ -45,7 +56,7 @@ app.use((req, res, next) => {
 //Routes
 app.use('/metrics', metricsRoute);
 app.use('/api/v1', contentNegotiation);
-app.use('/api/v1', staticTokenAuth);
+//app.use('/api/v1', staticTokenAuth);
 app.use('/api/v1', apiProductsRouter);
 app.use('/api/v1', apiCategoriesRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));

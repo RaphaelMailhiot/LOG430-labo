@@ -55,7 +55,7 @@ services:
       - products-db
     networks:
       - microservices
-    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
+    command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   products-db:
     image: postgres:15-alpine
@@ -78,7 +78,7 @@ services:
       - sales-db
     networks:
       - microservices
-    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
+    command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   sales-db:
     image: postgres:15-alpine

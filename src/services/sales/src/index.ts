@@ -12,6 +12,7 @@ import { swaggerUiOptions } from './swagger/swaggerUiOptions';
 import apiCheckoutRouter from "./routes/apiCheckoutRouter";
 import apiSalesRouter from "./routes/apiSalesRouter";
 import apiShoppingCartsRouter from "./routes/apiShoppingCartsRouter";
+import { AppDataSource } from './data-source';
 
 // Gestion des signaux d'arrêt
 process.on('SIGINT', async () => {
@@ -21,6 +22,16 @@ process.on('SIGINT', async () => {
 
 const app = express();
 app.use(metricsMiddleware);
+
+if (process.env.NODE_ENV !== 'test') {
+    AppDataSource.initialize()
+        .then(() => {
+            console.log('Connecté à la base de données');
+        })
+        .catch((error) => {
+            console.error('Erreur de connexion à la base de données :', error);
+        });
+}
 
 // Middleware
 app.use(express.json());
@@ -46,7 +57,7 @@ app.use((req, res, next) => {
 //Routes
 app.use('/metrics', metricsRoute);
 app.use('/api/v1', contentNegotiation);
-app.use('/api/v1', staticTokenAuth);
+//app.use('/api/v1', staticTokenAuth);
 app.use('/api/v1', apiCheckoutRouter);
 app.use('/api/v1', apiSalesRouter);
 app.use('/api/v1', apiShoppingCartsRouter);

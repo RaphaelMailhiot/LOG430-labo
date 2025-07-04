@@ -10,7 +10,8 @@
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "migration:run": "typeorm migration:run"
+    "migration:run": "ts-node --require tsconfig-paths/register ./src/migration-runner.ts",
+    "seed": "ts-node src/seed.ts"
   },
   "keywords": [],
   "license": "ISC",
@@ -33,6 +34,7 @@
     "supertest": "^7.1.1",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
