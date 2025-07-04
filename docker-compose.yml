@@ -101,7 +101,7 @@ services:
       - store-db
     networks:
       - microservices
-    #command: sh -c "npm run migration:run && npm run seed && npm run dev"
+    command: sh -c "npm run migration:run && npm run seed && npm run dev"
 
   store-db:
     image: postgres:15-alpine
