@@ -1,8 +1,8 @@
 services:
   # FRONTEND
   frontend:
-    build: .
-    env_file: ./.env
+    build: ./frontend
+    env_file: ./frontend/.env
     ports:
       - "3000:3000"
     depends_on:
@@ -19,8 +19,8 @@ services:
 
   # AUTH SERVICE
   auth-service:
-    build: ./src/services/auth
-    env_file: ./src/services/auth/.env
+    build: ./services/auth
+    env_file: ./services/auth/.env
     ports:
       - "3001:3000"
     depends_on:
@@ -42,8 +42,8 @@ services:
 
   # INVENTORY SERVICE
   inventory-service:
-    build: ./src/services/inventory
-    env_file: ./src/services/inventory/.env
+    build: ./services/inventory
+    env_file: ./services/inventory/.env
     ports:
       - "3002:3000"
     depends_on:
@@ -65,8 +65,8 @@ services:
 
   # PRODUCTS SERVICE
   products-service:
-    build: ./src/services/products
-    env_file: ./src/services/products/.env
+    build: ./services/products
+    env_file: ./services/products/.env
     ports:
       - "3003:3000"
     depends_on:
@@ -88,8 +88,8 @@ services:
 
   # SALES SERVICE
   sales-service:
-    build: ./src/services/sales
-    env_file: ./src/services/sales/.env
+    build: ./services/sales
+    env_file: ./services/sales/.env
     ports:
       - "3004:3000"
     depends_on:
@@ -111,8 +111,8 @@ services:
 
   # STORE SERVICE
   store-service:
-    build: ./src/services/store
-    env_file: ./src/services/store/.env
+    build: ./services/store
+    env_file: ./services/store/.env
     ports:
       - "3005:3000"
     depends_on:
