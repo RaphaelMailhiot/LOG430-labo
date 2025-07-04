@@ -6,7 +6,11 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ]
   },
   "include": ["src/**/*"]
 }

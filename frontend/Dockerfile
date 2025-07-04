@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Crée le dossier de l'app
-WORKDIR /app
+WORKDIR /frontend
 
 # Copie les fichiers de dépendances
 COPY package*.json ./
@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Commande de démarrage
-CMD ["npm", "run", "dev:docker"]
+CMD ["npm", "run", "dev"]

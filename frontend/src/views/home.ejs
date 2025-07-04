@@ -6,90 +6,12 @@
       <div class="container mx-auto py-8 text-center">
 
         <h1 class="text-3xl font-bold underline mb-4">
-          Bienvenue sur le site de gestion des ventes
+          Bienvenue sur le site e-commerce
         </h1>
 
       </div>
     </section>
 
-    <% if (currentStore?.isMain) { %>
-      <section>
-        <div class="container mx-auto py-8">
-          <h2 class="text-3xl font-bold underline mb-4">
-            Tableau de bord de la <%= currentStore.name %>
-          </h2>
-          <form action="/api/v1/rapport" method="GET" style="display:inline;">
-            <button type="submit" class="px-4 py-2 mb-3 bg-blue-600 text-white rounded">
-              Générer le rapport global
-            </button>
-          </form>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <% storesData.ventesParMagasin.forEach(magasin=> { %>
-              <div
-                class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <div class="p-5">
-                  <h5
-                    class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center justify-center">
-                    <%= magasin.Magasin %>
-                  </h5>
-                  <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                    Nombre de ventes : <span class="font-semibold">
-                      <%= magasin.Ventes %>
-                    </span>
-                  </p>
-                  <div class="mb-3">
-                    <span class="block font-semibold mb-1 text-gray-800 dark:text-gray-200">Stock par produit :</span>
-                    <ul class="text-sm text-gray-700 dark:text-gray-300">
-                      <% storesData.stocksData.filter(s=> s.Magasin === magasin.Magasin).forEach(stock => { %>
-                        <li class="flex justify-between border-b border-gray-100 dark:border-gray-700 py-1">
-                          <span>
-                            <%= stock.Produit %>
-                          </span>
-                          <span class="font-mono">
-                            <%= stock.Stock %>
-                          </span>
-                        </li>
-                        <% }) %>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <% }) %>
-          </div>
-        </div>
-      </section>
-
-      <section class="mt-10">
-        <div class="container mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 class="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-300 flex items-center gap-2">
-        <svg class="w-6 h-6 text-blue-500 dark:text-blue-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M16 3v4M8 3v4m-5 4h18"></path></svg>
-        Demandes de réapprovisionnement
-          </h2>
-          <% if (supplyRequest.length === 0) { %>
-        <p class="text-gray-500 dark:text-gray-400">Aucune demande en attente.</p>
-          <% } else { %>
-        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-          <% supplyRequest.forEach(request => { %>
-        <li class="py-3 flex items-center justify-between">
-          <div>
-            <span class="font-medium text-gray-800 dark:text-gray-200">
-          <%= request.product.name %>
-            </span>
-            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
-          (<%= request.store.name %>)
-            </span>
-          </div>
-          <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-semibold">
-            <%= request.quantity %>
-          </span>
-        </li>
-          <% }) %>
-        </ul>
-          <% } %>
-        </div>
-      </section>
-      <% } %>
-
   </main>
 
-  <%- include('_partials/footer') %>
+<%- include('_partials/footer') %>

@@ -1,17 +1,18 @@
-import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
-import { contentNegotiation } from './middleware/contentNegotiation';
-import { staticTokenAuth } from './middleware/staticTokenAuth';
-import { logger } from './middleware/logger';
-import { redis } from './middleware/redisClient';
-import { metricsMiddleware, metricsRoute } from './middleware/metrics';
 import swaggerUi from 'swagger-ui-express';
+import { AppDataSource } from './data-source';
+import { contentNegotiation } from './middleware/contentNegotiation';
+import { logger } from './middleware/logger';
+import { metricsMiddleware, metricsRoute } from './middleware/metrics';
+import { redis } from './middleware/redisClient';
+//import { staticTokenAuth } from './middleware/staticTokenAuth';
+import apiCustomersRouter from './routes/apiCustomersRouter';
+import apiManagersRouter from './routes/apiManagersRouter';
+import apiUsersRouter from './routes/apiUsersRouter';
 import swaggerSpec from './swagger/swaggerConfig';
 import { swaggerUiOptions } from './swagger/swaggerUiOptions';
-import apiCustomersRouter from "./routes/apiCustomersRouter";
-import apiManagersRouter from "./routes/apiManagersRouter";
-import { AppDataSource } from './data-source';
 
 // Gestion des signaux d'arrêt
 process.on('SIGINT', async () => {
@@ -59,6 +60,7 @@ app.use('/api/v1', contentNegotiation);
 //app.use('/api/v1', staticTokenAuth);
 app.use('/api/v1', apiCustomersRouter);
 app.use('/api/v1', apiManagersRouter);
+app.use('/api/v1', apiUsersRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 //Error handling

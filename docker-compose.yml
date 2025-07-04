@@ -14,7 +14,7 @@ services:
     networks:
       - microservices
     volumes:
-      - .:/app
+      - ./frontend:/frontend
     command: sh -c "npm install && npm run dev"
 
   # AUTH SERVICE
@@ -182,11 +182,12 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
     networks:
       - microservices
 
 volumes:
-  app:
+  frontend:
   auth_pgdata:
   inventory_pgdata:
   products_pgdata:
