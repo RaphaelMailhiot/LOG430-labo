@@ -1,4 +1,22 @@
 services:
+  # FRONTEND
+  frontend:
+    build: .
+    env_file: ./.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - inventory-service
+      - products-service
+      - sales-service
+      - store-service
+    networks:
+      - microservices
+    volumes:
+      - .:/app
+    command: sh -c "npm install && npm run dev"
+
   # AUTH SERVICE
   auth-service:
     build: ./src/services/auth
@@ -168,6 +186,7 @@ services:
       - microservices
 
 volumes:
+  app:
   auth_pgdata:
   inventory_pgdata:
   products_pgdata:

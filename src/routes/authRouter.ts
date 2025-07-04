@@ -1,16 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { AppDataSource } from '../data-source';
-import { Store } from '../entities/Store';
 
 const router = Router();
 
 // Login
 router.get('/login', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const storeRepo = AppDataSource.getRepository(Store);
-    const stores = await storeRepo.find();
     const title = 'Connexion';
-    res.render('login', { stores, title });
+    res.render('login', { title });
   } catch (err) {
     next(err);
   }

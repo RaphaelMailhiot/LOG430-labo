@@ -1,8 +1,21 @@
 import express, { Request, Response, NextFunction } from 'express';
+import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
+import homeRouter from './routes/homeRouter';
+import authRouter from './routes/authRouter';
 
-const app = express();
+export const app = express();
+
+// Middlewares globaux
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'votre_secret',
+  resave: false,
+  saveUninitialized: false,
+}));
 
 // CORS pour autoriser le front à appeler les APIs
 app.use(cors({
@@ -11,14 +24,18 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Servir les fichiers statiques du build front (ex: React)
+// View Engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Static files
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Route fallback pour le front (SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
+// Routes
+app.use('/', homeRouter);
+app.use('/', authRouter);
 
+// Errors handler
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   const status = typeof err.status === 'number' ? err.status : 500;
   res.status(status).json({
@@ -30,7 +47,7 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// Lancer le serveur front
-app.listen(3000, () => {
-  console.log('Front-end disponible sur le port 3000');
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send('Page non trouvée');
 });
