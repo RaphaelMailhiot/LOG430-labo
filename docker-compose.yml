@@ -6,11 +6,16 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - auth-service
-      - inventory-service
-      - products-service
-      - sales-service
-      - store-service
+      - auth-service-1
+      - auth-service-2
+      - inventory-service-1
+      - inventory-service-2
+      - products-service-1
+      - products-service-2
+      - sales-service-1
+      - sales-service-2
+      - store-service-1
+      - store-service-2
     networks:
       - microservices
     volumes:
@@ -18,16 +23,27 @@ services:
     command: sh -c "npm install && npm run dev"
 
   # AUTH SERVICE
-  auth-service:
+  auth-service-1:
     build: ./services/auth
     env_file: ./services/auth/.env
     ports:
-      - "3001:3000"
+      - "3101:3000"
     depends_on:
       - auth-db
     networks:
       - microservices
     command: sh -c "npm run migration:run && npm run seed && npm run dev"
+
+  auth-service-2:
+    build: ./services/auth
+    env_file: ./services/auth/.env
+    ports:
+      - "3102:3000"
+    depends_on:
+      - auth-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
 
   auth-db:
     image: postgres:15-alpine
@@ -41,16 +57,27 @@ services:
       - microservices
 
   # INVENTORY SERVICE
-  inventory-service:
+  inventory-service-1:
     build: ./services/inventory
     env_file: ./services/inventory/.env
     ports:
-      - "3002:3000"
+      - "3201:3000"
     depends_on:
       - inventory-db
     networks:
       - microservices
     command: sh -c "npm run migration:run && npm run seed && npm run dev"
+
+  inventory-service-2:
+    build: ./services/inventory
+    env_file: ./services/inventory/.env
+    ports:
+      - "3202:3000"
+    depends_on:
+      - inventory-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
 
   inventory-db:
     image: postgres:15-alpine
@@ -64,16 +91,27 @@ services:
       - microservices
 
   # PRODUCTS SERVICE
-  products-service:
+  products-service-1:
     build: ./services/products
     env_file: ./services/products/.env
     ports:
-      - "3003:3000"
+      - "3301:3000"
     depends_on:
       - products-db
     networks:
       - microservices
     command: sh -c "npm run migration:run && npm run seed && npm run dev"
+
+  products-service-2:
+    build: ./services/products
+    env_file: ./services/products/.env
+    ports:
+      - "3302:3000"
+    depends_on:
+      - products-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
 
   products-db:
     image: postgres:15-alpine
@@ -87,16 +125,27 @@ services:
       - microservices
 
   # SALES SERVICE
-  sales-service:
+  sales-service-1:
     build: ./services/sales
     env_file: ./services/sales/.env
     ports:
-      - "3004:3000"
+      - "3401:3000"
     depends_on:
       - sales-db
     networks:
       - microservices
     command: sh -c "npm run migration:run && npm run seed && npm run dev"
+
+  sales-service-2:
+    build: ./services/sales
+    env_file: ./services/sales/.env
+    ports:
+      - "3402:3000"
+    depends_on:
+      - sales-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
 
   sales-db:
     image: postgres:15-alpine
@@ -110,16 +159,27 @@ services:
       - microservices
 
   # STORE SERVICE
-  store-service:
+  store-service-1:
     build: ./services/store
     env_file: ./services/store/.env
     ports:
-      - "3005:3000"
+      - "3501:3000"
     depends_on:
       - store-db
     networks:
       - microservices
     command: sh -c "npm run migration:run && npm run seed && npm run dev"
+
+  store-service-2:
+    build: ./services/store
+    env_file: ./services/store/.env
+    ports:
+      - "3502:3000"
+    depends_on:
+      - store-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
 
   store-db:
     image: postgres:15-alpine
@@ -142,8 +202,8 @@ services:
     volumes:
       - ./kong.yml:/kong.yml
     ports:
-      - "8000:8000"  # Public (proxy)
-      - "8001:8001"  # Admin
+      - "8000:8000"
+      - "8001:8001"
     networks:
       - microservices
 

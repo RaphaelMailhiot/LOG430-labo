@@ -1,7 +1,36 @@
 _format_version: "3.0"
+
+upstreams:
+  - name: auth-upstream
+    algorithm: round-robin
+    targets:
+      - target: auth-service-1:3000
+      - target: auth-service-2:3000
+  - name: inventory-upstream
+    algorithm: round-robin
+    targets:
+      - target: inventory-service-1:3000
+      - target: inventory-service-2:3000
+  - name: products-upstream
+    algorithm: round-robin
+    targets:
+      - target: products-service-1:3000
+      - target: products-service-2:3000
+  - name: sales-upstream
+    algorithm: round-robin
+    targets:
+      - target: sales-service-1:3000
+      - target: sales-service-2:3000
+  - name: store-upstream
+    algorithm: round-robin
+    targets:
+      - target: store-service-1:3000
+      - target: store-service-2:3000
+
 services:
   - name: auth
-    url: http://auth-service:3000
+    host: auth-upstream
+    port: 80
     routes:
       - name: auth-service
         paths:
@@ -13,7 +42,8 @@ services:
         strip_path: true
 
   - name: inventory
-    url: http://inventory-service:3000
+    host: inventory-upstream
+    port: 80
     routes:
       - name: inventory-service
         paths:
@@ -25,7 +55,8 @@ services:
         strip_path: true
 
   - name: products
-    url: http://products-service:3000
+    host: products-upstream
+    port: 80
     routes:
       - name: products-service
         paths:
@@ -37,7 +68,8 @@ services:
         strip_path: true
 
   - name: sales
-    url: http://sales-service:3000
+    host: sales-upstream
+    port: 80
     routes:
       - name: sales-service
         paths:
@@ -49,7 +81,8 @@ services:
         strip_path: true
 
   - name: store
-    url: http://store-service:3000
+    host: store-upstream
+    port: 80
     routes:
       - name: store-service
         paths:
