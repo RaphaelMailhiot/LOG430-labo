@@ -3,34 +3,32 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'app'
+  - job_name: 'auth'
     static_configs:
-      - targets: [ 'app:3000' ]
+      - targets: ['auth-service-1:3000', 'auth-service-2:3000']
         labels:
-          service: 'metrics'
+          service: 'auth'
 
-  - job_name: 'prometheus'
+  - job_name: 'inventory'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['inventory-service-1:3000', 'inventory-service-2:3000']
         labels:
-          service: 'prometheus'
+          service: 'inventory'
 
-  - job_name: 'node_exporter'
+  - job_name: 'products'
     static_configs:
-      - targets: ['nodeexporter:9100']
+      - targets: ['products-service-1:3000', 'products-service-2:3000']
         labels:
-          service: 'node'
-          instance: 'main-node'
+          service: 'products'
 
-  - job_name: 'nginx_exporter'
+  - job_name: 'sales'
     static_configs:
-      - targets: ['nginx-exporter:9113']
+      - targets: ['sales-service-1:3000', 'sales-service-2:3000']
         labels:
-          service: 'nginx'
+          service: 'sales'
 
-  - job_name: 'redis_exporter'
+  - job_name: 'store'
     static_configs:
-      - targets: ['redis-exporter:9121']
+      - targets: ['store-service-1:3000', 'store-service-2:3000']
         labels:
-          service: 'redis'
-          instance: 'primary'
+          service: 'store'
