@@ -1,18 +1,18 @@
-import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
-import { contentNegotiation } from './middleware/contentNegotiation';
-import { staticTokenAuth } from './middleware/staticTokenAuth';
-import { logger } from './middleware/logger';
-import { redis } from './middleware/redisClient';
-import { metricsMiddleware, metricsRoute } from './middleware/metrics';
 import swaggerUi from 'swagger-ui-express';
+import { AppDataSource } from './data-source';
+import { contentNegotiation } from './middleware/contentNegotiation';
+import { logger } from './middleware/logger';
+import { metricsMiddleware, metricsRoute } from './middleware/metrics';
+import { redis } from './middleware/redisClient';
+//import { staticTokenAuth } from './middleware/staticTokenAuth';
+import apiCheckoutRouter from './routes/apiCheckoutRouter';
+import apiSalesRouter from './routes/apiSalesRouter';
+import apiShoppingCartsRouter from './routes/apiShoppingCartsRouter';
 import swaggerSpec from './swagger/swaggerConfig';
 import { swaggerUiOptions } from './swagger/swaggerUiOptions';
-import apiCheckoutRouter from "./routes/apiCheckoutRouter";
-import apiSalesRouter from "./routes/apiSalesRouter";
-import apiShoppingCartsRouter from "./routes/apiShoppingCartsRouter";
-import { AppDataSource } from './data-source';
 
 // Gestion des signaux d'arrêt
 process.on('SIGINT', async () => {

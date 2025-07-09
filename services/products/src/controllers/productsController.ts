@@ -1,7 +1,7 @@
 import {AppDataSource} from '../data-source';
+import {Category} from '../entities/Category';
 import {Product} from '../entities/Product';
 import {redis} from '../middleware/redisClient';
-import {Category} from "../entities/Category";
 
 export class ProductsController {
     async getProducts() {

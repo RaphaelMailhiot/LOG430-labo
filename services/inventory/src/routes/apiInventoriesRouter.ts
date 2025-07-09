@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { InventoriesController } from '../controllers/inventoriesController';
-import axios from 'axios';
 
 const router = Router();
 const inventoriesController = new InventoriesController();

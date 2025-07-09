@@ -60,7 +60,7 @@ router.post('/checkouts', async (req: Request, res: Response) => {
         (err as any).error = 'Bad Request';
         res.status(400).sendData({ error: 'Bad Request' });
     }
-})
+});
 /**
  * @openapi
  * /checkouts/{checkoutId}:

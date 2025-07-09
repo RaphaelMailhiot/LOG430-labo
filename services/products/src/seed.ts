@@ -1,6 +1,6 @@
 import { AppDataSource } from './data-source';
+import { Category } from './entities/Category';
 import { Product } from './entities/Product';
-import { Category } from "./entities/Category";
 
 export async function initCategories() {
     const categoryRepo = AppDataSource.getRepository(Category);

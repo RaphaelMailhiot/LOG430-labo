@@ -1,6 +1,6 @@
 import { AppDataSource } from '../data-source';
+import {Category} from '../entities/Category';
 import {redis} from '../middleware/redisClient';
-import {Category} from "../entities/Category";
 
 export class CategoriesController {
     async getAllCategories() {
