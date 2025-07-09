@@ -30,7 +30,7 @@ upstreams:
 services:
   - name: auth
     host: auth-upstream
-    port: 80
+    port: 3000
     routes:
       - name: auth-service
         paths:
@@ -51,14 +51,10 @@ services:
                 - Authorization
                 - Content-Type
               credentials: true
-      - name: auth-api-docs
-        paths:
-          - /auth/api-docs
-        strip_path: true
 
   - name: inventory
     host: inventory-upstream
-    port: 80
+    port: 3000
     routes:
       - name: inventory-service
         paths:
@@ -79,14 +75,10 @@ services:
                 - Authorization
                 - Content-Type
               credentials: true
-      - name: inventory-api-docs
-        paths:
-          - /inventory/api-docs
-        strip_path: true
 
   - name: products
     host: products-upstream
-    port: 80
+    port: 3000
     routes:
       - name: products-service
         paths:
@@ -107,14 +99,10 @@ services:
                 - Authorization
                 - Content-Type
               credentials: true
-      - name: products-api-docs
-        paths:
-          - /products/api-docs
-        strip_path: true
 
   - name: sales
     host: sales-upstream
-    port: 80
+    port: 3000
     routes:
       - name: sales-service
         paths:
@@ -135,14 +123,10 @@ services:
                 - Authorization
                 - Content-Type
               credentials: true
-      - name: sales-api-docs
-        paths:
-          - /sales/api-docs
-        strip_path: true
 
   - name: store
     host: store-upstream
-    port: 80
+    port: 3000
     routes:
       - name: store-service
         paths:
@@ -163,7 +147,3 @@ services:
                 - Authorization
                 - Content-Type
               credentials: true
-      - name: store-api-docs
-        paths:
-          - /store/api-docs
-        strip_path: true

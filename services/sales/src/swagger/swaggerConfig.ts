@@ -9,7 +9,7 @@ const options = {
       description: 'Documentation de l’API d’authentification',
     },
     servers: [
-      { url: 'http://localhost:3001/api/v2' }
+      { url: '/sales/api/v1' }
     ],
     components: {
       securitySchemes: {
@@ -25,7 +25,7 @@ const options = {
       { bearerAuth: [] }
     ]
   },
-  apis: ['./src/services/auth/routes/*.ts'],
+  apis: [__dirname + '/../routes/*.ts'],
 };
 
 export default swaggerJSDoc(options);

@@ -55,13 +55,13 @@ app.use((req, res, next) => {
 });
 
 //Routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 app.use('/metrics', metricsRoute);
 app.use('/api/v1', contentNegotiation);
 //app.use('/api/v1', staticTokenAuth);
 app.use('/api/v1', apiCustomersRouter);
 app.use('/api/v1', apiManagersRouter);
 app.use('/api/v1', apiUsersRouter);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 //Error handling
 app.use((err:any, req:Request, res:Response, _next:NextFunction) => {
