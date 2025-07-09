@@ -36,6 +36,21 @@ services:
         paths:
           - /auth
         strip_path: true
+        plugins:
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              headers:
+                - Accept
+                - Authorization
+                - Content-Type
+              credentials: true
       - name: auth-api-docs
         paths:
           - /auth/api-docs
@@ -49,6 +64,21 @@ services:
         paths:
           - /inventory
         strip_path: true
+        plugins:
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              headers:
+                - Accept
+                - Authorization
+                - Content-Type
+              credentials: true
       - name: inventory-api-docs
         paths:
           - /inventory/api-docs
@@ -62,6 +92,21 @@ services:
         paths:
           - /products
         strip_path: true
+        plugins:
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              headers:
+                - Accept
+                - Authorization
+                - Content-Type
+              credentials: true
       - name: products-api-docs
         paths:
           - /products/api-docs
@@ -75,6 +120,21 @@ services:
         paths:
           - /sales
         strip_path: true
+        plugins:
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              headers:
+                - Accept
+                - Authorization
+                - Content-Type
+              credentials: true
       - name: sales-api-docs
         paths:
           - /sales/api-docs
@@ -88,6 +148,21 @@ services:
         paths:
           - /store
         strip_path: true
+        plugins:
+          - name: cors
+            config:
+              origins:
+                - "*"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              headers:
+                - Accept
+                - Authorization
+                - Content-Type
+              credentials: true
       - name: store-api-docs
         paths:
           - /store/api-docs
