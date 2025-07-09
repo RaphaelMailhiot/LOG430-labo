@@ -245,6 +245,8 @@ services:
       - ./frontend/dist:/usr/share/nginx/html
     networks:
       - microservices
+    depends_on:
+      - frontend
 
 volumes:
   frontend:

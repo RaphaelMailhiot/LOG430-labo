@@ -8,7 +8,7 @@ WORKDIR /products-service
 COPY package*.json ./
 
 # Installe les dépendances
-RUN npm install
+RUN npm ci
 
 # Copie le reste du code source
 COPY . .
