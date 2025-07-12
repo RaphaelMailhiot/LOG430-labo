@@ -5,30 +5,35 @@ global:
 scrape_configs:
   - job_name: 'auth'
     static_configs:
-      - targets: ['auth-service-1:3000', 'auth-service-2:3000']
+      - targets: ['localhost:80']
         labels:
           service: 'auth'
+    metrics_path: /auth/metrics
 
   - job_name: 'inventory'
     static_configs:
-      - targets: ['inventory-service-1:3000', 'inventory-service-2:3000']
+      - targets: ['localhost:80']
         labels:
           service: 'inventory'
+    metrics_path: /inventory/metrics
 
   - job_name: 'products'
     static_configs:
-      - targets: ['products-service-1:3000', 'products-service-2:3000']
+      - targets: ['localhost:80']
         labels:
           service: 'products'
+    metrics_path: /products/metrics
 
   - job_name: 'sales'
     static_configs:
-      - targets: ['sales-service-1:3000', 'sales-service-2:3000']
+      - targets: ['localhost:80']
         labels:
           service: 'sales'
+    metrics_path: /sales/metrics
 
   - job_name: 'store'
     static_configs:
-      - targets: ['store-service-1:3000', 'store-service-2:3000']
+      - targets: ['localhost:80']
         labels:
           service: 'store'
+    metrics_path: /store/metrics

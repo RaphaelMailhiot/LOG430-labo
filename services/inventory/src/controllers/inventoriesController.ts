@@ -37,7 +37,7 @@ export class InventoriesController {
         }
         const inventoryRepo = AppDataSource.getRepository(InventoryProduct);
         const inventory = await inventoryRepo.find({
-            where: {storeId: storeId},
+            where: {store_id: storeId},
         });
         try {
             await redis.set(cacheKey, JSON.stringify(inventory), 'EX', 300);
@@ -61,8 +61,8 @@ export class InventoriesController {
         const inventoryRepo = AppDataSource.getRepository(InventoryProduct);
         const inventoryItem = await inventoryRepo.findOne({
             where: {
-                storeId: storeId,
-                productId: productId,
+                store_id: storeId,
+                product_id: productId,
             },
         });
 
@@ -91,7 +91,7 @@ export class InventoriesController {
         }
 
         const inventoryItem = await inventoryRepo.findOne({
-            where: { storeId, productId },
+            where: { store_id: storeId, product_id: productId },
         });
 
         if (!inventoryItem) {

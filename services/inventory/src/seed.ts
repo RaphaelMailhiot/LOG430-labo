@@ -5,27 +5,27 @@ export async function initInventoryProducts() {
     const inventoryProductRepo = AppDataSource.getRepository(InventoryProduct);
 
     const mainStoreBaseInventoryProducts = [
-        { storeId: 1, productId: 1, stock: 100 },
-        { storeId: 1, productId: 2, stock: 100 },
-        { storeId: 1, productId: 3, stock: 100 },
-        { storeId: 1, productId: 4, stock: 100 },
-        { storeId: 1, productId: 5, stock: 100 },
+        { store_id: 1, product_id: 1, stock: 100 },
+        { store_id: 1, product_id: 2, stock: 100 },
+        { store_id: 1, product_id: 3, stock: 100 },
+        { store_id: 1, product_id: 4, stock: 100 },
+        { store_id: 1, product_id: 5, stock: 100 },
     ];
 
     const storesBaseInventoryProducts = [
-        { productId: 1, stock: 10 },
-        { productId: 2, stock: 12 },
-        { productId: 3, stock: 14 },
-        { productId: 4, stock: 16 },
-        { productId: 5, stock: 18 },
+        { product_id: 1, stock: 10 },
+        { product_id: 2, stock: 12 },
+        { product_id: 3, stock: 14 },
+        { product_id: 4, stock: 16 },
+        { product_id: 5, stock: 18 },
     ];
 
     const count = await inventoryProductRepo.count();
     if (count === 0) {
         for (const base of mainStoreBaseInventoryProducts) {
             const inventoryProduct = inventoryProductRepo.create({
-                storeId: base.storeId,
-                productId: base.productId,
+                store_id: base.store_id,
+                product_id: base.product_id,
                 stock: base.stock,
             });
             await inventoryProductRepo.save(inventoryProduct);
@@ -34,8 +34,8 @@ export async function initInventoryProducts() {
         for (let i = 2; i <= 4; i++) {
             for (const base of storesBaseInventoryProducts) {
                 const inventoryProduct = inventoryProductRepo.create({
-                    storeId: i,
-                    productId: base.productId,
+                    store_id: i,
+                    product_id: base.product_id,
                     stock: base.stock,
                 });
                 await inventoryProductRepo.save(inventoryProduct);

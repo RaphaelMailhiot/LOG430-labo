@@ -6,10 +6,10 @@ export class InventoryProduct {
     id!: number;
 
     @Column()
-    storeId!: number;
+    store_id!: number;
 
     @Column()
-    productId!: number;
+    product_id!: number;
 
     @Column()
     stock!: number;

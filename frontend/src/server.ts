@@ -23,6 +23,8 @@ const excludedPaths = [
     '/logout',
     '/register',
     '/metrics',
+    '/grafana',
+    '/prometheus',
     '/output.css',
     '/favicon.ico',
     '/Main.js'
