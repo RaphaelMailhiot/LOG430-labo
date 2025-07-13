@@ -23,6 +23,13 @@ process.on('SIGINT', async () => {
 const app = express();
 app.use(metricsMiddleware);
 
+app.use((_req:Request, res:Response, next:NextFunction) => {
+    res.sendData = function (data: any) {
+        this.json({ data });
+    };
+    next();
+});
+
 if (process.env.NODE_ENV !== 'test') {
     AppDataSource.initialize()
         .then(() => {
@@ -79,4 +86,8 @@ app.use((_req:Request, res:Response) => {
 });
 
 //Listening
-app.listen(3000, () => console.log('Service Auth démarré sur le port 3000'));
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(3000, () => console.log('Service Auth démarré sur le port 3000'));
+}
+
+export default app;

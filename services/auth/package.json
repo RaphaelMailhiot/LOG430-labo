@@ -9,7 +9,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "set NODE_ENV=test && jest",
     "migration:run": "ts-node --require tsconfig-paths/register ./src/migration-runner.ts",
     "seed": "ts-node src/seed.ts"
   },
@@ -22,6 +22,7 @@
     "@types/express-session": "^1.18.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.19",
+    "@types/supertest": "^6.0.3",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.32.1",

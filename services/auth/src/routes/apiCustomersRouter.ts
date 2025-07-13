@@ -90,7 +90,7 @@ router.get('/customers/:customerId', async (req: Request, res: Response, next: N
         if (customer) {
             res.status(200).sendData(customer);
         } else {
-            res.status(404).sendData({ error: 'Customer not found' });
+            return res.status(404).sendData({ error: 'Customer not found' });
         }
     } catch (err) {
         (err as any).status = 400;
