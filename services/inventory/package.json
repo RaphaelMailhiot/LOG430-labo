@@ -9,7 +9,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "set NODE_ENV=test && jest",
     "migration:run": "ts-node --require tsconfig-paths/register ./src/migration-runner.ts",
     "seed": "ts-node src/seed.ts"
   },

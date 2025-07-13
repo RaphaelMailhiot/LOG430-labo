@@ -9,7 +9,7 @@
     "dev": "nodemon src/start.ts",
     "build": "tsc && copyfiles -u 1 src/views/**/* dist/views && npm run build:css",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "set NODE_ENV=test && jest",
     "build:css": "tailwindcss -i ./public/input.css -o ./public/output.css",
     "load-test": "npx artillery run load-test.yml -o report.json && npx artillery report --output report.html report.json"
   },
