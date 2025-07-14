@@ -1,74 +1,153 @@
-@startuml Diagramme de classes
+@startuml Diagramme de classes global
 
-title Diagramme de classes
-
-class Product {
-  - id: number
-  - name: string
-  - category: string
-  - price: number
+skinparam package {
+    BackgroundColor #F9F9F9
+    BorderColor #333
+    FontColor #333
+}
+skinparam class {
+    BackgroundColor #EFEFEF
+    BorderColor #666
+    FontColor #222
+    ArrowColor #888
+}
+skinparam note {
+    BackgroundColor #FFFBEA
+    BorderColor #E1C16E
 }
 
-class Store {
-  - id: number
-  - name: string
-  - isMain: boolean
+title <b><size:18>Diagramme de classes - Frontend & Microservices</size></b>
+
+package "frontend" #ADD8E6 {
+    class CartView
+    class ProductView
+    class StoreView
+    class LoginView
+    CartView ..> ShoppingCart
+    ProductView ..> Product
+    StoreView ..> Store
+    LoginView ..> Customer
 }
 
-class Inventory {
-  - id: number
-  - stock: number
-  - product: Product
-  - store: Store
+package "auth" #FFDAB9 {
+    class Customer {
+        + id: number
+        + name: string
+        + email: string
+        + password: string
+        + cart_id: number
+    }
+    class Manager {
+        + id: number
+        + name: string
+        + email: string
+        + password: string
+        + store_id: number
+    }
+    Customer "1" -- "1" ShoppingCart : "cart_id"
+    Manager "1" -- "1" Store : "store_id"
 }
 
-class Sale {
-  - id: number
-  - date: string
-  - store: Store
-  - items: SaleItem[]
+package "products" #90EE90 {
+    class Product {
+        + id: number
+        + name: string
+        + price: number
+        + category: Category
+    }
+    class Category {
+        + id: number
+        + name: string
+    }
+    Category "1" -- "0..*" Product : "products"
 }
 
-class SaleItem {
-  - id: number
-  - sale: Sale
-  - product: Product
-  - quantity: number
-  - price: number
+package "inventory" #FFB6C1 {
+    class InventoryProduct {
+        + id: number
+        + store_id: number
+        + product_id: number
+        + stock: number
+    }
+    class SupplyRequest {
+        + id: number
+        + store_id: number
+        + quantity: number
+    }
+    InventoryProduct "1" -- "1" Store : "store_id"
+    InventoryProduct "1" -- "1" Product : "product_id"
+    SupplyRequest "1" -- "1" InventoryProduct : "product"
+    SupplyRequest "1" -- "1" Store : "store_id"
 }
 
-class SupplyRequest {
-  - id: number
-  - product: Product
-  - quantity: number
-  - store: Store
+package "sales" #E6E6FA {
+    class Sale {
+        + id: number
+        + store_id: number
+        + date: string
+    }
+    class SaleItem {
+        + sale_id: number
+        + product_id: number
+        + quantity: number
+        + price: number
+    }
+    class ShoppingCart {
+        + id: number
+        + customer_id: number
+    }
+    class ShoppingCartProduct {
+        + id: number
+        + product_id: number
+        + quantity: number
+    }
+    class Checkout {
+        + id: number
+        + customer_id: number
+        + store_id: number
+        + total_amount: number
+        + payment_method: string
+    }
+    Sale "1" -- "0..*" SaleItem : "items"
+    Sale "1" -- "1" Store : "store_id"
+    SaleItem "1" -- "1" Product : "product_id"
+    ShoppingCart "1" -- "0..*" ShoppingCartProduct : "products"
+    ShoppingCart "1" -- "1" Customer : "customer_id"
+    ShoppingCartProduct "1" -- "1" Product : "product_id"
+    Checkout "1" -- "1" Customer : "customer_id"
+    Checkout "1" -- "1" Store : "store_id"
 }
 
-class ProductService {
-  + findProducts(term: string, storeId: number): Product[]
-  + getProductById(id: number): Product
-  + updateStock(productId: number, storeId: number, delta: number): void
+package "store" #FFFACD {
+    class Store {
+        + id: number
+        + name: string
+        + isMain: boolean
+    }
 }
 
-class SaleService {
-  + recordSale(items: SaleItem[], storeId: number): number
-  + cancelSale(saleId: number, storeId: number): void
-  + findOldSales(storeId: number): Sale[]
-}
+note top of frontend
+    <b>Frontend</b> : Vue utilisateur
+end note
 
-Product "1" -- "0..*" Inventory : "product"
-Store "1" -- "0..*" Inventory : "store"
-Inventory "1" -- "0..*" SaleItem : "inventory"
-Product "1" -- "0..*" SaleItem : "product"
-Sale "1" -- "0..*" SaleItem : "items"
-Store "1" -- "0..*" Sale : "store"
-Product "1" -- "0..*" SupplyRequest : "product"
-Store "1" -- "0..*" SupplyRequest : "store"
+note top of auth
+    <b>Auth</b> : Gestion des utilisateurs et managers
+end note
 
-ProductService ..> Product
-ProductService ..> Inventory
-SaleService ..> Sale
-SaleService ..> SaleItem
-SaleService ..> Inventory
+note top of products
+    <b>Products</b> : Catalogue produits et catégories
+end note
+
+note top of inventory
+    <b>Inventory</b> : Stock et demandes d’approvisionnement
+end note
+
+note top of sales
+    <b>Sales</b> : Panier, ventes et paiements
+end note
+
+note top of store
+    <b>Store</b> : Magasins physiques
+end note
 
 @enduml

@@ -1,0 +1,56 @@
+@startuml Organisation des modules des services
+
+title Organisation des modules des services
+
+package "services" {
+    package "src" as SRC {
+        package controllers as C {
+            class *Controller
+        }
+        package entities as E {
+            class *
+        }
+        package middleware as MW {
+            class contentNegotiation
+            class logger
+            class metrics
+            class redisClient
+            class staticTokenAuth
+        }
+        package migrations as M {
+            class *-Init
+        }
+        package routes as R {
+            class api*Router
+        }
+        package swagger as S {
+            class swaggerConfig
+            class swaggerUiOptions
+        }
+        class dataSource
+        class index
+        class migrationRunner
+        class seed
+    }
+    package "test" as TEST {
+        class test1
+        class test2
+        class test*
+    }
+}
+
+metrics -[hidden]right- redisClient
+redisClient -[hidden]right- staticTokenAuth
+test1 -[hidden]right- test2
+dataSource -[hidden]down- TEST
+C -[hidden]down- E
+E -[hidden]down- MW
+MW -[hidden]down- M
+M -[hidden]down- R
+R -[hidden]down- S
+S -[hidden]down- dataSource
+dataSource -[hidden]right- index
+index -[hidden]right- migrationRunner
+migrationRunner -[hidden]right- seed
+
+@enduml
