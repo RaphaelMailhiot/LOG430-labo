@@ -1,4 +1,3 @@
-// @ts-ignore
 import request from 'supertest';
 
 interface Manager {

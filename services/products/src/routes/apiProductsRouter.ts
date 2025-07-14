@@ -61,6 +61,41 @@ router.get('/products', async (req: Request, res: Response, next: NextFunction) 
 });
 /**
  * @openapi
+ * /products/{id}:
+ *   get:
+ *     summary: Récupère un produit par son ID
+ *     tags:
+ *       - Produits
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID du produit à récupérer
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Détails du produit
+ *       404:
+ *         description: Produit non trouvé
+ */
+router.get('/products/:id', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const productId = Number(req.params.id);
+        const product = await productsController.getProductById(productId);
+        if (product) {
+            res.status(200).sendData(product);
+        } else {
+            res.status(404).sendData({error: 'Product not found'});
+        }
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+/**
+ * @openapi
  * /products/category/{categoryId}:
  *   get:
  *     summary: Liste les produits par catégorie

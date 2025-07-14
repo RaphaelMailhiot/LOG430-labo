@@ -1,5 +1,6 @@
 import { AppDataSource } from './data-source';
 import { Sale } from './entities/Sale';
+import { ShoppingCart } from './entities/ShoppingCart';
 
 export async function initSales() {
     const saleRepo = AppDataSource.getRepository(Sale);
@@ -23,9 +24,24 @@ export async function initSales() {
     }
 }
 
+export async function initCarts() {
+    const cartRepo = AppDataSource.getRepository(ShoppingCart);
+
+    const customerIds = [1, 2, 3]; // Alice, Bob, Charlie
+
+    for (const customer_id of customerIds) {
+        const cart = cartRepo.create({
+            customer_id,
+            products: [],
+        });
+        await cartRepo.save(cart);
+    }
+}
+
 async function seed() {
     await AppDataSource.initialize();
     await initSales();
+    await initCarts();
     await AppDataSource.destroy();
     console.log('Seed terminé !');
 }

@@ -1,6 +1,7 @@
-import { AppDataSource } from '../data-source';
-import { ShoppingCart } from '../entities/ShoppingCart';
-import { ShoppingCartProduct } from '../entities/ShoppingCartProduct';
+import axios from 'axios';
+import {AppDataSource} from '../data-source';
+import {ShoppingCart} from '../entities/ShoppingCart';
+import {ShoppingCartProduct} from '../entities/ShoppingCartProduct';
 import {redis} from '../middleware/redisClient';
 
 export class ShoppingCartsController {
@@ -18,7 +19,7 @@ export class ShoppingCartsController {
         }
 
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
-        const shoppingCarts = await shoppingCartRepo.find({ relations: ['customer', 'products.product'] });
+        const shoppingCarts = await shoppingCartRepo.find({relations: ['customer', 'products.product']});
         try {
             await redis.set(cacheKey, JSON.stringify(shoppingCarts), 'EX', 3600);
         } catch (err) {
@@ -28,22 +29,29 @@ export class ShoppingCartsController {
         return shoppingCarts;
     }
 
+    //TODO Fix this method to return the shopping cart of a specific customer
     async addProductToCart(productsId: number, body: any) {
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
         const shoppingCart = await shoppingCartRepo.findOne({
-            where: { customer_id: body.customerId }
+            where: {customer_id: body.customerId}
         });
         if (!shoppingCart) {
             throw new Error('Shopping cart not found for the given customer');
         }
+
+        // Récupère les infos du produit via axios
+        const productRes = await axios.get(`http://kong:8000/products/api/v1/products/${productsId}`);
+        const productData = productRes.data;
+
         const product = shoppingCart.products.find(p => p.product_id === productsId);
         if (product) {
             product.quantity += body.quantity;
         } else {
             const newProduct = shoppingCartRepo.manager.create(ShoppingCartProduct, {
-                product: { id: productsId } as any, // Assuming product is fetched elsewhere
+                product_id: productsId,
                 quantity: body.quantity,
-                cart: shoppingCart
+                cart: shoppingCart,
+                product: productData // Associe les infos du produit
             });
             shoppingCart.products.push(newProduct);
         }

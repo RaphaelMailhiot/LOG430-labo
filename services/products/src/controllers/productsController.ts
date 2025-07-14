@@ -60,6 +60,35 @@ export class ProductsController {
         return {data, total};
     }
 
+    async getProductById(id: number) {
+        const cacheKey = `categories:product:${id}`;
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Erreur Redis (getProductById):', err);
+        }
+
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
+        const categoryRepo = AppDataSource.getRepository(Category);
+        const category = await categoryRepo.findOne({ where: { products: { id } }, relations: ['products'] });
+
+        if (!category) {
+            throw new Error(`Category for product ID ${id} not found`);
+        }
+
+        try {
+            await redis.set(cacheKey, JSON.stringify(category), 'EX', 300);
+        } catch (err) {
+            console.error('Erreur Redis (set getProductById):', err);
+        }
+
+        return category;
+    }
+
     async getProductsByCategoryId(categoryId: number) {
         const cacheKey = `categories:${categoryId}:products`;
         let cached: string | null = null;
