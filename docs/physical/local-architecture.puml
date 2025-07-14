@@ -1,20 +1,86 @@
-@startuml Architecture locale 3-tier
+@startuml Architecture microservices round-robin
 
-title Architecture locale 3-tier
+title Architecture microservices avec bases séparées et round-robin
 
-node "Machine utilisateur N" {
-  component "Navigateur Web"
+node "Utilisateur" {
+  component "Frontend (Navigateur Web)"
 }
 
-node "Serveur Node.js N" {
-  component "Express.js (API & Vue)"
-  component "TypeORM"
+node "API Gateway" {
+  component "Kong"
 }
 
-database "PostgreSQL"
+node "Auth Service 1" {
+  component "Express.js Auth 1"
+}
+node "Auth Service 2" {
+  component "Express.js Auth 2"
+}
+node "Auth DB" {
+  database "PostgreSQL Auth"
+}
 
-"Navigateur Web" --> "Express.js (API & Vue)" : HTTP (REST/EJS)
-"Express.js (API & Vue)" --> "TypeORM" : appels ORM
-"TypeORM" --> "PostgreSQL" : ORM (pg driver)
+node "Products Service 1" {
+  component "Express.js Products 1"
+}
+node "Products Service 2" {
+  component "Express.js Products 2"
+}
+node "Products DB" {
+  database "PostgreSQL Products"
+}
+
+node "Inventory Service 1" {
+  component "Express.js Inventory 1"
+}
+node "Inventory Service 2" {
+  component "Express.js Inventory 2"
+}
+node "Inventory DB" {
+  database "PostgreSQL Inventory"
+}
+
+node "Sales Service 1" {
+  component "Express.js Sales 1"
+}
+node "Sales Service 2" {
+  component "Express.js Sales 2"
+}
+node "Sales DB" {
+  database "PostgreSQL Sales"
+}
+
+node "Store Service 1" {
+  component "Express.js Store 1"
+}
+node "Store Service 2" {
+  component "Express.js Store 2"
+}
+node "Store DB" {
+  database "PostgreSQL Store"
+}
+
+"Frontend (Navigateur Web)" --> "Kong" : HTTP (Axios)
+"Kong" --> "Express.js Auth 1" : round-robin
+"Kong" --> "Express.js Auth 2" : round-robin
+"Kong" --> "Express.js Products 1" : round-robin
+"Kong" --> "Express.js Products 2" : round-robin
+"Kong" --> "Express.js Inventory 1" : round-robin
+"Kong" --> "Express.js Inventory 2" : round-robin
+"Kong" --> "Express.js Sales 1" : round-robin
+"Kong" --> "Express.js Sales 2" : round-robin
+"Kong" --> "Express.js Store 1" : round-robin
+"Kong" --> "Express.js Store 2" : round-robin
+
+"Express.js Auth 1" --> "PostgreSQL Auth"
+"Express.js Auth 2" --> "PostgreSQL Auth"
+"Express.js Products 1" --> "PostgreSQL Products"
+"Express.js Products 2" --> "PostgreSQL Products"
+"Express.js Inventory 1" --> "PostgreSQL Inventory"
+"Express.js Inventory 2" --> "PostgreSQL Inventory"
+"Express.js Sales 1" --> "PostgreSQL Sales"
+"Express.js Sales 2" --> "PostgreSQL Sales"
+"Express.js Store 1" --> "PostgreSQL Store"
+"Express.js Store 2" --> "PostgreSQL Store"
 
 @enduml
