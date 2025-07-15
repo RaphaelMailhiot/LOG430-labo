@@ -32,12 +32,6 @@ jest.mock('../src/data-source', () => ({
     },
 }));
 
-// Mock le serveur pour éviter qu'il démarre
-jest.spyOn(require('http'), 'createServer').mockImplementation(() => ({
-    listen: jest.fn(),
-    close: jest.fn(),
-}));
-
 import app from '../src/index';
 
 beforeEach(() => {
