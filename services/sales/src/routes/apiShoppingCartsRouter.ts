@@ -99,6 +99,35 @@ router.put('/shopping-carts/:cartId', async (req: Request, res: Response, next: 
 });
 /**
  * @openapi
+ * /customers/{customerId}/shopping-carts:
+ *   get:
+ *     summary: Récupère les chariots d'un client par son ID
+ *     tags:
+ *       - Chariots
+ *     parameters:
+ *       - in: path
+ *         name: customerId
+ *         required: true
+ *         description: ID du client dont on veut récupérer les chariots
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Liste des chariots du client
+ */
+router.get('/customers/:customerId/shopping-carts', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const customerId = Number(req.params.customerId);
+        const shoppingCarts = await shoppingCartsController.getShoppingCartsByCustomerId(customerId);
+        res.status(200).sendData(shoppingCarts);
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+/**
+ * @openapi
  * /shopping-carts/{productsId}:
  *   post:
  *     summary: Ajoute un produit à un chariot

@@ -8,6 +8,9 @@ const apiInventory = axios.create({
 const apiProducts = axios.create({
   baseURL: 'http://kong:8000/products/api/v1',
 });
+const apiSales = axios.create({
+    baseURL: 'http://kong:8000/sales/api/v1',
+});
 
 router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -51,5 +54,18 @@ router.get('/produits', async (_req: Request, res: Response, next: NextFunction)
     next(err);
   }
 });
+
+router.get('/panier', async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+        const title = 'Panier';
+        const user = res.locals.currentUser;
+        const panierResponse = await apiSales.get(`customers/${user.id}/shopping-carts`);
+        const panier = panierResponse.data;
+        res.status(200).render('shop/cart', { title, panier });
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 export default router;

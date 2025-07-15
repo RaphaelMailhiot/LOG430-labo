@@ -34,6 +34,8 @@ const excludedPrefixes = ['/public', '/api'];
 
 app.use((req, res, next) => {
     res.locals.currentStore = req.session.selectedStore || null;
+    res.locals.currentUser = req.session.user || null;
+    res.locals.isManager = req.session.isManager || false;
 
     if (
         excludedPaths.includes(req.path) ||

@@ -68,6 +68,37 @@ export class ShoppingCartsController {
         return shoppingCart;
     }
 
+    async getShoppingCartsByCustomerId(customerId: number) {
+        const cacheKey = `shoppingCarts:customer:${customerId}`;
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Redis error (getShoppingCartsByCustomerId):', err);
+        }
+
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
+        const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
+        const shoppingCarts = await shoppingCartRepo.find({
+            where: {customer_id: customerId}
+        });
+
+        if (!shoppingCarts.length) {
+            throw new Error('No shopping carts found for this customer');
+        }
+
+        try {
+            await redis.set(cacheKey, JSON.stringify(shoppingCarts), 'EX', 3600);
+        } catch (err) {
+            console.error('Redis error (set getShoppingCartsByCustomerId):', err);
+        }
+
+        return shoppingCarts;
+    }
+
     async addProductToCart(productsId: number, body: any) {
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
         const shoppingCart = await shoppingCartRepo.findOne({

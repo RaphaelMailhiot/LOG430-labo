@@ -329,6 +329,9 @@ services:
     image: grafana/grafana:latest
     ports:
       - "3006:3000"
+    environment:
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=http://localhost/grafana/
     volumes:
       - grafana_data:/var/lib/grafana
       - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards

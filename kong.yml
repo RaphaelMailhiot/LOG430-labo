@@ -155,7 +155,7 @@ services:
       - name: grafana-route
         paths:
           - /grafana
-        strip_path: false
+        strip_path: true
 
   - name: prometheus
     host: prometheus
@@ -164,4 +164,4 @@ services:
       - name: prometheus-route
         paths:
           - /prometheus
-        strip_path: false
+        strip_path: true

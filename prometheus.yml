@@ -5,35 +5,35 @@ global:
 scrape_configs:
   - job_name: 'auth'
     static_configs:
-      - targets: ['localhost:80']
+      - targets: ['http://kong:8000/auth']
         labels:
           service: 'auth'
-    metrics_path: /auth/metrics
+    metrics_path: /metrics
 
   - job_name: 'inventory'
     static_configs:
-      - targets: ['localhost:80']
+      - targets: ['http://kong:8000/inventory']
         labels:
           service: 'inventory'
-    metrics_path: /inventory/metrics
+    metrics_path: /metrics
 
   - job_name: 'products'
     static_configs:
-      - targets: ['localhost:80']
+      - targets: ['http://kong:8000/products']
         labels:
           service: 'products'
-    metrics_path: /products/metrics
+    metrics_path: /metrics
 
   - job_name: 'sales'
     static_configs:
-      - targets: ['localhost:80']
+      - targets: ['http://kong:8000/sales']
         labels:
           service: 'sales'
-    metrics_path: /sales/metrics
+    metrics_path: /metrics
 
   - job_name: 'store'
     static_configs:
-      - targets: ['localhost:80']
+      - targets: ['http://kong:8000/store']
         labels:
           service: 'store'
-    metrics_path: /store/metrics
+    metrics_path: /metrics
