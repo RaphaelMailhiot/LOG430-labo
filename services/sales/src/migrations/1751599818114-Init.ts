@@ -4,7 +4,7 @@ export class Init1751599818114 implements MigrationInterface {
     name = 'Init1751599818114';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query('CREATE TABLE "shopping_cart" ("id" SERIAL NOT NULL, "customer_id" integer NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_40f9358cdf55d73d8a2ad226592" PRIMARY KEY ("id"))');
+        await queryRunner.query('CREATE TABLE "shopping_cart" ("id" SERIAL NOT NULL, "customer_id" integer NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_40f9358cdf55d73d8a2ad226592" PRIMARY KEY ("id"))');
         await queryRunner.query('CREATE TABLE "shopping_cart_product" ("id" SERIAL NOT NULL, "product_id" integer NOT NULL, "quantity" integer NOT NULL, "cartId" integer, CONSTRAINT "PK_e9714a8554c8b915d109d3de5c9" PRIMARY KEY ("id"))');
         await queryRunner.query('CREATE TABLE "sale_item" ("sale_id" integer NOT NULL, "product_id" integer NOT NULL, "quantity" integer NOT NULL, "price" real NOT NULL, CONSTRAINT "PK_90bf979b24ccd41b40b51179bfb" PRIMARY KEY ("sale_id", "product_id"))');
         await queryRunner.query('CREATE TABLE "sale" ("id" SERIAL NOT NULL, "store_id" integer NOT NULL, "date" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_d03891c457cbcd22974732b5de2" PRIMARY KEY ("id"))');
@@ -22,5 +22,4 @@ export class Init1751599818114 implements MigrationInterface {
         await queryRunner.query('DROP TABLE "shopping_cart_product"');
         await queryRunner.query('DROP TABLE "shopping_cart"');
     }
-
 }

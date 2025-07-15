@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {AppDataSource} from '../data-source';
 import {Customer} from '../entities/Customer';
 import {redis} from '../middleware/redisClient';
@@ -28,9 +29,24 @@ export class CustomersController {
     }
 
     async createCustomer(body: any) {
+
+        const apiCreateShoppingCart = await axios.post('http://kong:8000/sales/api/v1/shopping-carts', {
+            ...body,
+            customerId: null // will be set after customer creation
+        });
+        const shoppingCart = apiCreateShoppingCart.data;
+
         const customerRepo = AppDataSource.getRepository(Customer);
-        const newCustomer = customerRepo.create(body);
+        const newCustomer = customerRepo.create({ ...body, cart_id: shoppingCart.id });
         const savedCustomer = await customerRepo.save(newCustomer);
+
+        // If save returns an array, use the first element
+        const customerObj = Array.isArray(savedCustomer) ? savedCustomer[0] : savedCustomer;
+
+        // Update the shopping cart with the customer ID
+        await axios.put(`http://kong:8000/sales/api/v1/shopping-carts/${shoppingCart.id}`, {
+            customer_id: customerObj.id
+        });
 
         // Invalider le cache pour tous les clients
         try {

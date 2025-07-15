@@ -1,4 +1,4 @@
-@startuml Diagramme de classes centralisé et détaillé
+@startuml Diagramme de classes des microservices
 
 skinparam package {
     BackgroundColor #F9F9F9
@@ -16,7 +16,7 @@ skinparam note {
     BorderColor #E1C16E
 }
 
-title <b><size:18>Frontend simplifié, services détaillés</size></b>
+title Diagramme de classes des microservices
 
 package "frontend" #ADD8E6 {
     class Frontend

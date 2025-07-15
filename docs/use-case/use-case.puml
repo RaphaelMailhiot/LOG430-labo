@@ -5,6 +5,7 @@ left to right direction
 title Cas d'utilisation du système de gestion des ventes
 actor Magasin as M
 actor MaisonMère as MM
+actor Client as C
 
 rectangle "Système" {
     usecase "Rechercher un produit"                         as RP
@@ -16,6 +17,9 @@ rectangle "Système" {
     usecase "Consulter le stock central et déclencher un réapprovisionnement" as CR
     usecase "Visualiser les performances des magasins"      as VPM
     usecase "Offrir une interface web minimale pour les gestionnaires"        as IW
+    usecase "Ajouter un produit dans son panier"        as APC
+    usecase "Consulter son panier"        as CP
+    usecase "Valider son panier"        as VP
 }
 
 M --> RP
@@ -27,5 +31,8 @@ MM --> GRV
 M --> CR
 MM --> VPM
 M --> IW
+C --> APC
+C --> CP
+C --> VP
 
 @enduml

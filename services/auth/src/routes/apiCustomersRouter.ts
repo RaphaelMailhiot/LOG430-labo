@@ -43,6 +43,8 @@ router.get('/customers', async (_req: Request, res: Response, next: NextFunction
  *                 type: string
  *               email:
  *                 type: string
+ *               password:
+ *                  type: string
  *     responses:
  *       201:
  *         description: Client créé avec succès

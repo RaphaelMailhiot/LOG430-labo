@@ -5,6 +5,7 @@ import path from 'path';
 import authRouter from './routes/authRouter';
 import dashboardRouter from './routes/dashboardRouter';
 import homeRouter from './routes/homeRouter';
+import shopRouter from './routes/shopRouter';
 
 export const app = express();
 
@@ -59,6 +60,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/', authRouter);
 app.use('/', dashboardRouter);
 app.use('/', homeRouter);
+app.use('/shop', shopRouter);
 
 // Gestion des erreurs
 app.use((err: Error & { status?: number; error?: string }, req: Request, res: Response, _next: NextFunction) => {

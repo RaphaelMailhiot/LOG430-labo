@@ -27,6 +27,78 @@ router.get('/shopping-carts', async (_req: Request, res: Response, next: NextFun
 });
 /**
  * @openapi
+ * /shopping-carts:
+ *   post:
+ *     summary: Crée un nouveau chariot
+ *     tags:
+ *       - Chariots
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               customerId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Chariot créé avec succès
+ */
+router.post('/shopping-carts', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const newCart = req.body;
+        if (!newCart) {
+            return res.status(400).sendData({ error: 'Invalid cart data' });
+        }
+        const createdCart = await shoppingCartsController.createShoppingCart(newCart);
+        res.status(201).sendData(createdCart);
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+/**
+ * @openapi
+ * /shopping-carts/{cartId}:
+ *   put:
+ *     summary: Met à jour un chariot avec l'ID du client
+ *     tags:
+ *       - Chariots
+ *     parameters:
+ *       - in: path
+ *         name: cartId
+ *         required: true
+ *         description: ID du chariot à mettre à jour
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               customer_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Chariot mis à jour avec succès
+ */
+router.put('/shopping-carts/:cartId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const cartId = Number(req.params.cartId);
+        const updatedCart = await shoppingCartsController.updateShoppingCart(cartId, req.body);
+        res.status(200).sendData(updatedCart);
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+/**
+ * @openapi
  * /shopping-carts/{productsId}:
  *   post:
  *     summary: Ajoute un produit à un chariot

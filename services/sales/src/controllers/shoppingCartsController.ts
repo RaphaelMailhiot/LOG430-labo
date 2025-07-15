@@ -29,7 +29,45 @@ export class ShoppingCartsController {
         return shoppingCarts;
     }
 
-    //TODO Fix this method to return the shopping cart of a specific customer
+    async createShoppingCart(body: any) {
+        const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
+        
+        // Créer un nouveau panier
+        const newCart = shoppingCartRepo.create({
+            customer_id: body.customerId,
+            products: [] // Initialiser avec un tableau vide
+        });
+        
+        const savedCart = await shoppingCartRepo.save(newCart);
+        
+        // Invalider le cache
+        try {
+            await redis.del('shoppingCarts:all');
+        } catch (err) {
+            console.error('Redis error (del createShoppingCart):', err);
+        }
+        
+        return savedCart;
+    }
+
+    async updateShoppingCart(cartId: number, body: any) {
+        const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
+        const shoppingCart = await shoppingCartRepo.findOne({
+            where: {id: cartId}
+        });
+        if (!shoppingCart) {
+            throw new Error('Shopping cart not found');
+        }
+        shoppingCart.customer_id = body.customerId || shoppingCart.customer_id;
+        await shoppingCartRepo.save(shoppingCart);
+        try {
+            await redis.del('shoppingCarts:all');
+        } catch (err) {
+            console.error('Redis error (del updateShoppingCart):', err);
+        }
+        return shoppingCart;
+    }
+
     async addProductToCart(productsId: number, body: any) {
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
         const shoppingCart = await shoppingCartRepo.findOne({
