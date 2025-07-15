@@ -318,28 +318,30 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus.yml:/etc/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
-      - microservices
+      microservices:
+        aliases:
+          - prometheus
+
 
   # GRAFANA
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3006:3000"
-    environment:
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
-      - GF_SERVER_ROOT_URL=http://localhost/grafana/
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
     networks:
       - microservices
 
-  # NGINX (reverse proxy)
+  # NGINX
   nginx:
     image: nginx:latest
     ports:
@@ -350,7 +352,10 @@ services:
     networks:
       - microservices
     depends_on:
-      - frontend
+    - frontend
+    - prometheus
+    - grafana
+    restart: always
 
 volumes:
   frontend:

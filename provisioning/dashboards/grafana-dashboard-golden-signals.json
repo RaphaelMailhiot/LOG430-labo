@@ -1,103 +1,143 @@
 {
-  "id": null,
-  "uid": "golden-signals",
-  "title": "Golden Signals Dashboard",
-  "tags": [
-    "sre",
-    "golden-signals"
-  ],
+  "title": "Node.js Microservices - Performance",
+  "tags": ["prometheus", "nodejs", "microservices"],
   "timezone": "browser",
-  "schemaVersion": 36,
+  "schemaVersion": 38,
   "version": 1,
   "refresh": "10s",
   "panels": [
     {
-      "type": "graph",
-      "title": "Latence (moyenne, P95, P99)",
+      "type": "stat",
+      "title": "Service UP",
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
-          "legendFormat": "Moyenne",
+          "expr": "up",
+          "legendFormat": "{{job}}",
           "refId": "A"
-        },
-        {
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
-          "legendFormat": "P95",
-          "refId": "B"
-        },
-        {
-          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
-          "legendFormat": "P99",
-          "refId": "C"
         }
       ],
-      "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 24,
-        "h": 8
-      }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "green", "value": 1}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
     },
     {
-      "type": "graph",
-      "title": "Trafic - Requ\u00eates HTTP/s",
+      "type": "stat",
+      "title": "CPU Total (s)",
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "rate(http_requests_total[1m])",
-          "legendFormat": "req/s",
+          "expr": "process_cpu_seconds_total",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
-      "gridPos": {
-        "x": 0,
-        "y": 8,
-        "w": 24,
-        "h": 8
-      }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
     },
     {
-      "type": "graph",
-      "title": "Erreurs HTTP (4xx & 5xx)",
+      "type": "stat",
+      "title": "Mémoire Résidente (MB)",
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "rate(http_requests_total{status=~'4..'}[1m])",
-          "legendFormat": "4xx",
+          "expr": "process_resident_memory_bytes/1024/1024",
+          "legendFormat": "{{job}}",
           "refId": "A"
-        },
-        {
-          "expr": "rate(http_requests_total{status=~'5..'}[1m])",
-          "legendFormat": "5xx",
-          "refId": "B"
         }
       ],
-      "gridPos": {
-        "x": 0,
-        "y": 16,
-        "w": 24,
-        "h": 8
-      }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "megabytes"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
     },
     {
-      "type": "graph",
-      "title": "Saturation - CPU & M\u00e9moire",
+      "type": "stat",
+      "title": "Event Loop Lag (ms)",
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[1m])) * 100)",
-          "legendFormat": "CPU Utilisation",
+          "expr": "nodejs_eventloop_lag_seconds * 1000",
+          "legendFormat": "{{job}}",
           "refId": "A"
-        },
-        {
-          "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
-          "legendFormat": "M\u00e9moire utilis\u00e9e (%)",
-          "refId": "B"
         }
       ],
-      "gridPos": {
-        "x": 0,
-        "y": 24,
-        "w": 24,
-        "h": 8
-      }
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+    },
+    {
+      "type": "stat",
+      "title": "Requêtes HTTP/s",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m])) by (job)",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "req/s"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 4}
+    },
+    {
+      "type": "stat",
+      "title": "Latence HTTP p95 (ms)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,job)) * 1000",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 4}
+    },
+    {
+      "type": "stat",
+      "title": "GC Duration (ms)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(nodejs_gc_duration_seconds_sum[5m])) by (job) * 1000",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8}
     }
   ]
 }
