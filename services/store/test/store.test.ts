@@ -1,3 +1,13 @@
+// Mock redisClient BEFORE any imports to prevent real Redis connection
+jest.mock('../src/middleware/redisClient', () => ({
+    redis: {
+        get: jest.fn(() => null),
+        set: jest.fn(),
+        del: jest.fn(),
+        quit: jest.fn(),
+    },
+}));
+
 import { StoresController } from '../src/controllers/storesController';
 
 jest.mock('../src/data-source', () => ({
@@ -7,13 +17,6 @@ jest.mock('../src/data-source', () => ({
             findOne: jest.fn(() => Promise.resolve({ id: 1, name: 'Main Store', isMain: true })),
             findOneBy: jest.fn(({ id }) => Promise.resolve(id === 1 ? { id: 1, name: 'Main Store' } : null)),
         })),
-    },
-}));
-
-jest.mock('../src/middleware/redisClient', () => ({
-    redis: {
-        get: jest.fn(() => null),
-        set: jest.fn(),
     },
 }));
 

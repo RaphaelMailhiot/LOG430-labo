@@ -1,3 +1,14 @@
+// Mock redisClient BEFORE any imports to prevent real Redis connection
+jest.mock('../src/middleware/redisClient', () => ({
+    redis: {
+        get: jest.fn().mockResolvedValue(null),
+        set: jest.fn().mockResolvedValue('OK'),
+        del: jest.fn().mockResolvedValue(1),
+        keys: jest.fn().mockResolvedValue([]),
+        quit: jest.fn().mockResolvedValue('OK'),
+    },
+}));
+
 import request from 'supertest';
 
 const seedInventory = [
@@ -21,16 +32,6 @@ jest.mock('../src/data-source', () => ({
             save: jest.fn(item => Promise.resolve(item)),
         })),
         initialize: jest.fn().mockResolvedValue(undefined),
-    },
-}));
-
-jest.mock('../src/middleware/redisClient', () => ({
-    redis: {
-        get: jest.fn().mockResolvedValue(null),
-        set: jest.fn().mockResolvedValue('OK'),
-        del: jest.fn().mockResolvedValue(1),
-        keys: jest.fn().mockResolvedValue([]),
-        quit: jest.fn().mockResolvedValue('OK'),
     },
 }));
 

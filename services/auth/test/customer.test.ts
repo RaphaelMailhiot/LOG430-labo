@@ -13,6 +13,26 @@ const seedCustomers: Customer[] = [
 const customers: Customer[] = [];
 let idCounter = 1;
 
+// Mock redisClient BEFORE any imports to prevent real Redis connection
+jest.mock('../src/middleware/redisClient', () => ({
+    redis: {
+        get: jest.fn().mockResolvedValue(null),
+        set: jest.fn().mockResolvedValue('OK'),
+        del: jest.fn().mockResolvedValue(1),
+        quit: jest.fn().mockResolvedValue('OK'),
+    },
+}));
+
+// Mock axios
+jest.mock('axios', () => ({
+    post: jest.fn().mockResolvedValue({
+        data: { id: 1, customerId: null }
+    }),
+    put: jest.fn().mockResolvedValue({
+        data: { id: 1, customer_id: 1 }
+    })
+}));
+
 jest.mock('../src/data-source', () => ({
     AppDataSource: {
         getRepository: jest.fn(() => ({
