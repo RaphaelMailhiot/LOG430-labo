@@ -90,11 +90,11 @@
 
 ## Vue logique
 ![Diagramme de classes (PlantUML)](../out/docs/logical/class-diagram/class-diagram.svg)
-![Diagramme de classes Service Auth (PlantUML)](../out/docs/logical/auth-service-class/auth-service-class.svg)
-![Diagramme de classes Service Inventory (PlantUML)](../out/docs/logical/inventory-service-class/inventory-service-class.svg)
-![Diagramme de classes Service Products (PlantUML)](../out/docs/logical/products-service-class/products-service-class.svg)
-![Diagramme de classes Service Sales (PlantUML)](../out/docs/logical/sales-service-class/sales-service-class.svg)
-![Diagramme de classes Service Store (PlantUML)](../out/docs/logical/store-service-class/store-service-class.svg)
+![Diagramme de classes Service Auth (PlantUML)](../out/docs/logical/auth-service-class-diagram/auth-service-class-diagram.svg)
+![Diagramme de classes Service Inventory (PlantUML)](../out/docs/logical/inventory-service-class-diagram/inventory-service-class-diagram.svg)
+![Diagramme de classes Service Products (PlantUML)](../out/docs/logical/products-service-class-diagram/products-service-class-diagram.svg)
+![Diagramme de classes Service Sales (PlantUML)](../out/docs/logical/sales-service-class-diagram/sales-service-class-diagram.svg)
+![Diagramme de classes Service Store (PlantUML)](../out/docs/logical/store-service-class-diagram/store-service-class-diagram.svg)
 
 ## Vue des processus
 ![Processus de connection (PlantUML)](../out/docs/process/auth-login/auth-login.svg)
