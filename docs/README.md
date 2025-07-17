@@ -2,7 +2,7 @@
 
 ## Besoins fonctionnels
 
-(Labo1)
+(Partie 1)
 
 1. **Recherche de produits**  
    - Recherche par identifiant, nom ou catégorie  
@@ -18,17 +18,41 @@
    - Transactions atomiques pour chaque vente
 6. **Couche de persistance abstraite**  
    - Accès direct à la base de données via un ORM
-
-(Labo2)
-
 7. **Générer un rapport consolidé des ventes**
-    - La maison mère peut générer un rapport détaillé des ventes de tous les magasins et stocks
+   - La maison mère peut générer un rapport détaillé des ventes de tous les magasins et stocks
 8. **Consulter le stock central et d´eclencher un réapprovisionnement**
-    - Un employé voit le stock central et peux faire une demande de réapprovisionnement
+   - Un employé voit le stock central et peux faire une demande de réapprovisionnement
 9. **Visualiser les performances des magasins dans un tableau de bord**
-    - La maison mère peut voir les infos des magasins sur un tableau de bord
+   - La maison mère peut voir les infos des magasins sur un tableau de bord
 10. **Offrir une interface web minimale pour les gestionnaires**
-    - Une interface web permet de gérer le POS du magasin
+   - Une interface web permet de gérer le POS du magasin
+
+(Partie 2)
+
+1. **Extension API RESTful**
+   - Un API RESTful gère le backend
+2. **Documentation Swagger/OpenAPI**
+   - Une documentation est disponible par service à l'url /api-docs
+3. **Sécurité et CORS**
+   - Sécurisée l'API
+4. **Tests & CI/CD**
+   - Les routes API sont testées
+5. **Test de charge & observabilité initiale**
+   - Ajout de Grafana et Prometheus
+6. **Load balancing & résilience**
+   - Ajout de Round-Robin
+   - Ajout de NGINX
+7. **Caching des endpoints**
+   - Ajout de Redis
+8. **Découpage microservices**
+   - Chaque service est son propre projet
+9. **Organisation DDD**
+   - Chaque service suit une organisation DDD
+10. **Configuration de l’API Gateway**
+    - Ajout de Kong
+11. **Logging**
+    - Un client peut se connecter à l'interface
+    - Un manager peut se connecter à l'interface
 
 ---
 
