@@ -1,0 +1,103 @@
+@startuml inventory-service-class-diagram
+
+package "Inventory Service Entities" {
+    class InventoryProduct {
+        + id: number
+        + store_id: number
+        + product_id: number
+        + stock: number
+    }
+
+    class SupplyRequest {
+        + id: number
+        + store_id: number
+        + product: InventoryProduct
+        + quantity: number
+    }
+}
+
+package "Controllers" {
+    class InventoriesController {
+        + getInventories()
+        + getStoreInventory(store_id: number)
+        + getStoreInventoryProductId(store_id: number, product_id: number)
+        + updateStoreInventoryProductId(storeId: number, productId: number, body: { stock?: number })
+    }
+
+    class SupplyRequestsController {
+        + getAllSupplyRequests()
+        + getSupplyRequestsByStoreId(storeId: number)
+        + createSupplyRequest(body: any)
+    }
+}
+
+package "Middleware" {
+    class ContentNegotiation {
+        + handle(req: Request, res: Response, next: NextFunction)
+    }
+
+    class Logger {
+        + info(message: object)
+        + error(message: object)
+        + warn(message: object)
+    }
+
+    class Metrics {
+        + recordInventoryRequest(success: boolean)
+        + recordSupplyRequest(success: boolean)
+        + recordStockUpdate(store_id: number, product_id: number, quantity: number)
+    }
+
+    class StaticTokenAuth {
+        + authenticate(req: Request, res: Response, next: NextFunction)
+    }
+}
+
+package "Routes" {
+    class InventoriesRouter {
+        + GET /stores/main/inventory
+        + GET /stores/{storeId}/inventory
+        + GET /stores/{storeId}/inventory/{productId}
+        + PUT /stores/{storeId}/inventory/{productId}
+    }
+
+    class SupplyRequestsRouter {
+        + GET /supply-requests
+        + POST /supply-requests
+        + GET /stores/{storeId}/supply-requests
+    }
+}
+
+' Relationships
+InventoriesController --> InventoryProduct : manages
+SupplyRequestsController --> SupplyRequest : manages
+SupplyRequest --> InventoryProduct : references
+
+InventoriesRouter --> InventoriesController : routes to
+SupplyRequestsRouter --> SupplyRequestsController : routes to
+
+ContentNegotiation --> InventoriesRouter : processes
+ContentNegotiation --> SupplyRequestsRouter : processes
+
+Logger --> InventoriesController : logs
+Logger --> SupplyRequestsController : logs
+
+Metrics --> InventoriesController : monitors
+Metrics --> SupplyRequestsController : monitors
+
+StaticTokenAuth --> InventoriesRouter : authenticates
+StaticTokenAuth --> SupplyRequestsRouter : authenticates
+
+note right of InventoryProduct
+  Represents stock levels
+  for products in stores
+  with real-time updates
+end note
+
+note right of SupplyRequest
+  Represents requests for
+  product restocking
+  with approval workflow
+end note
+
+@enduml

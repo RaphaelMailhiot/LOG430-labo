@@ -1,4 +1,4 @@
-@startuml Diagramme de classes des microservices
+@startuml class-diagram
 
 skinparam package {
     BackgroundColor #F9F9F9

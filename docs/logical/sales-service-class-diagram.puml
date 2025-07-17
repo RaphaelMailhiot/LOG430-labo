@@ -1,0 +1,151 @@
+@startuml sales-service-class-diagram
+
+package "Sales Service Entities" {
+    class Sale {
+        + id: number
+        + store_id: number
+        + date: string
+        + items: SaleItem[]
+    }
+
+    class SaleItem {
+        + sale_id: number
+        + product_id: number
+        + quantity: number
+        + price: number
+        + sale: Sale
+    }
+
+    class Checkout {
+        + id: number
+        + customer_id: number
+        + store_id: number
+        + total_amount: number
+        + payment_method: string
+    }
+
+    class ShoppingCart {
+        + id: number
+        + customer_id: number | null
+        + products: ShoppingCartProduct[]
+        + created_at: Date
+        + updated_at: Date
+    }
+
+    class ShoppingCartProduct {
+        + id: number
+        + product_id: number
+        + cart: ShoppingCart
+        + quantity: number
+    }
+}
+
+package "Controllers" {
+    class SalesController {
+        + getAllSales()
+        + getSaleByStore(storeId: number)
+        + getSaleById(storeId: number, saleId: number)
+    }
+
+    class CheckoutsController {
+        + getAllCheckouts()
+        + createCheckout(body: any)
+        + getCheckoutById(checkoutId: number)
+    }
+
+    class ShoppingCartsController {
+        + getAllShoppingCarts()
+        + createShoppingCart(body: any)
+        + updateShoppingCart(cartId: number, body: any)
+        + getShoppingCartsByCustomerId(customerId: number)
+        + addProductToCart(productsId: number, body: any)
+    }
+}
+
+package "Middleware" {
+    class ContentNegotiation {
+        + handle(req: Request, res: Response, next: NextFunction)
+    }
+
+    class Logger {
+        + info(message: object)
+        + error(message: object)
+        + warn(message: object)
+    }
+
+    class Metrics {
+        + recordSaleRequest(success: boolean)
+        + recordCheckoutRequest(success: boolean)
+        + recordCartRequest(success: boolean)
+        + recordRequest(method: string, path: string, status: number)
+    }
+
+    class StaticTokenAuth {
+        + authenticate(req: Request, res: Response, next: NextFunction)
+    }
+
+    class RedisClient {
+        + get(key: string): Promise<string | null>
+        + set(key: string, value: string, ttl: number): Promise<void>
+        + del(key: string): Promise<void>
+    }
+}
+
+package "Routes" {
+    class SalesRouter {
+        + GET /api/v1/sales
+        + GET /api/v1/stores/{storeId}/sales
+        + GET /api/v1/stores/{storeId}/sales/{saleId}
+    }
+
+    class CheckoutRouter {
+        + GET /api/v1/checkouts
+        + POST /api/v1/checkouts
+        + GET /api/v1/checkouts/{checkoutId}
+    }
+
+    class ShoppingCartsRouter {
+        + GET /api/v1/shopping-carts
+        + POST /api/v1/shopping-carts
+        + PUT /api/v1/shopping-carts/{cartId}
+        + GET /api/v1/customers/{customerId}/shopping-carts
+        + POST /api/v1/shopping-carts/{productsId}
+    }
+}
+
+' Relationships
+Sale --> SaleItem : contains
+SaleItem --> Sale : belongs to
+ShoppingCart --> ShoppingCartProduct : contains
+ShoppingCartProduct --> ShoppingCart : belongs to
+
+SalesController --> Sale : manages
+CheckoutsController --> Checkout : manages
+ShoppingCartsController --> ShoppingCart : manages
+ShoppingCartsController --> ShoppingCartProduct : manages
+
+SalesRouter --> SalesController : routes to
+CheckoutRouter --> CheckoutsController : routes to
+ShoppingCartsRouter --> ShoppingCartsController : routes to
+
+ContentNegotiation --> SalesRouter : processes
+ContentNegotiation --> CheckoutRouter : processes
+ContentNegotiation --> ShoppingCartsRouter : processes
+
+Logger --> SalesController : logs
+Logger --> CheckoutsController : logs
+Logger --> ShoppingCartsController : logs
+
+Metrics --> SalesController : monitors
+Metrics --> CheckoutsController : monitors
+Metrics --> ShoppingCartsController : monitors
+
+StaticTokenAuth --> SalesRouter : authenticates
+StaticTokenAuth --> CheckoutRouter : authenticates
+StaticTokenAuth --> ShoppingCartsRouter : authenticates
+
+RedisClient --> SalesController : caches
+RedisClient --> CheckoutsController : caches
+RedisClient --> ShoppingCartsController : caches
+
+@enduml

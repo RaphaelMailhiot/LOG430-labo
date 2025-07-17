@@ -1,0 +1,121 @@
+@startuml sales-purchase
+
+start
+
+:Client initie un achat;
+note right
+  POST /api/v1hopping-carts
+  ou POST /api/v1eckouts
+  avec les données du client
+end note
+
+:API Gateway (Kong) reçoit la requête;
+
+:Sales Service traite la requête;
+
+:Validation des données dentrée;
+if (Données client valides?) then (oui)
+else (non)
+  :Retourner erreur 400ad Request;
+  stop
+endif
+
+:Vérifier le cache Redis;
+note right
+  Recherche dans le cache
+  pour les paniers existants
+end note
+
+if (Panier en cache?) then (oui)
+  :Récupérer panier du cache;
+else (non)
+  :Créer nouveau panier dachat;
+  note right
+    - Créer ShoppingCart
+    - Associer au client
+    - Initialiser les produits
+  end note
+endif
+
+:Ajouter produits au panier;
+note right
+  POST /api/v1ing-carts/{productId}
+  avec quantité et infos produit
+end note
+
+if (Produits disponibles?) then (oui)
+  :Récupérer infos produit depuis Products Service;
+  note right
+    Appel API vers Products Service
+    pour vérifier stock et prix
+  end note
+else (non)
+  :Enregistrer erreur (Prometheus);
+  :Retourner erreur 404 Product Not Found;
+  stop
+endif
+
+:Calculer le total de la commande;
+note right
+  - Prix unitaire × quantité
+  - Taxes applicables
+  - Frais de livraison
+end note
+
+:Vérifier les permissions daccès;
+note right
+  Vérification des droits
+  d'achat du client
+end note
+
+if (Accès autorisé?) then (oui)
+  :Créer le checkout;
+  note right
+    - Créer Checkout entity
+    - Enregistrer méthode de paiement
+    - Calculer total_amount
+  end note
+  
+  :Mettre en cache les données (Redis);
+  note right
+    Cache avec TTL de 360    pour optimiser les performances
+  end note
+  
+  :Enregistrer la vente;
+  note right
+    - Créer Sale entity
+    - Créer SaleItem pour chaque produit
+    - Associer au store_id
+  end note
+  
+  :Enregistrer achat réussi (Prometheus);
+  
+  :Retourner réponse 21ated;
+  note right
+   [object Object]
+  checkout: {
+        id": 123,
+        customer_id": 456     total_amount": 99.99,
+       payment_method": "credit_card
+      },
+     sale: {
+        id": 789
+     store_id":1,
+     items": [...]
+      }
+    }
+  end note
+  
+else (non)
+  :Enregistrer accès refusé (Prometheus);
+  :Retourner erreur 403 Forbidden;
+  note right
+    [object Object]error":Access denied",
+    message": "Insufficient permissions
+    }
+  end note
+endif
+
+stop
+
+@enduml 

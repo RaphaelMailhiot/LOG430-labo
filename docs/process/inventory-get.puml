@@ -1,0 +1,63 @@
+@startuml inventory-get
+
+start
+
+:Client envoie requête d'inventaire;
+note right
+  GET /api/v1ventories
+  ou GET /api/v1/inventories/:store_id
+  ou GET /api/v1/inventories/:store_id/products/:product_id
+end note
+
+:API Gateway (Kong) reçoit la requête;
+
+:Inventory Service traite la requête;
+
+:Validation des paramètres dentrée;
+if (Store_id présent?) then (oui)
+else (non)
+  :Retourner erreur 400ad Request;
+  stop
+endif
+
+:Rechercher l'inventaire en base de données;
+
+if (Inventaire trouvé?) then (oui)
+  :Récupérer les données d'inventaire;
+  note right
+    - stock disponible
+    - informations produit
+    - store_id
+  end note
+else (non)
+  :Enregistrer requête échouée (Prometheus);
+  :Retourner erreur 404 Not Found;
+  stop
+endif
+
+:Vérifier les permissions daccès;
+note right
+  Vérification des droits
+  d'accès à l'inventaire
+end note
+
+if (Accès autorisé?) then (oui)
+  :Formater les données de réponse;
+  
+  :Enregistrer requête réussie (Prometheus);
+  
+  :Retourner réponse200OK;
+  
+else (non)
+  :Enregistrer accès refusé (Prometheus);
+  :Retourner erreur 403 Forbidden;
+  note right
+    [object Object]error":Access denied",
+    message": "Insufficient permissions
+    }
+  end note
+endif
+
+stop
+
+@enduml 

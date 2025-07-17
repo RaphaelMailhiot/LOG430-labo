@@ -1,4 +1,4 @@
-@startuml Architecture microservices round-robin
+@startuml local-architecture
 
 title Architecture microservices avec bases séparées et round-robin
 

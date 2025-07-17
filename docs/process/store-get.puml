@@ -1,0 +1,100 @@
+@startuml store-get
+
+start
+
+:Client envoie requête de magasins;
+note right
+  GET /api/v1/stores
+  ou GET /api/v1ores/main
+  ou GET /api/v1/stores/{storeId}
+end note
+
+:API Gateway (Kong) reçoit la requête;
+
+:Store Service traite la requête;
+
+:Validation des paramètres dentrée;
+if (Paramètres valides?) then (oui)
+else (non)
+  :Retourner erreur 400ad Request;
+  stop
+endif
+
+:Vérifier le cache Redis;
+note right
+  Recherche dans le cache
+  avec la clé appropriée
+  (stores:all, stores:main, stores:{id})
+end note
+
+if (Données en cache?) then (oui)
+  :Retourner données du cache;
+  note right
+    Données formatées
+    depuis Redis
+  end note
+else (non)
+  :Rechercher les magasins en base de données;
+  note right
+    - Tous les magasins
+    - Magasin principal (isMain: true)
+    - Magasin par ID spécifique
+  end note
+endif
+
+if (Magasins trouvés?) then (oui)
+  :Récupérer les données des magasins;
+  note right
+    - Informations magasin
+    - ID, nom, statut principal
+    - Relations avec autres services
+  end note
+else (non)
+  :Enregistrer requête échouée (Prometheus);
+  :Retourner erreur 404 Not Found;
+  stop
+endif
+
+:Vérifier les permissions daccès;
+note right
+  Vérification des droits
+  d'accès aux magasins
+end note
+
+if (Accès autorisé?) then (oui)
+  :Mettre en cache les données (Redis);
+  note right
+    Cache avec TTL de360    pour optimiser les performances
+  end note
+  
+  :Formater les données de réponse;
+  note right
+    - Informations magasin
+    - Statut principal si applicable
+    - Format JSON standardisé
+  end note
+  
+  :Enregistrer requête réussie (Prometheus);
+  
+  :Retourner réponse 200 OK;
+  note right
+   [object Object]   data: {
+      id:1
+      name": Magasin Principal",
+      isMain": true
+    }
+  end note
+  
+else (non)
+  :Enregistrer accès refusé (Prometheus);
+  :Retourner erreur 403 Forbidden;
+  note right
+    [object Object]error:Access denied,
+    message": "Insufficient permissions
+    }
+  end note
+endif
+
+stop
+
+@enduml 

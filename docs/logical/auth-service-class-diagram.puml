@@ -1,0 +1,115 @@
+@startuml auth-service-class-diagram
+
+package "Auth Service Entities" {
+    
+    class Customer {
+        + id: number
+        + name: string
+        + email: string
+        + password: string
+        + cart_id: number
+    }
+    
+    class Manager {
+        + id: number
+        + name: string
+        + email: string
+        + password: string
+        + store_id: number
+    }
+}
+
+package "Controllers" {
+    
+    class CustomersController {
+        + getAllCustomers()
+        + getCustomerById(id: number)
+        + createCustomer(customerData: object)
+        + updateCustomer(id: number, data: object)
+        + deleteCustomer(id: number)
+        + loginCustomer(email: string, password: string)
+    
+    class ManagersController {
+        + getAllManagers()
+        + getManagerById(id: number)
+        + createManager(managerData: object)
+        + updateManager(id: number, data: object)
+        + deleteManager(id: number)
+        + loginManager(email: string, password: string)
+    }
+    
+    class UsersController {
+        + getAllUsers()
+        + createUser(userData: object)
+    }
+}
+
+package "Middleware" {
+    
+    class ContentNegotiation {
+        + handle(req: Request, res: Response, next: NextFunction)
+    }
+    
+    class Logger {
+        + info(message: object)
+        + error(message: object)
+        + warn(message: object)
+    }
+    
+    class Metrics {
+        + recordLogin(success: boolean)
+        + recordRegistration(success: boolean)
+        + recordRequest(method: string, path: string, status: number)
+    }
+    
+    class StaticTokenAuth {
+        + authenticate(req: Request, res: Response, next: NextFunction)
+    }
+}
+
+package "Routes" {
+    
+    class CustomersRouter {
+        + GET /api/v1/customers
+        + POST /api/v1/customers
+        + GET /api/v1/customers/:id
+    }
+    
+    class ManagersRouter {
+        + GET /api/v1/managers
+        + POST /api/v1/managers
+        + GET /api/v1/managers/:id
+    }
+    
+    class UsersRouter {
+        + GET /api/v1/users
+        + GET /api/v1/users/:email/password/:password
+    }
+}
+
+' Relationships
+CustomersController --> Customer : manages
+ManagersController --> Manager : manages
+UsersController --> "Auth Service Entities" : manages
+
+CustomersRouter --> CustomersController : routes to
+ManagersRouter --> ManagersController : routes to
+UsersRouter --> UsersController : routes to
+
+ContentNegotiation --> CustomersRouter : processes
+ContentNegotiation --> ManagersRouter : processes
+ContentNegotiation --> UsersRouter : processes
+
+Logger --> CustomersController : logs
+Logger --> ManagersController : logs
+Logger --> UsersController : logs
+
+Metrics --> CustomersController : monitors
+Metrics --> ManagersController : monitors
+Metrics --> UsersController : monitors
+
+StaticTokenAuth --> CustomersRouter : authenticates
+StaticTokenAuth --> ManagersRouter : authenticates
+StaticTokenAuth --> UsersRouter : authenticates
+
+@enduml 

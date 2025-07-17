@@ -48,14 +48,16 @@
 
 ## Architecture et Technologies
 
-- **Client/Serveur 3 tiers**  
-  - Interface : application web
-  - Serveur : Node.js avec Express.js
-  - Base de données : PostgreSQL
+- **Architecture microservices**  
+  - Frontend : Application web Express.js
+  - Services : auth, inventory, products, sales, store
+  - API Gateway : Kong pour la gestion des routes
+  - Base de données : PostgreSQL par service
 - **ORM abstrait** (TypeORM)  
 - **SGBD** : PostgreSQL
 - **Conteneurisation** : Docker & Docker-Compose  
-- **CI/CD** : GitHub Actions / GitLab CI  
+- **Monitoring** : Prometheus & Grafana
+- **CI/CD** : GitHub Actions  
 - **Tests** : Jest
 
 ---
@@ -64,61 +66,112 @@
 
 ## Vue logique
 ![Diagramme de classes (PlantUML)](../out/docs/logical/class-diagram/class-diagram.svg)
+![Diagramme de classes Service Auth (PlantUML)](../out/docs/logical/auth-service-class/auth-service-class.svg)
+![Diagramme de classes Service Inventory (PlantUML)](../out/docs/logical/inventory-service-class/inventory-service-class.svg)
+![Diagramme de classes Service Products (PlantUML)](../out/docs/logical/products-service-class/products-service-class.svg)
+![Diagramme de classes Service Sales (PlantUML)](../out/docs/logical/sales-service-class/sales-service-class.svg)
+![Diagramme de classes Service Store (PlantUML)](../out/docs/logical/store-service-class/store-service-class.svg)
 
 ## Vue des processus
-![Processus de recherche d'un produit (PlantUML)](../out/docs/process/product-search/product-search.svg)
-![Processus d'ajout d'un produit (PlantUML)](../out/docs/process/add-product/add-product.svg)
-![Processus d'une vente (PlantUML)](../out/docs/process/record-sale/record-sale.svg)
-![Processus de retour d'une vente (PlantUML)](../out/docs/process/manage-return/manage-return.svg)
-![Processus de consultation de l'inventaire (PlantUML)](../out/docs/process/view-stock/view-stock.svg)
+![Processus de connection (PlantUML)](../out/docs/process/auth-login/auth-login.svg)
+![Processus de get l'inventaire (PlantUML)](../out/docs/process/inventory-get/inventory-get.svg)
+![Processus de get les produts (PlantUML)](../out/docs/process/products-get/products-get.svg)
+![Processus de faire une vente e-commerce (PlantUML)](../out/docs/process/sales-purchase/sales-purchase.svg)
+![Processus de get le magasin (PlantUML)](../out/docs/process/store-get/store-get.svg)
 
 ## Vue de déploiement
-![Architecture locale 2-tier (PlantUML)](../out/docs/physical/local-architecture/local-architecture.svg)
+![Architecture Microservices (PlantUML)](../out/docs/physical/local-architecture/local-architecture.svg)
 
 ## Vue d’implémentation
 ![Organisation des modules (PlantUML)](../out/docs/development/modules-organisation/modules-organisation.svg)
+![Organisation des modules de services (PlantUML)](../out/docs/development/services-modules-organisation/services-modules-organisation.svg)
 
 ## Vue des cas d'utilisation
 ![Cas d'utilisation (PlantUML)](../out/docs/use-case/use-case/use-case.svg)
 
 ---
 
-# 3. Justification des d´ecisions d’architecture (ADR)
+# 3. Justification des d´ecisions d'architecture (ADR)
 
-## ADR-1 : Choix de plateform
+## ADR-1 : Choix de plateforme
 
-Il faut une plateforme pour faire une service de gestion de POS avec un modèle 3-tier qui est modulaire et fiable.
-La plateforme choisit est Node.js avec TypeScript parce qu'on peut utiliser npm pour facilité le développement, TypeScript est plus sécuriataire que JavaScript grâce au typage et ma connaissance de la plateforme aide le développement.
+Il faut une plateforme pour développer un système de gestion de POS avec une architecture microservices qui est modulaire, évolutive et fiable.
+La plateforme choisie est Node.js avec TypeScript parce qu'on peut utiliser npm pour faciliter le développement, TypeScript est plus sécuritaire que JavaScript grâce au typage et ma connaissance de la plateforme aide le développement.
 
-## ADR-2 : Séparation des responsabilités
+## ADR-2 : Architecture microservices
 
-Il faut une structure claire pour maintenir une évolution de l'application et séparer les différentes couches de l'application.
-L'architecture adopté est inspiré des celle Modèle-Vue-Contrôleur (MVC). Cela fait en sorte que chaques couches sont séparées des autres et elles peuvent évoluer indépendamment.
+Il faut une architecture qui permet l'évolution indépendante des différents domaines métier et facilite la maintenance.
+L'architecture adoptée est microservices avec séparation des responsabilités par domaine métier (auth, inventory, products, sales, store). Cela permet à chaque service d'évoluer indépendamment et facilite le déploiement et la mise à l'échelle.
 
-## ADR-3 : Choix de m´ecanisme de base de données
+## ADR-3 : Choix de mécanisme de base de données
 
-Il faut une base de données pour gérer l'inventaire et les ventes.
-Le type de base de données choisit est PostgreSQL parce que j'avais à la base une base de données SQLite et je devais migré vers une base de données qui est multi-utilisateurs puisqu'il y a maintenant plusieurs magasin et PostgreSQL est une base de données relationnelles ce qui facilite la migration.
+Il faut une base de données pour gérer l'inventaire et les ventes dans un contexte multi-services.
+Le type de base de données choisi est PostgreSQL avec une base de données par service (Database per Service pattern). PostgreSQL est une base de données relationnelles robuste qui supporte les transactions distribuées et facilite la gestion des données complexes.
+
+## ADR-4 : API Gateway
+
+Il faut un mécanisme pour gérer les communications entre le frontend et les microservices de manière centralisée.
+L'API Gateway Kong est choisi pour gérer le routage, l'authentification et la limitation de débit de manière centralisée, simplifiant ainsi l'architecture et améliorant la sécurité.
+
+## ADR-5 : Monitoring et observabilité
+
+Il faut un système de monitoring pour surveiller les performances et la santé des microservices.
+Prometheus et Grafana sont choisis pour collecter les métriques, surveiller les performances et fournir des tableaux de bord visuels pour l'observabilité du système.
 
 # 4. Choix technologiques
 
+## 🚀 Plateforme de développement
+
 - **Node.js**  
-  Choisi pour sa simplicité de déploiement, sa rapidité d’exécution et la richesse de son écosystème. Permet de développer une application console portable et légère.
+  Choisi pour sa simplicité de déploiement, sa rapidité d'exécution et la richesse de son écosystème. Permet de développer des microservices performants et évolutifs.
 
 - **TypeScript**  
-  Apporte la sécurité du typage statique, facilite la maintenance et réduit les erreurs à l’exécution. Idéal pour des projets évolutifs et fiables.
+  Apporte la sécurité du typage statique, facilite la maintenance et réduit les erreurs à l'exécution. Idéal pour des projets évolutifs et fiables dans un contexte microservices.
+
+## 🗄️ Persistance des données
 
 - **TypeORM**  
-  Fournit une abstraction de la couche de persistance, simplifie l’accès aux données et compatible avec SQLite.
+  Fournit une abstraction de la couche de persistance, simplifie l'accès aux données et compatible avec PostgreSQL. Supporte les migrations et les entités TypeScript.
 
 - **PostgreSQL**  
-  Base de données client-serveur pour les applications à grande échelle qui est multi-utilisateurs et faite pour des multiples connexions.
+  Base de données relationnelle robuste pour les applications à grande échelle. Supporte les transactions distribuées et la gestion des données complexes dans un contexte multi-services.
 
-- **Jest**  
-  Outil de tests unitaires moderne, rapide et facile à intégrer dans un projet TypeScript. Permet d’assurer la fiabilité du code et de faciliter la maintenance.
+## 🏗️ Architecture et communication
+
+- **Kong API Gateway**  
+  Gère le routage, l'authentification et la limitation de débit de manière centralisée. Simplifie l'architecture microservices et améliore la sécurité.
+
+- **Express.js**  
+  Framework web minimaliste et flexible pour Node.js. Facilite la création d'APIs RESTful pour les microservices.
+
+- **Swagger/OpenAPI**  
+  Documentation automatique des APIs pour chaque microservice. Améliore la collaboration entre équipes et facilite l'intégration.
+
+## 🐳 Conteneurisation et déploiement
 
 - **Docker & Docker Compose**  
-  Garantissent la portabilité et la reproductibilité de l’environnement de développement et de production. Simplifient le déploiement sur différentes plateformes sans configuration manuelle.
+  Garantissent la portabilité et la reproductibilité de l'environnement de développement et de production. Simplifient le déploiement des microservices sur différentes plateformes.
 
-- **GitHub Actions / GitLab CI**  
-  Intègrent l’intégration continue (CI) pour automatiser les tests et les vérifications à chaque modification du code, augmentant la fiabilité et la qualité du projet.
+- **Nginx**  
+  Serveur web et reverse proxy pour servir l'application frontend et gérer les requêtes statiques.
+
+## 📊 Monitoring et observabilité
+
+- **Prometheus**  
+  Système de collecte et de stockage de métriques pour surveiller les performances des microservices.
+
+- **Grafana**  
+  Plateforme de visualisation et de création de tableaux de bord pour analyser les métriques collectées par Prometheus.
+
+## 🧪 Tests et qualité
+
+- **Jest**  
+  Outil de tests unitaires moderne, rapide et facile à intégrer dans un projet TypeScript. Permet d'assurer la fiabilité du code et de faciliter la maintenance.
+
+- **ESLint**  
+  Outil d'analyse statique pour maintenir la qualité du code et respecter les standards de codage.
+
+## 🔄 Intégration continue
+
+- **GitHub Actions**  
+  Automatise les tests, la vérification de qualité du code et le déploiement à chaque modification du code, augmentant la fiabilité et la qualité du projet.

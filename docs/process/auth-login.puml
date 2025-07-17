@@ -1,0 +1,78 @@
+@startuml auth-login
+
+start
+
+:Client envoie requête de connexion;
+note right
+  POST /api/v1/customers/login
+  ou POST /api/v1/managers/login
+  avec email et password
+end note
+
+:API Gateway (Kong) reçoit la requête;
+
+:Auth Service traite la requête;
+
+:Validation des données d'entrée;
+if (Email et password présents?) then (oui)
+else (non)
+  :Retourner erreur 400 Bad Request;
+  stop
+endif
+
+:Rechercher l'utilisateur en base de données;
+note right
+  Query: SELECT * FROM customers/managers 
+  WHERE email = ?
+end note
+
+if (Utilisateur trouvé?) then (oui)
+  :Récupérer les données utilisateur;
+else (non)
+  :Enregistrer tentative échouée (Prometheus);
+  :Retourner erreur 404 Not Found;
+  stop
+endif
+
+:Vérifier le mot de passe;
+note right
+  Comparaison avec hash 
+  bcrypt ou similaire
+end note
+
+if (Mot de passe correct?) then (oui)
+  :Stocker session dans Redis;
+  note right
+    Key: session:user_id
+    Value: token + metadata
+    TTL: 24h
+  end note
+  
+  :Enregistrer connexion réussie (Prometheus);
+  
+  :Retourner réponse 200 OK;
+  note right
+    {
+      "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "cart_id": 1
+      }
+    }
+  end note
+  
+else (non)
+  :Enregistrer tentative échouée (Prometheus);
+  :Retourner erreur 401 Unauthorized;
+  note right
+    {
+      "success": false,
+      "error": "Invalid credentials"
+    }
+  end note
+endif
+
+stop
+
+@enduml

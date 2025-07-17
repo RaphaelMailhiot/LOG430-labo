@@ -1,0 +1,101 @@
+@startuml products-get
+
+start
+
+:Client envoie requête de produits;
+note right
+  GET /api/v1/products
+  ou GET /api/v1/products/:id
+  ou GET /api/v1/products/category/:categoryId
+end note
+
+:API Gateway (Kong) reçoit la requête;
+
+:Products Service traite la requête;
+
+:Validation des paramètres dentrée;
+if (Paramètres valides?) then (oui)
+else (non)
+  :Retourner erreur 400ad Request;
+  stop
+endif
+
+:Vérifier le cache Redis;
+note right
+  Recherche dans le cache
+  avec la clé appropriée
+end note
+
+if (Données en cache?) then (oui)
+  :Retourner données du cache;
+  note right
+    Données formatées
+    depuis Redis
+  end note
+else (non)
+  :Rechercher les produits en base de données;
+  note right
+    - Tous les produits
+    - Produit par ID
+    - Produits par catégorie
+    - Pagination et filtres
+  end note
+endif
+
+if (Produits trouvés?) then (oui)
+  :Récupérer les données des produits;
+  note right
+    - Informations produit
+    - Catégorie associée
+    - Prix et détails
+  end note
+else (non)
+  :Enregistrer requête échouée (Prometheus);
+  :Retourner erreur 404 Not Found;
+  stop
+endif
+
+:Vérifier les permissions daccès;
+note right
+  Vérification des droits
+  d'accès aux produits
+end note
+
+if (Accès autorisé?) then (oui)
+  :Mettre en cache les données (Redis);
+  note right
+    Cache avec TTL de 30    pour optimiser les performances
+  end note
+  
+  :Formater les données de réponse;
+  note right
+    - Pagination si applicable
+    - Métadonnées de réponse
+    - Format JSON standardisé
+  end note
+  
+  :Enregistrer requête réussie (Prometheus);
+  
+  :Retourner réponse 200 OK;
+  note right
+ [object Object]   data: [...],
+    pagination": {
+       total_records": 100,
+       current_page":1,
+       total_pages":5     }
+    }
+  end note
+  
+else (non)
+  :Enregistrer accès refusé (Prometheus);
+  :Retourner erreur 403 Forbidden;
+  note right
+    [object Object]error":Access denied",
+    message": "Insufficient permissions
+    }
+  end note
+endif
+
+stop
+
+@enduml 

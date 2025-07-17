@@ -1,0 +1,63 @@
+@startuml store-service-class-diagram
+
+package "Store Service Entities" {
+    class Store {
+        + id: number
+        + name: string
+        + isMain: boolean
+    }
+}
+
+package "Controllers" {
+    class StoresController {
+        + getAllStores(): void
+        + getMainStore(): void
+        + getStoreById(storeId: number): void
+    }
+}
+
+package "Middleware" {
+    class ContentNegotiation {
+        + handle(req: Request, res: Response, next: NextFunction): void
+    }
+
+    class Logger {
+        + info(message: object): void
+        + error(message: object): void
+        + warn(message: object): void
+    }
+
+    class Metrics {
+        + recordStoreRequest(success: boolean): void
+        + recordRequest(method: string, path: string, status: number): void
+    }
+
+    class StaticTokenAuth {
+        + authenticate(req: Request, res: Response, next: NextFunction): void
+    }
+
+    class RedisClient {
+        + get(key: string): Promise<string | null>
+        + set(key: string, value: string, ttl: number): Promise<void>
+        + del(key: string): Promise<void>
+    }
+}
+
+package "Routes" {
+    class StoresRouter {
+        + GET /api/v1/stores
+        + GET /api/v1/stores/main
+        + GET /api/v1/stores/{storeId}
+    }
+}
+
+' Relationships
+StoresController --> Store : manages
+StoresRouter --> StoresController : routes to
+ContentNegotiation --> StoresRouter : processes
+Logger --> StoresController : logs
+Metrics --> StoresController : monitors
+StaticTokenAuth --> StoresRouter : authenticates
+RedisClient --> StoresController : caches
+
+@enduml

@@ -1,0 +1,104 @@
+@startuml products-service-class-diagram
+
+package "Products Service Entities" {
+    class Product {
+        + id: number
+        + name: string
+        + price: number
+        + category: Category
+    }
+
+    class Category {
+        + id: number
+        + name: string
+        + products: Product[]
+    }
+}
+
+package "Controllers" {    
+    class ProductsController {
+        + getProducts()
+        + getProductsPaginated(params: object)
+        + getProductById(id: number)
+        + getProductsByCategoryId(categoryId: number)
+    }
+
+    class CategoriesController {
+        + getAllCategories()
+        + getCategoriesById(id: number)
+        + getCategoryByProductId(productId: number)
+        + createCategory(categoryData: object)
+    }
+}
+
+package "Middleware" {
+    class ContentNegotiation {
+        + handle(req: Request, res: Response, next: NextFunction)
+    }
+
+    class Logger {
+        + info(message: object)
+        + error(message: object)
+        + warn(message: object)
+    }
+
+    class Metrics {
+        + recordProductRequest(success: boolean)
+        + recordCategoryRequest(success: boolean)
+        + recordRequest(method: string, path: string, status: number)
+    }
+
+    class StaticTokenAuth {
+        + authenticate(req: Request, res: Response, next: NextFunction)
+    }
+
+    class RedisClient {
+        + get(key: string): Promise<string | null>
+        + set(key: string, value: string, ttl: number): Promise<void>
+        + del(key: string): Promise<void>
+    }
+}
+
+package "Routes" {    
+    class ProductsRouter {
+        + GET /api/v1/products
+        + GET /api/v1/products/:id
+        + GET /api/v1/products/category/:categoryId
+    }
+
+    class CategoriesRouter {
+        + GET /api/v1/categories
+        + GET /api/v1/categories/:id
+        + GET /api/v1/categories/product/:productId
+        + POST /api/v1/categories
+    }
+}
+
+' Relationships
+ProductsController --> Product : manages
+ProductsController --> Category : manages
+CategoriesController --> Category : manages
+CategoriesController --> Product : manages
+
+ProductsRouter --> ProductsController : routes to
+CategoriesRouter --> CategoriesController : routes to
+
+ContentNegotiation --> ProductsRouter : processes
+ContentNegotiation --> CategoriesRouter : processes
+
+Logger --> ProductsController : logs
+Logger --> CategoriesController : logs
+
+Metrics --> ProductsController : monitors
+Metrics --> CategoriesController : monitors
+
+StaticTokenAuth --> ProductsRouter : authenticates
+StaticTokenAuth --> CategoriesRouter : authenticates
+
+RedisClient --> ProductsController : caches
+RedisClient --> CategoriesController : caches
+
+Product --> Category : belongs to
+Category --> Product : contains
+
+@enduml
