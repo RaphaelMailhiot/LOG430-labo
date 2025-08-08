@@ -1,7 +1,5 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Saga } from './entities/Saga';
-import { SagaStep } from './entities/SagaStep';
 
 const MAX_RETRIES = 10;
 const RETRY_DELAY_MS = 3000;
@@ -15,35 +13,9 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME,
     synchronize: false,
     logging: false,
-    entities: [Saga, SagaStep],
+    entities: [`${__dirname}/entities/*.ts`],
     migrations: [`${__dirname}/migrations/*.ts`],
     subscribers: [],
-    // Optimisations mémoire pour TypeORM
-    extra: {
-        // Limite le pool de connexions
-        max: 5,
-        min: 1,
-        // Timeout pour les connexions
-        connectionTimeoutMillis: 5000,
-        // Timeout pour les requêtes
-        query_timeout: 5000,
-        // Timeout pour les statements
-        statement_timeout: 5000,
-        // Désactive les logs de requêtes en production
-        application_name: process.env.NODE_ENV === 'production' ? undefined : 'saga-orchestrator',
-    },
-    // Optimisations supplémentaires
-    cache: {
-        duration: 30000, // 30 secondes
-        type: 'redis',
-        options: {
-            host: process.env.REDIS_HOST || 'redis',
-            port: parseInt(process.env.REDIS_PORT || '6379'),
-            ttl: 300, // 5 minutes
-        },
-    },
-    // Désactive les logs en production
-    logger: process.env.NODE_ENV === 'production' ? 'simple-console' : 'advanced-console',
 });
 
 export async function initializeDatabase(): Promise<void> {
@@ -64,4 +36,4 @@ export async function initializeDatabase(): Promise<void> {
             await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
         }
     }
-} 
+}

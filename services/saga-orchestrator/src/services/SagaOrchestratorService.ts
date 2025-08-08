@@ -1,22 +1,10 @@
 import { Repository } from 'typeorm';
+import { SagaExecutor, SagaExecutionContext } from './SagaExecutor';
 import { Saga, SagaStatus, SagaType } from '../entities/Saga';
 import { SagaStep, StepStatus, StepType } from '../entities/SagaStep';
 import { PurchaseSagaExecutor } from './executors/PurchaseSagaExecutor';
 import { ReturnSagaExecutor } from './executors/ReturnSagaExecutor';
 import { logger } from '../middleware/logger';
-
-export interface SagaExecutionContext {
-  saga: Saga;
-  currentStep: SagaStep;
-  stepData: Record<string, any>;
-}
-
-export abstract class SagaExecutor {
-  abstract executeStep(context: SagaExecutionContext): Promise<Record<string, any>>;
-  abstract compensateStep(context: SagaExecutionContext): Promise<void>;
-  abstract getNextStep(currentStep: SagaStep): SagaStep | null;
-  abstract getCompensationStep(failedStep: SagaStep): SagaStep | null;
-}
 
 export class SagaOrchestratorService {
   private sagaRepository: Repository<Saga>;

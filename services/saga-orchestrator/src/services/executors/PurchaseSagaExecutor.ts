@@ -1,29 +1,29 @@
 import axios from 'axios';
-import { SagaExecutor, SagaExecutionContext } from '../SagaOrchestratorService';
 import { SagaStep, StepType } from '../../entities/SagaStep';
 import { logger } from '../../middleware/logger';
+import { SagaExecutor, SagaExecutionContext } from '../SagaExecutor';
 
 export class PurchaseSagaExecutor extends SagaExecutor {
-  
+
   async executeStep(context: SagaExecutionContext): Promise<Record<string, any>> {
     const { currentStep, stepData } = context;
-    
+
     switch (currentStep.type) {
       case StepType.VALIDATE_INVENTORY:
         return await this.validateInventory(stepData);
-        
+
       case StepType.RESERVE_INVENTORY:
         return await this.reserveInventory(stepData);
-        
+
       case StepType.PROCESS_PAYMENT:
         return await this.processPayment(stepData);
-        
+
       case StepType.CREATE_SALE:
         return await this.createSale(stepData);
-        
+
       case StepType.UPDATE_INVENTORY:
         return await this.updateInventory(stepData);
-        
+
       default:
         throw new Error(`Type d'étape non supporté: ${currentStep.type}`);
     }
@@ -31,20 +31,20 @@ export class PurchaseSagaExecutor extends SagaExecutor {
 
   async compensateStep(context: SagaExecutionContext): Promise<void> {
     const { currentStep, stepData } = context;
-    
+
     switch (currentStep.type) {
       case StepType.RELEASE_INVENTORY:
         await this.releaseInventory(stepData);
         break;
-        
+
       case StepType.REFUND_PAYMENT:
         await this.refundPayment(stepData);
         break;
-        
+
       case StepType.CANCEL_SALE:
         await this.cancelSale(stepData);
         break;
-        
+
       default:
         logger.warn(`Compensation non implémentée pour: ${currentStep.type}`);
     }
@@ -83,8 +83,8 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async validateInventory(data: Record<string, any>): Promise<Record<string, any>> {
     try {
       const { store_id, product_id, quantity } = data;
-      
-      const response = await axios.get(`http://inventory-service-1:3000/api/v1/inventories`, {
+
+      const response = await axios.get('http://inventory-service-1:3000/api/v1/inventories', {
         params: { store_id, product_id }
       });
 
@@ -104,8 +104,8 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async reserveInventory(data: Record<string, any>): Promise<Record<string, any>> {
     try {
       const { store_id, product_id, quantity } = data;
-      
-      const response = await axios.patch(`http://inventory-service-1:3000/api/v1/inventories`, {
+
+      const response = await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
         store_id,
         product_id,
         stock: -quantity // Réserver en diminuant le stock
@@ -122,9 +122,9 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async processPayment(data: Record<string, any>): Promise<Record<string, any>> {
     try {
       const { amount, payment_method, customer_id } = data;
-      
+
       // Simulation d'un appel au service de paiement
-      const paymentResponse = await axios.post(`http://payment-service:3000/api/v1/payments`, {
+      const paymentResponse = await axios.post('http://payment-service:3000/api/v1/payments', {
         amount,
         payment_method,
         customer_id,
@@ -132,7 +132,7 @@ export class PurchaseSagaExecutor extends SagaExecutor {
       });
 
       logger.info(`Paiement traité: ${amount}€ pour le client ${customer_id}`);
-      return { 
+      return {
         payment_id: paymentResponse.data.payment_id,
         transaction_id: paymentResponse.data.transaction_id
       };
@@ -145,8 +145,8 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async createSale(data: Record<string, any>): Promise<Record<string, any>> {
     try {
       const { store_id, customer_id, items, payment_id } = data;
-      
-      const response = await axios.post(`http://sales-service-1:3000/api/v1/sales`, {
+
+      const response = await axios.post('http://sales-service-1:3000/api/v1/sales', {
         store_id,
         customer_id,
         items,
@@ -164,9 +164,9 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async updateInventory(data: Record<string, any>): Promise<Record<string, any>> {
     try {
       const { store_id, product_id, quantity } = data;
-      
+
       // Mise à jour finale de l'inventaire (confirmation de la vente)
-      await axios.patch(`http://inventory-service-1:3000/api/v1/inventories`, {
+      await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
         store_id,
         product_id,
         stock: -quantity
@@ -184,8 +184,8 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async releaseInventory(data: Record<string, any>): Promise<void> {
     try {
       const { store_id, product_id, quantity } = data;
-      
-      await axios.patch(`http://inventory-service-1:3000/api/v1/inventories`, {
+
+      await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
         store_id,
         product_id,
         stock: quantity // Restaurer le stock
@@ -201,7 +201,7 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async refundPayment(data: Record<string, any>): Promise<void> {
     try {
       const { payment_id, amount } = data;
-      
+
       await axios.post(`http://payment-service:3000/api/v1/payments/${payment_id}/refund`, {
         amount
       });
@@ -216,7 +216,7 @@ export class PurchaseSagaExecutor extends SagaExecutor {
   private async cancelSale(data: Record<string, any>): Promise<void> {
     try {
       const { sale_id } = data;
-      
+
       await axios.delete(`http://sales-service-1:3000/api/v1/sales/${sale_id}`);
 
       logger.info(`Vente annulée: ${sale_id}`);

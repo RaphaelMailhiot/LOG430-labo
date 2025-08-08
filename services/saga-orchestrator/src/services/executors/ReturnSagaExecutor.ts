@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { SagaExecutor, SagaExecutionContext } from '../SagaOrchestratorService';
 import { SagaStep, StepType } from '../../entities/SagaStep';
 import { logger } from '../../middleware/logger';
+import { SagaExecutor, SagaExecutionContext } from '../SagaExecutor';
 
 export class ReturnSagaExecutor extends SagaExecutor {
   
@@ -136,7 +136,7 @@ export class ReturnSagaExecutor extends SagaExecutor {
       
       // Restaurer l'inventaire pour chaque produit
       for (const item of items) {
-        await axios.patch(`http://inventory-service-1:3000/api/v1/inventories`, {
+        await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
           store_id,
           product_id: item.product_id,
           stock: item.quantity // Restaurer le stock
@@ -201,14 +201,14 @@ export class ReturnSagaExecutor extends SagaExecutor {
       
       // Annuler la restauration de l'inventaire
       for (const item of restored_items) {
-        await axios.patch(`http://inventory-service-1:3000/api/v1/inventories`, {
+        await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
           store_id,
           product_id: item.product_id,
           stock: -item.quantity // Diminuer le stock
         });
       }
 
-      logger.info(`Restauration d'inventaire annulée`);
+      logger.info('Restauration d\'inventaire annulée');
     } catch (error) {
       logger.error(`Erreur lors de l'annulation de la restauration: ${error}`);
       throw error;

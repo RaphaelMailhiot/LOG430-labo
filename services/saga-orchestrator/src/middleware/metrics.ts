@@ -66,10 +66,19 @@ export const metricsMiddleware = (req: Request, res: Response, next: NextFunctio
 };
 
 // Route pour exposer les métriques
-export const metricsRoute = (req: Request, res: Response) => {
-    res.set('Content-Type', register.contentType);
-    res.end(register.metrics());
-};
+export async function metricsRoute(req: Request, res: Response) {
+    try {
+        res.set('Content-Type', register.contentType);
+        const metrics = await register.metrics();
+        res.end(metrics);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).end('Error generating metrics: ' + error.message);
+        } else {
+            res.status(500).end('Error generating metrics: Unknown error');
+        }
+    }
+}
 
 // Fonctions utilitaires pour les métriques de saga
 export const recordSagaStart = (type: string) => {

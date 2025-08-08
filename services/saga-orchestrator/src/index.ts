@@ -2,12 +2,12 @@ import cors from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
-import { AppDataSource } from './data-source';
 import { SagaController } from './controllers/sagaController';
-import { SagaOrchestratorService } from './services/SagaOrchestratorService';
+import { AppDataSource } from './data-source';
 import { logger } from './middleware/logger';
 import { metricsMiddleware, metricsRoute } from './middleware/metrics';
 import { redis } from './middleware/redisClient';
+import { SagaOrchestratorService } from './services/SagaOrchestratorService';
 import swaggerSpec from './swagger/swaggerConfig';
 import { swaggerUiOptions } from './swagger/swaggerUiOptions';
 
@@ -107,7 +107,7 @@ if (process.env.NODE_ENV !== 'test') {
 if (process.env.NODE_ENV !== 'production') {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 }
-app.use('/metrics', metricsRoute);
+app.get('/metrics', metricsRoute);
 
 // Routes de l'API Saga
 if (sagaController) {

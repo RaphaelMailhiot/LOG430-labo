@@ -1,20 +1,10 @@
 import { AppDataSource } from './data-source';
 
-async function runMigrations() {
-  try {
-    await AppDataSource.initialize();
-    console.log('✅ Base de données connectée pour les migrations');
-    
-    const migrations = await AppDataSource.runMigrations();
-    console.log(`✅ ${migrations.length} migration(s) exécutée(s)`);
-    
-    await AppDataSource.destroy();
-    console.log('✅ Connexion fermée');
+AppDataSource.initialize().then(async () => {
+    await AppDataSource.runMigrations();
+    console.log('✅ Migrations applied');
     process.exit(0);
-  } catch (error) {
-    console.error('❌ Erreur lors des migrations:', error);
+}).catch(error => {
+    console.error('❌ Migration error:', error);
     process.exit(1);
-  }
-}
-
-runMigrations(); 
+});

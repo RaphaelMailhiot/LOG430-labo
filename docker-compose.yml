@@ -305,16 +305,7 @@ services:
   # SAGA ORCHESTRATOR SERVICE
   saga-orchestrator-1:
     build: ./services/saga-orchestrator
-    environment:
-      - DB_HOST=saga-orchestrator-db
-      - DB_PORT=5432
-      - DB_USER=saga_user
-      - DB_PASSWORD=saga_pass
-      - DB_NAME=saga_db
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - NODE_ENV=development
-      - PORT=3000
+    env_file: ./services/saga-orchestrator/.env
     ports:
       - "3601:3000"
     depends_on:
@@ -334,16 +325,7 @@ services:
 
   saga-orchestrator-2:
     build: ./services/saga-orchestrator
-    environment:
-      - DB_HOST=saga-orchestrator-db
-      - DB_PORT=5432
-      - DB_USER=saga_user
-      - DB_PASSWORD=saga_pass
-      - DB_NAME=saga_db
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - NODE_ENV=development
-      - PORT=3000
+    env_file: ./services/saga-orchestrator/.env
     ports:
       - "3602:3000"
     depends_on:
