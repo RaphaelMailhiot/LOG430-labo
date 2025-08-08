@@ -135,7 +135,7 @@ services:
     routes:
       - name: saga-orchestrator-service
         paths:
-          - /saga
+          - /saga-orchestrator
         strip_path: true
         plugins:
           - name: cors

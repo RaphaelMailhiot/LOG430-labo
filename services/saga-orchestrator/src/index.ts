@@ -7,6 +7,7 @@ import { AppDataSource } from './data-source';
 import { logger } from './middleware/logger';
 import { metricsMiddleware, metricsRoute } from './middleware/metrics';
 import { redis } from './middleware/redisClient';
+import createApiSagaRouter from './routes/apiSagaRouter';
 import { SagaOrchestratorService } from './services/SagaOrchestratorService';
 import swaggerSpec from './swagger/swaggerConfig';
 import { swaggerUiOptions } from './swagger/swaggerUiOptions';
@@ -25,7 +26,7 @@ process.on('uncaughtException', (error) => {
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('🚨 Promesse rejetée non gérée:', reason);
+    console.error('🚨 Promesse rejetée non gérée:', reason, '\nPromise:', promise);
     process.exit(1);
 });
 
@@ -104,20 +105,17 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Routes avec optimisations
-if (process.env.NODE_ENV !== 'production') {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-}
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 app.get('/metrics', metricsRoute);
 
 // Routes de l'API Saga
-if (sagaController) {
-    app.post('/api/v1/sagas', (req: Request, res: Response) => sagaController.startSaga(req, res));
-    app.post('/api/v1/sagas/:sagaId/execute', (req: Request, res: Response) => sagaController.executeSaga(req, res));
-    app.get('/api/v1/sagas/:sagaId', (req: Request, res: Response) => sagaController.getSaga(req, res));
-    app.get('/api/v1/sagas', (req: Request, res: Response) => sagaController.getAllSagas(req, res));
-    app.post('/api/v1/sagas/:sagaId/compensate', (req: Request, res: Response) => sagaController.compensateSaga(req, res));
-    app.post('/api/v1/sagas/:sagaId/retry', (req: Request, res: Response) => sagaController.retrySaga(req, res));
+if (!sagaController) {
+    const { SagaController } = require('./controllers/sagaController');
+    const { SagaOrchestratorService } = require('./services/SagaOrchestratorService');
+    sagaOrchestrator = new SagaOrchestratorService();
+    sagaController = new SagaController(sagaOrchestrator);
 }
+app.use('/api/v1', createApiSagaRouter(sagaController!));
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {

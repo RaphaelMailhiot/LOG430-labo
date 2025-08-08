@@ -50,7 +50,7 @@ export class PurchaseSagaExecutor extends SagaExecutor {
     }
   }
 
-  getNextStep(currentStep: SagaStep): SagaStep | null {
+  getNextStep(_currentStep: SagaStep): SagaStep | null {
     // Logique pour déterminer la prochaine étape
     // Dans une saga orchestrée, c'est généralement l'étape suivante dans l'ordre
     return null; // Géré par l'orchestrateur
@@ -105,7 +105,7 @@ export class PurchaseSagaExecutor extends SagaExecutor {
     try {
       const { store_id, product_id, quantity } = data;
 
-      const response = await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
+      await axios.patch('http://inventory-service-1:3000/api/v1/inventories', {
         store_id,
         product_id,
         stock: -quantity // Réserver en diminuant le stock

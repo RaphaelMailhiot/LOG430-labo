@@ -97,22 +97,22 @@ export class Init1751596404826 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         // Suppression des index
-        await queryRunner.query(`DROP INDEX "IDX_saga_step_order"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_step_status"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_step_type"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_step_saga_id"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_created_at"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_status"`);
-        await queryRunner.query(`DROP INDEX "IDX_saga_type"`);
+        await queryRunner.query('DROP INDEX "IDX_saga_step_order"');
+        await queryRunner.query('DROP INDEX "IDX_saga_step_status"');
+        await queryRunner.query('DROP INDEX "IDX_saga_step_type"');
+        await queryRunner.query('DROP INDEX "IDX_saga_step_saga_id"');
+        await queryRunner.query('DROP INDEX "IDX_saga_created_at"');
+        await queryRunner.query('DROP INDEX "IDX_saga_status"');
+        await queryRunner.query('DROP INDEX "IDX_saga_type"');
         
         // Suppression des tables
-        await queryRunner.query(`DROP TABLE "saga_step"`);
-        await queryRunner.query(`DROP TABLE "saga"`);
+        await queryRunner.query('DROP TABLE "saga_step"');
+        await queryRunner.query('DROP TABLE "saga"');
         
         // Suppression des types enum
-        await queryRunner.query(`DROP TYPE "public"."step_status_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."step_type_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."saga_status_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."saga_type_enum"`);
+        await queryRunner.query('DROP TYPE "public"."step_status_enum"');
+        await queryRunner.query('DROP TYPE "public"."step_type_enum"');
+        await queryRunner.query('DROP TYPE "public"."saga_status_enum"');
+        await queryRunner.query('DROP TYPE "public"."saga_type_enum"');
     }
 } 

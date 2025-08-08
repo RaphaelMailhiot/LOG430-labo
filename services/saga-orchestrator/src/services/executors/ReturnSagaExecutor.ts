@@ -47,7 +47,7 @@ export class ReturnSagaExecutor extends SagaExecutor {
     }
   }
 
-  getNextStep(currentStep: SagaStep): SagaStep | null {
+  getNextStep(_currentStep: SagaStep): SagaStep | null {
     return null; // Géré par l'orchestrateur
   }
 
@@ -160,7 +160,7 @@ export class ReturnSagaExecutor extends SagaExecutor {
       const { sale_id, items, refund_amount } = data;
       
       // Mettre à jour la vente avec les informations de retour
-      const updateResponse = await axios.patch(`http://sales-service-1:3000/api/v1/sales/${sale_id}`, {
+      await axios.patch(`http://sales-service-1:3000/api/v1/sales/${sale_id}`, {
         status: 'returned',
         return_items: items,
         refund_amount,

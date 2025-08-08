@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { register, Counter, Histogram, Gauge } from 'prom-client';
+import { register, Counter, Histogram } from 'prom-client';
 
 // Métriques Prometheus
 const httpRequestDuration = new Histogram({

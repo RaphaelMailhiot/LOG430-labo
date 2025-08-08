@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [frontend, auth, inventory, products, sales, store]
+        service: [frontend, auth, inventory, products, saga-orchestrator, sales, store]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        service: [auth, inventory, products, sales, store]
+        service: [auth, inventory, products, saga-orchestrator, sales, store]
     services:
       postgres:
         image: postgres:15
@@ -88,7 +88,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        service: [frontend, auth, inventory, products, sales, store]
+        service: [frontend, auth, inventory, products, saga-orchestrator, sales, store]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -107,7 +107,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        service: [frontend, auth, inventory, products, sales, store]
+        service: [frontend, auth, inventory, products, saga-orchestrator, sales, store]
     permissions:
       packages: write
       contents: read
