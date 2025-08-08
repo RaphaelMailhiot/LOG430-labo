@@ -62,6 +62,38 @@ router.post('/shopping-carts', async (req: Request, res: Response, next: NextFun
 /**
  * @openapi
  * /shopping-carts/{cartId}:
+ *   get:
+ *     summary: Récupère un chariot par son ID
+ *     tags:
+ *       - Chariots
+ *     parameters:
+ *       - in: path
+ *         name: cartId
+ *         required: true
+ *         description: ID du chariot à récupérer
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Détails du chariot
+ *       404:
+ *         description: Chariot non trouvé
+ */
+router.get('/shopping-carts/:cartId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const cartId = Number(req.params.cartId);
+        const shoppingCart = await shoppingCartsController.getShoppingCartById(cartId);
+        res.status(200).sendData(shoppingCart);
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+
+/**
+ * @openapi
+ * /shopping-carts/{cartId}:
  *   put:
  *     summary: Met à jour un chariot avec l'ID du client
  *     tags:
@@ -128,7 +160,7 @@ router.get('/customers/:customerId/shopping-carts', async (req: Request, res: Re
 });
 /**
  * @openapi
- * /shopping-carts/{productsId}:
+ * /shopping-carts/{cartId}/products/{productsId}:
  *   post:
  *     summary: Ajoute un produit à un chariot
  *     tags:
@@ -155,11 +187,56 @@ router.get('/customers/:customerId/shopping-carts', async (req: Request, res: Re
  *       201:
  *         description: Produit ajouté au chariot avec succès
  */
-router.post('/shopping-carts/:productsId', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/shopping-carts/:cartId/products/:productsId', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const productsId = Number(req.params.productsId);
         const shoppingCart = await shoppingCartsController.addProductToCart(productsId, req.body);
         res.status(201).sendData(shoppingCart);
+    } catch (err) {
+        (err as any).status = 400;
+        (err as any).error = 'Bad Request';
+        next(err);
+    }
+});
+/**
+ * @openapi
+ * /shopping-carts/{cartId}/products/{productsId}:
+ *   delete:
+ *     summary: Supprime un produit d'un chariot
+ *     tags:
+ *       - Chariots
+ *     parameters:
+ *       - in: path
+ *         name: cartId
+ *         required: true
+ *         description: ID du chariot dont on veut supprimer le produit
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: productsId
+ *         required: true
+ *         description: ID du produit à supprimer du chariot
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               customerId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Produit supprimé du chariot avec succès
+ */
+router.delete('/shopping-carts/:cartId/products/:productsId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const productsId = Number(req.params.productsId);
+        const cartId = Number(req.params.cartId);
+        const shoppingCart = await shoppingCartsController.removeProductFromCart(productsId, cartId);
+        res.status(200).sendData(shoppingCart);
     } catch (err) {
         (err as any).status = 400;
         (err as any).error = 'Bad Request';

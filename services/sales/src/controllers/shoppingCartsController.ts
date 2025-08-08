@@ -62,6 +62,7 @@ export class ShoppingCartsController {
         await shoppingCartRepo.save(shoppingCart);
         try {
             await redis.del('shoppingCarts:all');
+            await redis.del(`shoppingCarts:cart:${cartId}`);
         } catch (err) {
             console.error('Redis error (del updateShoppingCart):', err);
         }
@@ -99,6 +100,38 @@ export class ShoppingCartsController {
         return shoppingCarts;
     }
 
+    async getShoppingCartById(cartId: number) {
+        const cacheKey = `shoppingCarts:cart:${cartId}`;
+        let cached: string | null = null;
+        try {
+            cached = await redis.get(cacheKey);
+        } catch (err) {
+            console.error('Redis error (getShoppingCartById):', err);
+        }
+
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
+        const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
+        const shoppingCart = await shoppingCartRepo.findOne({
+            where: {id: cartId},
+            relations: ['customer', 'products.product']
+        });
+
+        if (!shoppingCart) {
+            throw new Error('Shopping cart not found');
+        }
+
+        try {
+            await redis.set(cacheKey, JSON.stringify(shoppingCart), 'EX', 3600);
+        } catch (err) {
+            console.error('Redis error (set getShoppingCartById):', err);
+        }
+
+        return shoppingCart;
+    }
+
     async addProductToCart(productsId: number, body: any) {
         const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
         const shoppingCart = await shoppingCartRepo.findOne({
@@ -127,8 +160,31 @@ export class ShoppingCartsController {
         const updatedCart = await shoppingCartRepo.save(shoppingCart);
         try {
             await redis.del('shoppingCarts:all');
+            await redis.del(`shoppingCarts:cart:${shoppingCart.id}`);
         } catch (err) {
             console.error('Redis error (del addProductToCart):', err);
+        }
+        return updatedCart;
+    }
+
+    async removeProductFromCart(productsId: number, cartId: number) {
+        const shoppingCartRepo = AppDataSource.getRepository(ShoppingCart);
+        const shoppingCart = await shoppingCartRepo.findOne({
+            where: {id: cartId}
+        });
+        if (!shoppingCart) {
+            throw new Error('Shopping cart not found for the given customer');
+        }
+        const product = shoppingCart.products.find(p => p.product_id === productsId);
+        if (!product) {
+            throw new Error('Product not found in the shopping cart');
+        }
+        shoppingCart.products = shoppingCart.products.filter(p => p.product_id !== productsId);
+        const updatedCart = await shoppingCartRepo.save(shoppingCart);
+        try {
+            await redis.del(`shoppingCarts:cart:${cartId}`);
+        } catch (err) {
+            console.error('Redis error (del removeProductFromCart):', err);
         }
         return updatedCart;
     }

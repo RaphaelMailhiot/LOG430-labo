@@ -1,55 +1,154 @@
 config:
-  target: "http://localhost:3000/api/v2"
+  target: "http://localhost:3000"
   phases:
-    - duration: 120
+    - duration: 60
       arrivalRate: 1
-      rampTo: 100
+      rampTo: 50
       name: "Montée en charge initiale"
-    - duration: 300
-      arrivalRate: 100
+    - duration: 180
+      arrivalRate: 50
       name: "Charge soutenue"
-    - duration: 300
-      arrivalRate: 100
-      rampTo: 500
+    - duration: 120
+      arrivalRate: 50
+      rampTo: 200
       name: "Stress test"
+    - duration: 60
+      arrivalRate: 200
+      rampTo: 10
+      name: "Décharge progressive"
   defaults:
     headers:
       Content-Type: "application/json"
   variables:
-    storeIds: [1,2,3,4,5]
-    productIds: [101,102,103,104]
+    storeIds: [1, 2, 3, 4, 5]
+    productIds: [101, 102, 103, 104, 105]
+    customerIds: [201, 202, 203, 204, 205]
   processor: "./processors.js"
   thresholds:
     http_req_duration:
-      max: 1000
+      max: 2000
     http_req_failed:
-      max: 0.01
+      max: 0.05
+    http_req_rate:
+      min: 10
 
 scenarios:
-  - name: "Consultation stocks"
-    flow:
-      - loop:
-          - function: "pickRandomStore"
-          - get:
-              url: "/stores/{{ storeId }}/stock"
-          - think: 1
-        count: 2
-
-  - name: "Rapports consolidés"
+  - name: "Authentification et navigation"
+    weight: 30
     flow:
       - post:
-          url: "/reports/consolidated"
-          json:
-            startDate: "{{ moment().subtract(7,'days').format('YYYY-MM-DD') }}"
-            endDate:   "{{ moment().format('YYYY-MM-DD') }}"
+          url: "/login"
+          form:
+            email: "{{ faker.internet.email() }}"
+            password: "password123"
+            storeId: "{{ pickRandom(storeIds) }}"
+      - think: 1
+      - get:
+          url: "/dashboard"
       - think: 2
 
-  - name: "Mises à jour produits haute fréquence"
+  - name: "Consultation des produits"
+    weight: 25
     flow:
-      - function: "pickRandomProduct"
+      - get:
+          url: "/products"
+      - think: 1
+      - get:
+          url: "/products/{{ pickRandom(productIds) }}"
+      - think: 1
+
+  - name: "Gestion des stocks"
+    weight: 20
+    flow:
+      - get:
+          url: "/inventory"
+      - think: 1
+      - get:
+          url: "/inventory/{{ pickRandom(productIds) }}"
+      - think: 1
       - put:
-          url: "/products/{{ productId }}"
+          url: "/inventory/{{ pickRandom(productIds) }}"
           json:
-            price: "{{ faker.commerce.price() }}"
-            stock: "{{ faker.datatype.number({ min:10, max:100 }) }}"
+            stock: "{{ faker.datatype.number({ min: 10, max: 100 }) }}"
+
+  - name: "Création de saga d'achat"
+    weight: 15
+    flow:
+      - post:
+          url: "/saga"
+          json:
+            type: "purchase_saga"
+            data:
+              store_id: "{{ pickRandom(storeIds) }}"
+              customer_id: "{{ pickRandom(customerIds) }}"
+              items:
+                - product_id: "{{ pickRandom(productIds) }}"
+                  quantity: "{{ faker.datatype.number({ min: 1, max: 5 }) }}"
+                  price: "{{ faker.commerce.price() }}"
+              payment_method: "credit_card"
+              amount: "{{ faker.commerce.price() }}"
+      - think: 2
+      - post:
+          url: "/saga/{{ $randomString }}/execute"
+      - think: 1
+
+  - name: "Création de saga de retour"
+    weight: 10
+    flow:
+      - post:
+          url: "/saga"
+          json:
+            type: "return_saga"
+            data:
+              sale_id: "{{ faker.datatype.number({ min: 1000, max: 9999 }) }}"
+              customer_id: "{{ pickRandom(customerIds) }}"
+              items:
+                - product_id: "{{ pickRandom(productIds) }}"
+                  quantity: "{{ faker.datatype.number({ min: 1, max: 3 }) }}"
+                  reason: "defective"
+              refund_amount: "{{ faker.commerce.price() }}"
+      - think: 2
+      - post:
+          url: "/saga/{{ $randomString }}/execute"
+      - think: 1
+
+  - name: "Consultation des sagas"
+    weight: 10
+    flow:
+      - get:
+          url: "/saga"
+      - think: 1
+      - get:
+          url: "/saga?status=completed"
+      - think: 1
+      - get:
+          url: "/saga?status=failed"
+      - think: 1
+
+  - name: "Gestion des ventes"
+    weight: 15
+    flow:
+      - get:
+          url: "/sales"
+      - think: 1
+      - post:
+          url: "/sales"
+          json:
+            store_id: "{{ pickRandom(storeIds) }}"
+            customer_id: "{{ pickRandom(customerIds) }}"
+            items:
+              - product_id: "{{ pickRandom(productIds) }}"
+                quantity: "{{ faker.datatype.number({ min: 1, max: 3 }) }}"
+                price: "{{ faker.commerce.price() }}"
+            total: "{{ faker.commerce.price() }}"
+      - think: 2
+
+  - name: "Health checks"
+    weight: 5
+    flow:
+      - get:
+          url: "/health"
+      - think: 0.5
+      - get:
+          url: "/metrics"
       - think: 0.5

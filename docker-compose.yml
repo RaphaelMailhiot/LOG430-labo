@@ -16,10 +16,15 @@ services:
       - sales-service-2
       - store-service-1
       - store-service-2
+      - saga-orchestrator-1
+      - saga-orchestrator-2
     networks:
       - microservices
     volumes:
-      - ./frontend:/frontend
+      - ./frontend/src:/frontend/src
+      - ./frontend/public:/frontend/public
+      - ./frontend/package.json:/frontend/package.json
+      - ./frontend/package-lock.json:/frontend/package-lock.json
     command: sh -c "npm install && npm run dev"
     develop:
       watch:
@@ -30,6 +35,12 @@ services:
             - node_modules/
         - action: rebuild
           path: ./frontend/package.json
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
 
   # AUTH SERVICE
   auth-service-1:
@@ -291,6 +302,76 @@ services:
     networks:
       - microservices
 
+  # SAGA ORCHESTRATOR SERVICE
+  saga-orchestrator-1:
+    build: ./services/saga-orchestrator
+    environment:
+      - DB_HOST=saga-orchestrator-db
+      - DB_PORT=5432
+      - DB_USER=saga_user
+      - DB_PASSWORD=saga_pass
+      - DB_NAME=saga_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+      - PORT=3000
+    ports:
+      - "3601:3000"
+    depends_on:
+      - saga-orchestrator-db
+    networks:
+      - microservices
+    command: sh -c "npm run migration:run && npm run seed && npm run dev"
+    develop:
+      watch:
+        - action: sync
+          path: ./services/saga-orchestrator/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./services/saga-orchestrator/package.json
+
+  saga-orchestrator-2:
+    build: ./services/saga-orchestrator
+    environment:
+      - DB_HOST=saga-orchestrator-db
+      - DB_PORT=5432
+      - DB_USER=saga_user
+      - DB_PASSWORD=saga_pass
+      - DB_NAME=saga_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+      - PORT=3000
+    ports:
+      - "3602:3000"
+    depends_on:
+      - saga-orchestrator-db
+    networks:
+      - microservices
+    command: sh -c "npm run dev"
+    develop:
+      watch:
+        - action: sync
+          path: ./services/saga-orchestrator/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./services/saga-orchestrator/package.json
+
+  saga-orchestrator-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: saga_user
+      POSTGRES_PASSWORD: saga_pass
+      POSTGRES_DB: saga_db
+    volumes:
+      - saga_pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices
+
   # KONG API GATEWAY
   kong:
     image: kong:3.4
@@ -367,6 +448,7 @@ volumes:
   pgdata:
   grafana_data:
   node_modules:
+  saga_pgdata:
 
 networks:
   microservices:

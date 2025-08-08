@@ -1,0 +1,69 @@
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.729Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753722388732 (purchase_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.733Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T17:06:28.736Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.755Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753722388756 (return_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.756Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T17:06:28.760Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.775Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":400,"timestamp":"2025-07-28T17:06:28.778Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.789Z","url":"/api/v1/sagas"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.791Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T17:06:28.793Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.805Z","url":"/api/v1/sagas?status=completed"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.807Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T17:06:28.808Z","url":"/api/v1/sagas?status=completed"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.815Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T17:06:28.817Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.824Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":404,"timestamp":"2025-07-28T17:06:28.825Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.830Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"error","message":"Erreur lors de l'exécution de la saga: TypeError: saga.markAsFailed is not a function","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.832Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T17:06:28.833Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T17:06:28.844Z","url":"/health"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T17:06:28.846Z","url":"/health"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:01.998Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753742402001 (purchase_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.002Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T22:40:02.004Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.017Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753742402018 (return_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.019Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T22:40:02.020Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.028Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":400,"timestamp":"2025-07-28T22:40:02.029Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.036Z","url":"/api/v1/sagas"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.037Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:02.038Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.043Z","url":"/api/v1/sagas?status=completed"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.044Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:02.045Z","url":"/api/v1/sagas?status=completed"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.049Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T22:40:02.051Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.057Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":404,"timestamp":"2025-07-28T22:40:02.058Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.063Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"error","message":"Erreur lors de l'exécution de la saga: TypeError: saga.markAsFailed is not a function","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.064Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:02.065Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:02.072Z","url":"/health"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T22:40:02.074Z","url":"/health"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.139Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753742454142 (purchase_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.144Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T22:40:54.147Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.159Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Saga démarrée: saga-1753742454160 (return_saga)","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.160Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":201,"timestamp":"2025-07-28T22:40:54.161Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.167Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":400,"timestamp":"2025-07-28T22:40:54.168Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.176Z","url":"/api/v1/sagas"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.178Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:54.178Z","url":"/api/v1/sagas"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.186Z","url":"/api/v1/sagas?status=completed"}
+{"level":"error","message":"Erreur lors de la récupération des sagas: TypeError: Cannot read properties of undefined (reading 'length')","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.187Z"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:54.188Z","url":"/api/v1/sagas?status=completed"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.194Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T22:40:54.195Z","url":"/api/v1/sagas/saga-1"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.202Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":404,"timestamp":"2025-07-28T22:40:54.204Z","url":"/api/v1/sagas/non-existent-id"}
+{"level":"info","message":"Requête entrante","method":"POST","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.209Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"error","message":"Erreur lors de l'exécution de la saga: TypeError: saga.markAsFailed is not a function","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.210Z"}
+{"level":"info","message":"Réponse envoyée","method":"POST","service":"saga-orchestrator","status":500,"timestamp":"2025-07-28T22:40:54.211Z","url":"/api/v1/sagas/saga-2/execute"}
+{"level":"info","message":"Requête entrante","method":"GET","service":"saga-orchestrator","timestamp":"2025-07-28T22:40:54.218Z","url":"/health"}
+{"level":"info","message":"Réponse envoyée","method":"GET","service":"saga-orchestrator","status":200,"timestamp":"2025-07-28T22:40:54.220Z","url":"/health"}
