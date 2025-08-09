@@ -1,0 +1,29 @@
+@startuml
+title Saga Orchestrator - Machine d'état (Saga)
+hide empty description
+
+state "PENDING" as PENDING
+state "IN_PROGRESS" as IN_PROGRESS
+state "COMPLETED" as COMPLETED
+state "FAILED" as FAILED
+state "COMPENSATED" as COMPENSATED
+
+[*] --> PENDING : startSaga()
+PENDING --> IN_PROGRESS : executeSaga()
+IN_PROGRESS --> COMPLETED : toutes étapes OK
+IN_PROGRESS --> FAILED : erreur d'étape
+FAILED --> COMPENSATED : compensateSaga()
+COMPLETED --> [*]
+COMPENSATED --> [*]
+
+note right of IN_PROGRESS
+- Exécution séquentielle des étapes (ordre croissant)
+- Exécuteur selon type: PURCHASE_SAGA, RETURN_SAGA
+end note
+
+note bottom
+En cas d'échec, la saga est marquée FAILED puis les étapes complétées
+sont compensées; à la fin, la saga passe à COMPENSATED.
+end note
+
+@enduml

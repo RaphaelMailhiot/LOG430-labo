@@ -5,6 +5,14 @@ import { SagaStep, StepStatus, StepType } from '../entities/SagaStep';
 import { PurchaseSagaExecutor } from './executors/PurchaseSagaExecutor';
 import { ReturnSagaExecutor } from './executors/ReturnSagaExecutor';
 import { logger } from '../middleware/logger';
+import {
+  recordSagaStart,
+  recordSagaInProgress,
+  recordSagaComplete,
+  recordSagaFailure,
+  recordSagaCompensation,
+  recordSagaStep
+} from '../middleware/metrics';
 
 export class SagaOrchestratorService {
   private sagaRepository: Repository<Saga>;
@@ -45,6 +53,9 @@ export class SagaOrchestratorService {
 
       const savedSaga = await this.sagaRepository.save(saga);
 
+      // Metrics: saga démarrée
+      recordSagaStart(type);
+
       // Créer les étapes initiales
       await this.createInitialSteps(savedSaga, type);
 
@@ -79,6 +90,9 @@ export class SagaOrchestratorService {
       saga.status = SagaStatus.IN_PROGRESS;
       await this.sagaRepository.save(saga);
 
+      // Metrics: saga en cours
+      recordSagaInProgress(saga.type);
+
       // Exécuter chaque étape
       for (const step of saga.steps.sort((a, b) => a.step_order - b.step_order)) {
         if (step.status === StepStatus.COMPLETED) {
@@ -91,6 +105,12 @@ export class SagaOrchestratorService {
       // Marquer la saga comme terminée
       saga.markAsCompleted();
       await this.sagaRepository.save(saga);
+
+      // Metrics: saga complétée (durée)
+      const durationSec = saga.completed_at && saga.created_at
+        ? (saga.completed_at.getTime() - saga.created_at.getTime()) / 1000
+        : 0;
+      recordSagaComplete(saga.type, durationSec);
 
       logger.info(`Saga terminée avec succès: ${sagaId}`);
       return saga;
@@ -128,10 +148,15 @@ export class SagaOrchestratorService {
       step.markAsCompleted(outputData);
       await this.stepRepository.save(step);
 
+      // Metrics: étape complétée
+      recordSagaStep(saga.type, step.type, 'completed');
+
       logger.info(`Étape exécutée: ${step.type} pour la saga ${saga.id}`);
     } catch (error) {
       // Gérer l'échec de l'étape
       await this.handleStepFailure(step, error as Error);
+      // Metrics: étape échouée
+      recordSagaStep(saga.type, step.type, 'failed');
       throw error;
     }
   }
@@ -154,6 +179,9 @@ export class SagaOrchestratorService {
     await this.sagaRepository.save(saga);
 
     logger.error(`Échec de la saga ${saga.id}: ${error.message}`);
+
+    // Metrics: saga échouée
+    recordSagaFailure(saga.type);
 
     // Lancer la compensation
     await this.compensateSaga(saga);
@@ -188,6 +216,8 @@ export class SagaOrchestratorService {
           await this.stepRepository.save(step);
 
           logger.info(`Compensation effectuée pour l'étape: ${step.type}`);
+          // Metrics: compensation effectuée
+          recordSagaCompensation(saga.type);
         }
       } catch (compensationError) {
         logger.error(`Erreur lors de la compensation de l'étape ${step.type}: ${compensationError}`);

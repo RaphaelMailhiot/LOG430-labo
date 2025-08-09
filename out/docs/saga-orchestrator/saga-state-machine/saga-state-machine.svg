@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="641px" preserveAspectRatio="none" style="width:698px;height:641px;" version="1.1" viewBox="0 0 698 641" width="698px" zoomAndPan="magnify"><defs><filter height="300%" id="f1xy32t4xit198" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><text fill="#000000" font-family="sans-serif" font-size="18" lengthAdjust="spacing" textLength="338" x="172.5" y="18.6855">Saga Orchestrator - Machine d'état (Saga)</text><rect fill="#FEFECE" filter="url(#f1xy32t4xit198)" height="40" rx="12.5" ry="12.5" style="stroke:#A80036;stroke-width:1.5;" width="70" x="151" y="126.6406"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="156" y="152.3691">PENDING</text><rect fill="#FEFECE" filter="url(#f1xy32t4xit198)" height="40" rx="12.5" ry="12.5" style="stroke:#A80036;stroke-width:1.5;" width="108" x="132" y="246.1406"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="98" x="137" y="271.8691">IN_PROGRESS</text><rect fill="#FEFECE" filter="url(#f1xy32t4xit198)" height="40" rx="12.5" ry="12.5" style="stroke:#A80036;stroke-width:1.5;" width="96" x="7" y="438.6406"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="12" y="464.3691">COMPLETED</text><rect fill="#FEFECE" filter="url(#f1xy32t4xit198)" height="40" rx="12.5" ry="12.5" style="stroke:#A80036;stroke-width:1.5;" width="58" x="147" y="367.1406"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="48" x="152" y="392.8691">FAILED</text><rect fill="#FEFECE" filter="url(#f1xy32t4xit198)" height="40" rx="12.5" ry="12.5" style="stroke:#A80036;stroke-width:1.5;" width="115" x="117.5" y="508.6406"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105" x="122.5" y="534.3691">COMPENSATED</text><ellipse cx="186" cy="38.6406" fill="#000000" filter="url(#f1xy32t4xit198)" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><ellipse cx="81" cy="619.6406" fill="none" filter="url(#f1xy32t4xit198)" rx="10" ry="10" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="81.5" cy="620.1406" fill="#000000" rx="6" ry="6" style="stroke:none;stroke-width:1.0;"/><path d="M275,244.6406 L275,287.3438 L655,287.3438 L655,254.6406 L645,244.6406 L275,244.6406 " fill="#FBFB77" filter="url(#f1xy32t4xit198)" style="stroke:#A80036;stroke-width:1.0;"/><path d="M645,244.6406 L645,254.6406 L655,254.6406 L645,244.6406 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="305" x="281" y="263.1357">- Exécution séquentielle des étapes (ordre croissant)</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="359" x="281" y="279.4873">- Exécuteur selon type: PURCHASE_SAGA, RETURN_SAGA</text><path d="M241,365.6406 L241,408.3438 A0,0 0 0 0 241,408.3438 L689,408.3438 A0,0 0 0 0 689,408.3438 L689,375.6406 L679,365.6406 L469,365.6406 L465,287.8706 L461,365.6406 L241,365.6406 A0,0 0 0 0 241,365.6406 " fill="#FBFB77" filter="url(#f1xy32t4xit198)" style="stroke:#A80036;stroke-width:1.0;"/><path d="M679,365.6406 L679,375.6406 L689,375.6406 L679,365.6406 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="427" x="247" y="384.1357">En cas d'échec, la saga est marquée FAILED puis les étapes complétées</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="357" x="247" y="400.4873">sont compensées; à la fin, la saga passe à COMPENSATED.</text><!--MD5=[9674832c83223e87d1fcf6baeaa37530]
+link *start to PENDING--><path d="M186,48.6806 C186,64.6006 186,98.1406 186,121.2706 " fill="none" id="*start-to-PENDING" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="186,126.3306,190,117.3306,186,121.3306,182,117.3306,186,126.3306" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="64" x="187" y="93.1357">startSaga()</text><!--MD5=[1de3a617a7d10a4d8809703924147983]
+link PENDING to IN_PROGRESS--><path d="M186,166.7806 C186,187.0106 186,218.9606 186,240.9306 " fill="none" id="PENDING-to-IN_PROGRESS" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="186,246.0106,190,237.0106,186,241.0106,182,237.0106,186,246.0106" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="84" x="187" y="211.1357">executeSaga()</text><!--MD5=[60cc424a5837e466fbbffb1b1a6af178]
+link IN_PROGRESS to COMPLETED--><path d="M131.99,277.6306 C108.94,284.9306 83.95,297.1906 69,317.6406 C44.19,351.5606 46.4,403.1206 50.52,433.2906 " fill="none" id="IN_PROGRESS-to-COMPLETED" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="51.25,438.3006,53.8988,428.8146,50.5229,433.3538,45.9838,429.9779,51.25,438.3006" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="102" x="70" y="332.1357">toutes étapes OK</text><!--MD5=[eca7966b8786487531927302ed0d7b2a]
+link IN_PROGRESS to FAILED--><path d="M184.39,286.2606 C182.67,306.8206 179.91,339.5506 178.04,361.9006 " fill="none" id="IN_PROGRESS-to-FAILED" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="177.6,367.0706,182.3315,358.4328,178.014,362.0878,174.359,357.7703,177.6,367.0706" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="78" x="183" y="332.1357">erreur d'étape</text><!--MD5=[1f47452ea31f06ede8681ab8cef88c41]
+link FAILED to COMPENSATED--><path d="M175.86,407.2406 C175.68,432.1506 175.37,475.7406 175.18,503.0806 " fill="none" id="FAILED-to-COMPENSATED" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="175.14,508.3206,179.1914,499.3436,175.1686,503.3207,171.1915,499.2979,175.14,508.3206" style="stroke:#A80036;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="109" x="177" y="464.1357">compensateSaga()</text><!--MD5=[5cd109b487d9d432e8eae26eb24e7240]
+link COMPLETED to *end--><path d="M58.14,478.8206 C63.43,511.1906 74.01,575.9206 78.69,604.5106 " fill="none" id="COMPLETED-to-*end" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="79.54,609.7206,82.0463,600.196,78.7389,604.7852,74.1497,601.4778,79.54,609.7206" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[7a38c8409a279d36ba11cd577248d482]
+link COMPENSATED to *end--><path d="M154.6,548.9506 C135.26,567.2706 106.94,594.0806 91.68,608.5206 " fill="none" id="COMPENSATED-to-*end" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="87.75,612.2506,97.0385,608.9759,91.3839,608.8163,91.5435,603.1616,87.75,612.2506" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[00de559f2ae7dfceffb365e2e51845c1]
+link IN_PROGRESS to GMN16--><path d="M240.22,266.1406 C251.78,266.1406 263.34,266.1406 274.9,266.1406 " fill="none" id="IN_PROGRESS-GMN16" style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><!--MD5=[2d1335030fd7f6c6bc9b8573e73b35b8]
+@startuml
+title Saga Orchestrator - Machine d'état (Saga)
+hide empty description
+
+state "PENDING" as PENDING
+state "IN_PROGRESS" as IN_PROGRESS
+state "COMPLETED" as COMPLETED
+state "FAILED" as FAILED
+state "COMPENSATED" as COMPENSATED
+
+[*] - -> PENDING : startSaga()
+PENDING - -> IN_PROGRESS : executeSaga()
+IN_PROGRESS - -> COMPLETED : toutes étapes OK
+IN_PROGRESS - -> FAILED : erreur d'étape
+FAILED - -> COMPENSATED : compensateSaga()
+COMPLETED - -> [*]
+COMPENSATED - -> [*]
+
+note right of IN_PROGRESS
+- Exécution séquentielle des étapes (ordre croissant)
+- Exécuteur selon type: PURCHASE_SAGA, RETURN_SAGA
+end note
+
+note bottom
+En cas d'échec, la saga est marquée FAILED puis les étapes complétées
+sont compensées; à la fin, la saga passe à COMPENSATED.
+end note
+
+@enduml
+
+PlantUML version 1.2021.00(Sun Jan 10 05:25:05 EST 2021)
+(MIT source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: fr
+Country: CA
+--></g></svg>

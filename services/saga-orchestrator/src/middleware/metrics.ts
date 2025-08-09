@@ -85,6 +85,10 @@ export const recordSagaStart = (type: string) => {
     sagaTotal.inc({ type, status: 'started' });
 };
 
+export const recordSagaInProgress = (type: string) => {
+    sagaTotal.inc({ type, status: 'in_progress' });
+};
+
 export const recordSagaComplete = (type: string, duration: number) => {
     sagaTotal.inc({ type, status: 'completed' });
     sagaDuration.observe({ type }, duration);

@@ -1,0 +1,25 @@
+@startuml
+title Saga Orchestrator - Machine d'état (Étape)
+hide empty description
+
+state "PENDING" as PENDING
+state "IN_PROGRESS" as IN_PROGRESS
+state "COMPLETED" as COMPLETED
+state "FAILED" as FAILED
+state "COMPENSATED" as COMPENSATED
+
+[*] --> PENDING : création d'étape
+PENDING --> IN_PROGRESS : executeStep()
+IN_PROGRESS --> COMPLETED : succès
+IN_PROGRESS --> FAILED : erreur
+FAILED --> [*]
+COMPLETED --> COMPENSATED : compensateStep()
+COMPENSATED --> [*]
+
+note right of PENDING
+Chaque étape possède retry_count/max_retries,
+mais la logique de retry n'est pas encore implémentée
+au niveau de l'orchestrateur.
+end note
+
+@enduml
