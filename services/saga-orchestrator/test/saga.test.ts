@@ -1,3 +1,5 @@
+import type { Repository } from 'typeorm';
+
 // Mock redisClient BEFORE any imports to prevent real Redis connection
 jest.mock('../src/middleware/redisClient', () => ({
     redis: {
@@ -26,6 +28,152 @@ jest.mock('axios', () => ({
     delete: jest.fn().mockResolvedValue({ data: { success: true } }),
 }));
 
+// IMPORTANT: patcher AppDataSource AVANT d'importer l'app
+import request from 'supertest';
+import { AppDataSource } from '../src/data-source';
+
+// Stores en mémoire pour les tests
+const sagas: any[] = [];
+const sagaSteps: any[] = [];
+
+// Wraps pour donner les méthodes d’instance attendues
+const wrapStep = (raw: any) => raw && (typeof raw.markAsInProgress === 'function' ? raw : {
+    ...raw,
+    markAsInProgress() { this.status = 'in_progress'; this.started_at = new Date(); },
+    markAsCompleted(output?: any) { this.status = 'completed'; this.completed_at = new Date(); if (output !== undefined) this.output_data = output; },
+    markAsFailed(msg?: string) { this.status = 'failed'; this.error_message = msg ?? null; },
+    markAsCompensated() { this.status = 'compensated'; this.compensated_at = new Date(); },
+    getDuration() {
+        return this.started_at && this.completed_at
+            ? this.completed_at.getTime() - this.started_at.getTime()
+            : null;
+    },
+});
+
+const wrapSaga = (raw: any) => raw && (typeof raw.markAsInProgress === 'function' ? raw : {
+    ...raw,
+    markAsInProgress() { this.status = 'in_progress'; this.started_at = new Date(); },
+    incrementRetryCount() { this.retry_count = (this.retry_count ?? 0) + 1; },
+    markAsCompleted() { this.status = 'completed'; this.completed_at = new Date(); },
+    markAsFailed(msg?: string) { this.status = 'failed'; this.error_message = msg ?? null; },
+});
+
+// Patcher l’instance réelle utilisée par le code
+beforeAll(() => {
+    // Ces deux casts évitent que TS hurle sur les méthodes de DataSource
+    jest.spyOn(AppDataSource as any, 'initialize').mockResolvedValue(AppDataSource as any);
+    jest.spyOn(AppDataSource as any, 'destroy').mockResolvedValue(undefined as any);
+
+    // IMPORTANT: on caste aussi getRepository sur 'any' pour libérer la signature
+    jest.spyOn(AppDataSource as any, 'getRepository').mockImplementation((entity: any) => {
+        const name = typeof entity === 'string' ? entity : entity?.name;
+
+        if (name === 'Saga') {
+            const repo = {
+                find: jest.fn((opts?: any) => {
+                    let rows = [...sagas];
+
+                    if (opts?.order?.created_at === 'DESC') rows.sort((a,b) => +new Date(b.created_at) - +new Date(a.created_at));
+                    if (opts?.order?.created_at === 'ASC')  rows.sort((a,b) => +new Date(a.created_at) - +new Date(b.created_at));
+
+                    if (opts?.relations?.includes?.('steps')) {
+                        rows = rows.map(s => ({
+                            ...s,
+                            steps: sagaSteps
+                                .filter(st => st.saga_id === s.id)
+                                .sort((a,b) => a.step_order - b.step_order)
+                                .map(wrapStep),
+                        }));
+                    }
+
+                    return Promise.resolve(rows.map(wrapSaga));
+                }),
+
+                findOne: jest.fn(({ where, relations }: any) => {
+                    const saga = sagas.find(s => s.id === where.id);
+                    if (!saga) return Promise.resolve(null);
+
+                    if (relations?.includes?.('steps')) {
+                        const withSteps = {
+                            ...saga,
+                            steps: sagaSteps
+                                .filter(st => st.saga_id === saga.id)
+                                .sort((a,b) => a.step_order - b.step_order)
+                                .map(wrapStep),
+                        };
+                        return Promise.resolve(wrapSaga(withSteps));
+                    }
+                    return Promise.resolve(wrapSaga({ ...saga }));
+                }),
+
+                save: jest.fn((saga: any) => {
+                    if (!saga.id) saga.id = `saga-${Date.now()}`;
+                    const i = sagas.findIndex(s => s.id === saga.id);
+                    if (i >= 0) sagas[i] = { ...sagas[i], ...saga };
+                    else sagas.push({ ...saga });
+                    return Promise.resolve(wrapSaga({ ...saga }));
+                }),
+
+                create: jest.fn((data: any) => ({ ...data, id: `saga-${Date.now()}` })),
+                clear: jest.fn(() => { sagas.length = 0; return Promise.resolve(); }),
+            };
+
+            // ⬇️ le cast qui fait disparaître TS2345
+            return repo as unknown as Repository<any>;
+        }
+
+        if (name === 'SagaStep') {
+            const repo = {
+                find: jest.fn((opts?: any) => {
+                    let rows = [...sagaSteps];
+                    const where = opts?.where ?? {};
+                    const wantedSagaId = where.saga_id ?? where.saga?.id;
+
+                    if (wantedSagaId) rows = rows.filter(st => st.saga_id === wantedSagaId);
+                    if (where.status) rows = rows.filter(st => st.status === where.status);
+
+                    if (opts?.order?.step_order === 'ASC')  rows.sort((a,b) => a.step_order - b.step_order);
+                    if (opts?.order?.step_order === 'DESC') rows.sort((a,b) => b.step_order - a.step_order);
+
+                    return Promise.resolve(rows.map(wrapStep));
+                }),
+
+                findOne: jest.fn(({ where }: any) => {
+                    const wantedSagaId = where?.saga_id ?? where?.saga?.id;
+                    const match = (st: any) =>
+                        (where?.id ? st.id === where.id : true) &&
+                        (wantedSagaId ? st.saga_id === wantedSagaId : true) &&
+                        (where?.status ? st.status === where.status : true);
+
+                    const step = sagaSteps.find(match);
+                    return Promise.resolve(step ? wrapStep(step) : null);
+                }),
+
+                save: jest.fn((step: any) => {
+                    const id = step.id ?? `step-${Date.now()}`;
+                    const idx = sagaSteps.findIndex(st => st.id === id);
+                    if (idx >= 0) {
+                        sagaSteps[idx] = { ...sagaSteps[idx], ...step, id };
+                        return Promise.resolve(wrapStep(sagaSteps[idx]));
+                    }
+                    const created = { id, ...step };
+                    sagaSteps.push(created);
+                    return Promise.resolve(wrapStep(created));
+                }),
+
+                create: jest.fn((data: any) => ({ ...data, id: `step-${Date.now()}` })),
+                clear: jest.fn(() => { sagaSteps.length = 0; return Promise.resolve(); }),
+            };
+
+            // ⬇️ le cast qui fait disparaître TS2345
+            return repo as unknown as Repository<any>;
+        }
+
+        throw new Error(`Unknown repository requested: ${name}`);
+    });
+});
+
+
 // Mock les exécuteurs de saga
 jest.mock('../src/services/executors/PurchaseSagaExecutor', () => ({
     PurchaseSagaExecutor: jest.fn().mockImplementation(() => ({
@@ -45,236 +193,39 @@ jest.mock('../src/services/executors/ReturnSagaExecutor', () => ({
     })),
 }));
 
-import request from 'supertest';
 
 // Mock data
 const seedSagas = [
-    { 
-        id: 'saga-1', 
-        type: 'purchase_saga', 
-        status: 'completed', 
+    {
+        id: 'saga-1',
+        type: 'purchase_saga',
+        status: 'completed',
         data: { store_id: 1, customer_id: 123 },
         created_at: new Date(),
         updated_at: new Date()
     },
-    { 
-        id: 'saga-2', 
-        type: 'return_saga', 
-        status: 'pending', 
+    {
+        id: 'saga-2',
+        type: 'return_saga',
+        status: 'pending',
         data: { sale_id: 789, customer_id: 123 },
         created_at: new Date(),
         updated_at: new Date()
     }
 ];
 
-const sagas: any[] = [];
-const sagaSteps: any[] = [];
-
-// Mock data-source
-// Mock data-source
-jest.mock('../src/data-source', () => ({
-    AppDataSource: {
-        getRepository: jest.fn((entity) => {
-            const isSaga = (x: any) => x === 'Saga' || x?.name === 'Saga';
-            const isSagaStep = (x: any) => x === 'SagaStep' || x?.name === 'SagaStep';
-
-            // ajoute les méthodes d'instance de SagaStep utilisées par le service
-            const wrapStep = (raw: any) => {
-                if (!raw) return raw;
-                // évite de doubler les méthodes si déjà wrap
-                if (typeof raw.markAsInProgress === 'function') return raw;
-
-                return {
-                    ...raw,
-                    markAsInProgress() {
-                        this.status = 'in_progress';
-                        this.started_at = new Date();
-                    },
-                    markAsCompleted(output?: Record<string, any>) {
-                        this.status = 'completed';
-                        this.completed_at = new Date();
-                        if (output !== undefined) this.output_data = output;
-                    },
-                    markAsFailed(errorMessage?: string) {
-                        this.status = 'failed';
-                        this.error_message = errorMessage ?? null;
-                    },
-                    markAsCompensated() {
-                        this.status = 'compensated';
-                        this.compensated_at = new Date();
-                    },
-                    getDuration() {
-                        return this.started_at && this.completed_at
-                            ? this.completed_at.getTime() - this.started_at.getTime()
-                            : null;
-                    },
-                };
-            };
-
-            // === Wrapper pour donner les méthodes d'instance aux Sagas ===
-            const wrapSaga = (raw: any) => {
-                if (!raw) return raw;
-                if (typeof raw.markAsInProgress === 'function') return raw;
-
-                return {
-                    ...raw,
-                    markAsInProgress() {
-                        this.status = 'in_progress';
-                        this.started_at = new Date();
-                    },
-                    incrementRetryCount() {
-                        this.retry_count = (this.retry_count ?? 0) + 1;
-                    },
-                    markAsCompleted() {
-                        this.status = 'completed';
-                        this.completed_at = new Date();
-                    },
-                    markAsFailed(errorMessage?: string) {
-                        this.status = 'failed';
-                        this.error_message = errorMessage ?? null;
-                    },
-                };
-            };
-
-
-            if (isSaga(entity)) {
-                return {
-                    find: jest.fn((opts?: any) => {
-                        let rows = [...sagas];
-
-                        if (opts?.order?.created_at === 'DESC') {
-                            rows.sort((a, b) => +b.created_at - +a.created_at);
-                        } else if (opts?.order?.created_at === 'ASC') {
-                            rows.sort((a, b) => +a.created_at - +b.created_at);
-                        }
-
-                        if (opts?.relations?.includes?.('steps')) {
-                            rows = rows.map(s => ({
-                                ...s,
-                                steps: sagaSteps
-                                    .filter(st => st.saga_id === s.id)
-                                    .sort((a, b) => a.step_order - b.step_order)
-                                    .map(wrapStep),
-                            }));
-                        }
-
-                        // ⬇️ wrap la Saga AVANT de retourner
-                        return Promise.resolve(rows.map(wrapSaga));
-                    }),
-
-
-                    findOne: jest.fn(({ where, relations }: any) => {
-                        const saga = sagas.find(s => s.id === where.id);
-                        if (!saga) return Promise.resolve(null);
-
-                        if (relations?.includes?.('steps')) {
-                            const withSteps = {
-                                ...saga,
-                                steps: sagaSteps
-                                    .filter(st => st.saga_id === saga.id)
-                                    .sort((a, b) => a.step_order - b.step_order)
-                                    .map(wrapStep),
-                            };
-                            return Promise.resolve(wrapSaga(withSteps));
-                        }
-
-                        return Promise.resolve(wrapSaga({ ...saga }));
-                    }),
-
-
-                    save: jest.fn((saga) => {
-                        if (!saga.id) saga.id = `saga-${Date.now()}`;
-                        const i = sagas.findIndex(s => s.id === saga.id);
-                        if (i >= 0) sagas[i] = { ...sagas[i], ...saga };
-                        else sagas.push({ ...saga });
-                        return Promise.resolve(wrapSaga({ ...saga }));
-                    }),
-
-
-                    create: jest.fn((data) => ({ ...data, id: `saga-${Date.now()}` })),
-                    clear: jest.fn(() => { sagas.length = 0; return Promise.resolve(); }),
-                };
-            }
-
-            if (isSagaStep(entity)) {
-                return {
-                    // Supporte where.saga_id, where.status, where.saga.id et order.step_order
-                    find: jest.fn((opts?: any) => {
-                        let rows = [...sagaSteps];
-
-                        const where = opts?.where ?? {};
-                        const wantedSagaId = where.saga_id ?? where.saga?.id;
-
-                        if (wantedSagaId) {
-                            rows = rows.filter(st => st.saga_id === wantedSagaId);
-                        }
-                        if (where.status) {
-                            rows = rows.filter(st => st.status === where.status);
-                        }
-
-                        if (opts?.order?.step_order === 'ASC') {
-                            rows.sort((a, b) => a.step_order - b.step_order);
-                        } else if (opts?.order?.step_order === 'DESC') {
-                            rows.sort((a, b) => b.step_order - a.step_order);
-                        }
-
-                        return Promise.resolve(rows.map(wrapStep));
-                    }),
-
-                    // IMPORTANT: gère id OU (saga_id/saga.id + status)
-                    findOne: jest.fn(({ where }: any) => {
-                        const wantedSagaId = where?.saga_id ?? where?.saga?.id;
-
-                        const match = (st: any) =>
-                            (where?.id ? st.id === where.id : true) &&
-                            (wantedSagaId ? st.saga_id === wantedSagaId : true) &&
-                            (where?.status ? st.status === where.status : true);
-
-                        const step = sagaSteps.find(match);
-                        return Promise.resolve(step ? wrapStep(step) : null);
-                    }),
-
-                    // Persiste les changements de status/output/etc.
-                    save: jest.fn((step: any) => {
-                        const id = step.id ?? `step-${Date.now()}`;
-                        const idx = sagaSteps.findIndex(st => st.id === id);
-                        if (idx >= 0) {
-                            sagaSteps[idx] = { ...sagaSteps[idx], ...step, id };
-                            return Promise.resolve(wrapStep(sagaSteps[idx]));
-                        }
-                        const created = { id, ...step };
-                        sagaSteps.push(created);
-                        return Promise.resolve(wrapStep(created));
-                    }),
-
-                    create: jest.fn((data: any) => ({ ...data, id: `step-${Date.now()}` })),
-
-                    clear: jest.fn(() => {
-                        sagaSteps.length = 0;
-                        return Promise.resolve();
-                    }),
-                };
-            }
-
-            throw new Error('Unknown repository requested in test mock');
-        }),
-        initialize: jest.fn().mockResolvedValue(undefined),
-        destroy: jest.fn().mockResolvedValue(undefined),
-    },
-}));
-
 import app from '../src/index';
 
 beforeEach(() => {
     sagas.length = 0;
     sagaSteps.length = 0;
-    sagas.push(...seedSagas.map(s => ({ ...s })));
+    sagas.push(...seedSagas);
 });
 
-afterAll(async () => {
-    // Fermer proprement les connexions
-    await new Promise(resolve => setTimeout(resolve, 100));
+afterAll(() => {
+    jest.restoreAllMocks();
 });
+
 
 describe('Saga Orchestrator API', () => {
   describe('POST /api/v1/sagas', () => {

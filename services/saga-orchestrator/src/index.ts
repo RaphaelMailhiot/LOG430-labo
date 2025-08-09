@@ -36,8 +36,8 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? 
-        ['http://localhost:3000', 'http://frontend:3000'] : 
+    origin: process.env.NODE_ENV === 'production' ?
+        ['http://localhost:3000', 'http://frontend:3000'] :
         '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -59,20 +59,20 @@ app.use(session({
 // Middleware de logging
 app.use((req, res, next) => {
     if (process.env.NODE_ENV !== 'production') {
-        logger.info({ 
-            message: 'Requête entrante', 
-            method: req.method, 
-            url: req.originalUrl 
+        logger.info({
+            message: 'Requête entrante',
+            method: req.method,
+            url: req.originalUrl
         });
     }
-    
+
     res.on('finish', () => {
         if (process.env.NODE_ENV !== 'production') {
-            logger.info({ 
-                message: 'Réponse envoyée', 
-                method: req.method, 
-                url: req.originalUrl, 
-                status: res.statusCode 
+            logger.info({
+                message: 'Réponse envoyée',
+                method: req.method,
+                url: req.originalUrl,
+                status: res.statusCode
             });
         }
     });
@@ -118,7 +118,7 @@ if (!sagaController) {
 app.use('/api/v1', createApiSagaRouter(sagaController!));
 
 // Health check
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
         status: 'healthy',
         service: 'saga-orchestrator',
@@ -129,11 +129,11 @@ app.get('/health', (req: Request, res: Response) => {
 // Error handling
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = typeof err.status === 'number' ? err.status : 500;
-    
+
     if (process.env.NODE_ENV !== 'production') {
         console.error('Erreur:', err);
     }
-    
+
     res.status(status).json({
         timestamp: new Date().toISOString(),
         status,
@@ -141,6 +141,11 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
         message: err.message || 'Une erreur est survenue.',
         path: req.originalUrl || req.url
     });
+});
+
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    console.error('❌ Unhandled error', err);
+    res.status(500).json({ error: 'Internal Server Error', details: err?.message });
 });
 
 app.use((_req: Request, res: Response) => {
