@@ -51,32 +51,52 @@ const wrapSaga = (raw: any) => raw && (typeof raw.markAsInProgress === 'function
     markAsFailed(msg?: string) { this.status = 'failed'; this.error_message = msg ?? null; },
 });
 
-// 🔥 APPLIQUE LES SPIES *MAINTENANT* (pas dans beforeAll)
 jest.spyOn(AppDataSource as any, 'initialize').mockResolvedValue(AppDataSource as any);
 jest.spyOn(AppDataSource as any, 'destroy').mockResolvedValue(undefined as any);
+
+// ⚙️ Mock du manager et de transaction (certaines routes/services l'utilisent)
+const fakeManager = {
+    getRepository: (entity: any) => (AppDataSource as any).getRepository(entity),
+};
+
+Object.defineProperty(AppDataSource as any, 'manager', {
+    get: () => ({
+        transaction: async (cb: (mgr: any) => any) => cb(fakeManager),
+    }),
+});
+
+
 jest.spyOn(AppDataSource as any, 'getRepository').mockImplementation((entity: any) => {
     const name = typeof entity === 'string' ? entity : entity?.name;
 
     if (name === 'Saga') {
+        // ⬇️ on isole l'implémentation de find pour éviter la référence circulaire
+        const findImpl = (opts?: any): Promise<any[]> => {
+            let rows = [...sagas];
+
+            if (opts?.order?.created_at === 'DESC') rows.sort((a,b)=>+new Date(b.created_at)-+new Date(a.created_at));
+            if (opts?.order?.created_at === 'ASC')  rows.sort((a,b)=>+new Date(a.created_at)-+new Date(b.created_at));
+
+            if (opts?.relations?.includes?.('steps')) {
+                rows = rows.map(s => ({
+                    ...s,
+                    steps: sagaSteps
+                        .filter(st => st.saga_id === s.id)
+                        .sort((a,b)=>a.step_order-b.step_order)
+                        .map(wrapStep),
+                }));
+            }
+
+            return Promise.resolve(rows.map(wrapSaga));
+        };
+
         const repo = {
-            find: jest.fn((opts?: any) => {
-                let rows = [...sagas];
-                if (opts?.order?.created_at === 'DESC') rows.sort((a,b)=>+new Date(b.created_at)-+new Date(a.created_at));
-                if (opts?.order?.created_at === 'ASC')  rows.sort((a,b)=>+new Date(a.created_at)-+new Date(b.created_at));
-                if (opts?.relations?.includes?.('steps')) {
-                    rows = rows.map(s => ({
-                        ...s,
-                        steps: sagaSteps
-                            .filter(st => st.saga_id === s.id)
-                            .sort((a,b)=>a.step_order-b.step_order)
-                            .map(wrapStep),
-                    }));
-                }
-                return Promise.resolve(rows.map(wrapSaga));
-            }),
-            findOne: jest.fn(({ where, relations }: any) => {
+            find: jest.fn(findImpl),
+
+            findOne: jest.fn(({ where, relations }: any): Promise<any|null> => {
                 const saga = sagas.find(s => s.id === where.id);
                 if (!saga) return Promise.resolve(null);
+
                 if (relations?.includes?.('steps')) {
                     const withSteps = {
                         ...saga,
@@ -89,41 +109,60 @@ jest.spyOn(AppDataSource as any, 'getRepository').mockImplementation((entity: an
                 }
                 return Promise.resolve(wrapSaga({ ...saga }));
             }),
-            save: jest.fn((saga: any) => {
+
+            save: jest.fn((saga: any): Promise<any> => {
                 if (!saga.id) saga.id = `saga-${Date.now()}`;
                 const i = sagas.findIndex(s => s.id === saga.id);
                 if (i >= 0) sagas[i] = { ...sagas[i], ...saga };
                 else sagas.push({ ...saga });
                 return Promise.resolve(wrapSaga({ ...saga }));
             }),
+
             create: jest.fn((data: any) => ({ ...data, id: `saga-${Date.now()}` })),
-            clear: jest.fn(() => { sagas.length = 0; return Promise.resolve(); }),
+            clear: jest.fn((): Promise<void> => { sagas.length = 0; return Promise.resolve(); }),
+
+            // ✅ types de retour explicites → finit TS7024
+            count: jest.fn((opts?: any): Promise<number> =>
+                findImpl(opts).then((rows) => rows.length)
+            ),
+            findAndCount: jest.fn((opts?: any): Promise<[any[], number]> =>
+                findImpl(opts).then((rows) => [rows, rows.length])
+            ),
         };
+
         return repo as unknown as Repository<any>;
     }
 
     if (name === 'SagaStep') {
+        const findImpl = (opts?: any): Promise<any[]> => {
+            let rows = [...sagaSteps];
+            const where = opts?.where ?? {};
+            const wantedSagaId = where.saga_id ?? where.saga?.id;
+
+            if (wantedSagaId) rows = rows.filter(st => st.saga_id === wantedSagaId);
+            if (where.status) rows = rows.filter(st => st.status === where.status);
+
+            if (opts?.order?.step_order === 'ASC')  rows.sort((a,b)=>a.step_order-b.step_order);
+            if (opts?.order?.step_order === 'DESC') rows.sort((a,b)=>b.step_order-a.step_order);
+
+            return Promise.resolve(rows.map(wrapStep));
+        };
+
         const repo = {
-            find: jest.fn((opts?: any) => {
-                let rows = [...sagaSteps];
-                const where = opts?.where ?? {};
-                const wantedSagaId = where.saga_id ?? where.saga?.id;
-                if (wantedSagaId) rows = rows.filter(st => st.saga_id === wantedSagaId);
-                if (where.status) rows = rows.filter(st => st.status === where.status);
-                if (opts?.order?.step_order === 'ASC')  rows.sort((a,b)=>a.step_order-b.step_order);
-                if (opts?.order?.step_order === 'DESC') rows.sort((a,b)=>b.step_order-a.step_order);
-                return Promise.resolve(rows.map(wrapStep));
-            }),
-            findOne: jest.fn(({ where }: any) => {
+            find: jest.fn(findImpl),
+
+            findOne: jest.fn(({ where }: any): Promise<any|null> => {
                 const wantedSagaId = where?.saga_id ?? where?.saga?.id;
                 const match = (st: any) =>
                     (where?.id ? st.id === where.id : true) &&
                     (wantedSagaId ? st.saga_id === wantedSagaId : true) &&
                     (where?.status ? st.status === where.status : true);
+
                 const step = sagaSteps.find(match);
                 return Promise.resolve(step ? wrapStep(step) : null);
             }),
-            save: jest.fn((step: any) => {
+
+            save: jest.fn((step: any): Promise<any> => {
                 const id = step.id ?? `step-${Date.now()}`;
                 const idx = sagaSteps.findIndex(st => st.id === id);
                 if (idx >= 0) {
@@ -134,11 +173,22 @@ jest.spyOn(AppDataSource as any, 'getRepository').mockImplementation((entity: an
                 sagaSteps.push(created);
                 return Promise.resolve(wrapStep(created));
             }),
+
             create: jest.fn((data: any) => ({ ...data, id: `step-${Date.now()}` })),
-            clear: jest.fn(() => { sagaSteps.length = 0; return Promise.resolve(); }),
+            clear: jest.fn((): Promise<void> => { sagaSteps.length = 0; return Promise.resolve(); }),
+
+            // ✅ types de retour explicites
+            count: jest.fn((opts?: any): Promise<number> =>
+                findImpl(opts).then((rows) => rows.length)
+            ),
+            findAndCount: jest.fn((opts?: any): Promise<[any[], number]> =>
+                findImpl(opts).then((rows) => [rows, rows.length])
+            ),
         };
+
         return repo as unknown as Repository<any>;
     }
+
 
     throw new Error(`Unknown repository requested: ${name}`);
 });
