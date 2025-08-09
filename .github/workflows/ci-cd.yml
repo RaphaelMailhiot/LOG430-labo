@@ -79,7 +79,7 @@ jobs:
           done
 
       - name: Lancer les tests en série
-        run: npm test -- --runInBand --detectOpenHandles
+        run: NODE_ENV=test npx jest --runInBand --detectOpenHandles
         working-directory: services/${{ matrix.service }}
 
   build:
