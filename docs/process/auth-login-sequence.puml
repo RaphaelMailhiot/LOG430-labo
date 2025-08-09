@@ -1,0 +1,101 @@
+@startuml Auth Login Sequence
+
+skinparam style strictuml
+
+actor "Utilisateur" as User
+participant "Frontend" as Frontend
+participant "Kong API Gateway" as Kong
+participant "Store Service" as StoreService
+participant "Auth Service" as AuthService
+
+== Affichage de la page de connexion ==
+
+User -> Frontend: GET /login
+activate Frontend
+
+Frontend -> Kong: GET /store/api/v1/stores
+activate Kong
+Kong -> StoreService: GET /api/v1/stores
+activate StoreService
+StoreService --> Kong: Liste des magasins
+deactivate StoreService
+Kong --> Frontend: Liste des magasins
+deactivate Kong
+
+Frontend -> Frontend: Rendu de login.ejs avec les magasins
+Frontend --> User: Page de connexion avec formulaire
+deactivate Frontend
+
+== Soumission du formulaire de connexion ==
+
+User -> Frontend: POST /login (email, password, storeId)
+activate Frontend
+
+Frontend -> Kong: GET /auth/api/v1/users/{email}/password/{password}
+activate Kong
+Kong -> AuthService: GET /api/v1/users/{email}/password/{password}
+activate AuthService
+
+alt Utilisateur trouvé
+    AuthService --> Kong: Données utilisateur
+    Kong --> Frontend: Données utilisateur
+    deactivate Kong
+    
+    Frontend -> Frontend: Stockage en session (user, isManager)
+    
+    alt Utilisateur est manager (store_id présent)
+        Frontend -> Kong: GET /store/api/v1/stores/{user.store_id}
+        activate Kong
+        Kong -> StoreService: GET /api/v1/stores/{user.store_id}
+        activate StoreService
+        StoreService --> Kong: Données du magasin
+        deactivate StoreService
+        Kong --> Frontend: Données du magasin
+        deactivate Kong
+        
+        Frontend -> Frontend: Stockage en session (selectedStore)
+        Frontend --> User: Redirection vers /dashboard
+    else Utilisateur est client (pas de store_id)
+        Frontend -> Kong: GET /store/api/v1/stores/{storeId}
+        activate Kong
+        Kong -> StoreService: GET /api/v1/stores/{storeId}
+        activate StoreService
+        StoreService --> Kong: Données du magasin
+        deactivate StoreService
+        Kong --> Frontend: Données du magasin
+        deactivate Kong
+        
+        Frontend -> Frontend: Stockage en session (selectedStore)
+        Frontend --> User: Redirection vers /
+    end
+    
+else Utilisateur non trouvé
+    AuthService --> Kong: false
+    Kong --> Frontend: false
+    deactivate Kong
+    
+    Frontend -> Kong: GET /store/api/v1/stores
+    activate Kong
+    Kong -> StoreService: GET /api/v1/stores
+    activate StoreService
+    StoreService --> Kong: Liste des magasins
+    deactivate StoreService
+    Kong --> Frontend: Liste des magasins
+    deactivate Kong
+    
+    Frontend -> Frontend: Rendu de login.ejs avec erreur
+    Frontend --> User: Page de connexion avec message d'erreur
+end
+
+deactivate AuthService
+deactivate Frontend
+
+== Déconnexion ==
+
+User -> Frontend: POST /logout
+activate Frontend
+Frontend -> Frontend: Nettoyage de la session
+Frontend --> User: Redirection vers /login
+deactivate Frontend
+
+@enduml
