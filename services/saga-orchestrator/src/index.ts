@@ -109,13 +109,19 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
 app.get('/metrics', metricsRoute);
 
 // Routes de l'API Saga
+// Routes de l'API Saga
 if (!sagaController) {
     const { SagaController } = require('./controllers/sagaController');
     const { SagaOrchestratorService } = require('./services/SagaOrchestratorService');
-    sagaOrchestrator = new SagaOrchestratorService();
+
+    sagaOrchestrator = new SagaOrchestratorService(
+        AppDataSource.getRepository('Saga'),
+        AppDataSource.getRepository('SagaStep')
+    );
     sagaController = new SagaController(sagaOrchestrator);
 }
 app.use('/api/v1', createApiSagaRouter(sagaController!));
+
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
